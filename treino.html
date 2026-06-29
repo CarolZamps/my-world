@@ -532,6 +532,27 @@ const TREINOS = {
 const DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 
 // ============================================
+// SUPABASE
+// ============================================
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
+
+async function logToSupabase(entry) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/historico_treino`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify(entry),
+    });
+  } catch(e) { /* silencioso — localStorage é o fallback */ }
+}
+
+// ============================================
 // STORAGE
 // ============================================
 const KEY = 'meu-treino-v2';
@@ -585,12 +606,14 @@ function toggleConcluido(nome) {
     delete state.concluidos[k][nome];
   } else {
     state.concluidos[k][nome] = true;
-    state.historico.push({
+    const entry = {
       data: k, dia: diaSelecionado, exercicio: nome,
       carga: state.cargas[nome] ?? null,
       observacao: state.observacoes[nome] ?? '',
       timestamp: Date.now(),
-    });
+    };
+    state.historico.push(entry);
+    logToSupabase(entry);
   }
   saveState();
   render();
