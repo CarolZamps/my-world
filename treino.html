@@ -424,6 +424,51 @@
     color: var(--text-faint);
     font-size: 14px;
   }
+
+  .ex-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ex-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    width: fit-content;
+  }
+
+  .alt-toggle {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    text-align: left;
+  }
+
+  .alt-list {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .alt-list span {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
 </style>
 </head>
 <body>
@@ -479,50 +524,98 @@ const TREINOS = {
   'Segunda': {
     foco: 'Inferior A · glúteo & quadríceps',
     exercicios: [
-      { nome: 'Elevação Pélvica c/ Mini-band', series: 4, reps: '6-10', intervalo: '60s', sugerida: 0, lipedema: true, obs: 'Essencial — ativa glúteo sem impacto.' },
-      { nome: 'Leg Press 180° Inclinado', series: 4, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Controle total da carga sem impacto nas juntas.' },
-      { nome: 'Step Up no Smith', series: 3, reps: '8-10 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — assista o vídeo antes.' },
-      { nome: 'Cadeira Flexora', series: 4, reps: '10-12', intervalo: '60s', sugerida: 15, lipedema: true, obs: 'Ajuste bem a carga — movimento controlado.' },
-      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.' },
+      { nome: 'Elevação Pélvica c/ Mini-band', series: 4, reps: '6-10', intervalo: '60s', sugerida: 0, lipedema: true, obs: 'Essencial — ativa glúteo sem impacto.',
+        video: 'https://www.youtube.com/results?search_query=eleva%C3%A7%C3%A3o+p%C3%A9lvica+mini+band+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Hip Thrust com Barra', 'Glúteo no cabo (kickback)'] },
+      { nome: 'Leg Press 180° Inclinado', series: 4, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Controle total da carga sem impacto nas juntas.',
+        video: 'https://www.youtube.com/results?search_query=leg+press+180+graus+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Agachamento Goblet com Halter', 'Hack Squat na Máquina'] },
+      { nome: 'Step Up no Smith', series: 3, reps: '8-10 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — assista o vídeo antes.',
+        video: 'https://www.youtube.com/results?search_query=step+up+smith+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Step Up com Halteres', 'Afundo Estacionário'] },
+      { nome: 'Cadeira Flexora', series: 4, reps: '10-12', intervalo: '60s', sugerida: 15, lipedema: true, obs: 'Ajuste bem a carga — movimento controlado.',
+        video: 'https://www.youtube.com/results?search_query=cadeira+flexora+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Mesa Flexora', 'Stiff com Halteres'] },
+      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.',
+        video: 'https://www.youtube.com/results?search_query=panturrilha+hack+squat+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Panturrilha em Pé com Halter', 'Panturrilha no Degrau'] },
     ]
   },
   'Terça': {
     foco: 'Superior A · costas & bíceps',
     exercicios: [
-      { nome: 'Puxada Alta Frontal Articulada', series: 4, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '' },
-      { nome: 'Remada Cavalinho Máquina', series: 4, reps: '8-10', intervalo: '30s', sugerida: 15, lipedema: false, obs: '' },
-      { nome: 'Remada Fechada Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 15, lipedema: false, obs: '' },
-      { nome: 'Rosca Scott Máquina', series: 4, reps: '8-10', intervalo: '60s', sugerida: 8, lipedema: false, obs: '' },
-      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '' },
+      { nome: 'Puxada Alta Frontal Articulada', series: 4, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=puxada+alta+frontal+articulada+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Pulldown no Cabo (pegada fechada)', 'Remada com Elástico'] },
+      { nome: 'Remada Cavalinho Máquina', series: 4, reps: '8-10', intervalo: '30s', sugerida: 15, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=remada+cavalinho+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Remada com Haltere Apoiado', 'Remada no Cabo'] },
+      { nome: 'Remada Fechada Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 15, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=remada+fechada+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Remada Serrote com Haltere', 'Remada no Cabo Neutro'] },
+      { nome: 'Rosca Scott Máquina', series: 4, reps: '8-10', intervalo: '60s', sugerida: 8, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=rosca+scott+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Rosca Direta com Barra', 'Rosca Alternada com Haltere'] },
+      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=abdominal+crunch+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Abdominal no Cabo', 'Prancha Frontal'] },
     ]
   },
   'Quarta': {
     foco: 'Inferior B · posterior & isquios',
     exercicios: [
-      { nome: 'Afundo no Smith com 2 Step', series: 3, reps: '10-12 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — controle o joelho.' },
-      { nome: 'Agachamento Pêndulo', series: 4, reps: '8-10', intervalo: '90s', sugerida: 15, lipedema: true, obs: 'Intervalo maior para controlar inchaço.' },
-      { nome: 'Mesa Flexora c/ Isometria', series: 4, reps: '10-12', intervalo: '60s', sugerida: 12, lipedema: false, obs: 'Faça igual ao vídeo.' },
-      { nome: 'Stiff com Barra', series: 4, reps: '10-12', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Jeito certo — assista o vídeo.' },
-      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.' },
+      { nome: 'Afundo no Smith com 2 Step', series: 3, reps: '10-12 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — controle o joelho.',
+        video: 'https://www.youtube.com/results?search_query=afundo+smith+2+step+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Afundo com Halteres', 'Passada Caminhando'] },
+      { nome: 'Agachamento Pêndulo', series: 4, reps: '8-10', intervalo: '90s', sugerida: 15, lipedema: true, obs: 'Intervalo maior para controlar inchaço.',
+        video: 'https://www.youtube.com/results?search_query=agachamento+p%C3%AAndulo+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Agachamento Sumô com Halter', 'Agachamento Goblet'] },
+      { nome: 'Mesa Flexora c/ Isometria', series: 4, reps: '10-12', intervalo: '60s', sugerida: 12, lipedema: false, obs: 'Faça igual ao vídeo.',
+        video: 'https://www.youtube.com/results?search_query=mesa+flexora+isometria+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Cadeira Flexora', 'Stiff com Halteres'] },
+      { nome: 'Stiff com Barra', series: 4, reps: '10-12', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Jeito certo — assista o vídeo.',
+        video: 'https://www.youtube.com/results?search_query=stiff+barra+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Stiff com Halteres', 'Levantamento Terra Romeno'] },
+      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.',
+        video: 'https://www.youtube.com/results?search_query=panturrilha+hack+squat+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Panturrilha em Pé com Halter', 'Panturrilha no Degrau'] },
     ]
   },
   'Quinta': {
     foco: 'Superior B · ombro & tríceps',
     exercicios: [
-      { nome: 'Desenvolvimento Smith', series: 4, reps: '10', intervalo: '90s', sugerida: 8, lipedema: false, obs: 'Jeito certo — assista o vídeo.' },
-      { nome: 'Elevação Lateral Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 8, lipedema: false, obs: '' },
-      { nome: 'Crucifixo Inverso Sentado', series: 4, reps: '10-12', intervalo: '30s', sugerida: 6, lipedema: false, obs: '' },
-      { nome: 'Tríceps Paralela Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 10, lipedema: false, obs: '' },
-      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '' },
+      { nome: 'Desenvolvimento Smith', series: 4, reps: '10', intervalo: '90s', sugerida: 8, lipedema: false, obs: 'Jeito certo — assista o vídeo.',
+        video: 'https://www.youtube.com/results?search_query=desenvolvimento+smith+ombro+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Desenvolvimento com Halteres', 'Press Militar no Cabo'] },
+      { nome: 'Elevação Lateral Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 8, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=eleva%C3%A7%C3%A3o+lateral+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Elevação Lateral com Halteres', 'Elevação Lateral no Cabo'] },
+      { nome: 'Crucifixo Inverso Sentado', series: 4, reps: '10-12', intervalo: '30s', sugerida: 6, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=crucifixo+inverso+sentado+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Face Pull no Cabo', 'Abdução Horizontal com Halteres'] },
+      { nome: 'Tríceps Paralela Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 10, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=tr%C3%ADceps+paralela+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Tríceps no Cabo (corda)', 'Tríceps Testa com Haltere'] },
+      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=abdominal+crunch+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Abdominal no Cabo', 'Prancha Frontal'] },
     ]
   },
   'Sexta': {
     foco: 'Full body · revisão leve',
     exercicios: [
-      { nome: 'Leg Press 180° Inclinado', series: 3, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Revisão leve — não force demais.' },
-      { nome: 'Puxada Alta Frontal Articulada', series: 3, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '' },
-      { nome: 'Elevação Pélvica c/ Mini-band', series: 3, reps: '10-12', intervalo: '60s', sugerida: 0, lipedema: false, obs: '' },
-      { nome: 'Rosca Scott Máquina', series: 3, reps: '10-12', intervalo: '60s', sugerida: 8, lipedema: false, obs: '' },
+      { nome: 'Leg Press 180° Inclinado', series: 3, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Revisão leve — não force demais.',
+        video: 'https://www.youtube.com/results?search_query=leg+press+180+graus+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Agachamento Goblet com Halter', 'Hack Squat na Máquina'] },
+      { nome: 'Puxada Alta Frontal Articulada', series: 3, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=puxada+alta+frontal+articulada+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Pulldown no Cabo (pegada fechada)', 'Remada com Elástico'] },
+      { nome: 'Elevação Pélvica c/ Mini-band', series: 3, reps: '10-12', intervalo: '60s', sugerida: 0, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=eleva%C3%A7%C3%A3o+p%C3%A9lvica+mini+band+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Hip Thrust com Barra', 'Glúteo no cabo (kickback)'] },
+      { nome: 'Rosca Scott Máquina', series: 3, reps: '10-12', intervalo: '60s', sugerida: 8, lipedema: false, obs: '',
+        video: 'https://www.youtube.com/results?search_query=rosca+scott+m%C3%A1quina+execu%C3%A7%C3%A3o+correta',
+        alternativas: ['Rosca Direta com Barra', 'Rosca Alternada com Haltere'] },
     ]
   },
   'Sábado': { foco: 'descanso', exercicios: [] },
@@ -715,6 +808,16 @@ function renderExercises() {
           <label>Observação</label>
           <textarea data-field="obs" placeholder="Como foi? Doeu? Pegou pesado?">${obs}</textarea>
         </div>
+        ${(ex.video || (ex.alternativas && ex.alternativas.length)) ? `
+        <div class="ex-links">
+          ${ex.video ? `<a class="ex-link" href="${ex.video}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
+          ${ex.alternativas && ex.alternativas.length ? `
+            <button class="alt-toggle">↔ ver alternativa</button>
+            <div class="alt-list" hidden>
+              ${ex.alternativas.map(a => `<span>${a}</span>`).join('')}
+            </div>
+          ` : ''}
+        </div>` : ''}
       </div>
     `;
 
@@ -740,6 +843,19 @@ function renderExercises() {
       state.observacoes[ex.nome] = e.target.value;
       saveState();
     };
+
+    const altToggle = div.querySelector('.alt-toggle');
+    if (altToggle) {
+      altToggle.onclick = (e) => {
+        e.stopPropagation();
+        const list = altToggle.nextElementSibling;
+        list.hidden = !list.hidden;
+        altToggle.textContent = list.hidden ? '↔ ver alternativa' : '↑ fechar alternativas';
+      };
+    }
+
+    const exLink = div.querySelector('.ex-link');
+    if (exLink) exLink.onclick = (e) => e.stopPropagation();
 
     container.appendChild(div);
   });
