@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#0F0E13">
-<title>Meu Treino</title>
+<title>Meu Mundo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #0F0E13;
@@ -18,11 +18,16 @@
     --text-dim: #8B8595;
     --text-faint: #5A5566;
     --accent: #C8A3FF;
-    --accent-soft: rgba(200, 163, 255, 0.12);
     --accent-deep: #8B5CF6;
-    --success: #6EE7B7;
-    --lipedema: #E879F9;
-    --lipedema-soft: rgba(232, 121, 249, 0.12);
+
+    --treino: #C8A3FF;
+    --treino-soft: rgba(200, 163, 255, 0.12);
+    --financas: #6EE7B7;
+    --financas-soft: rgba(110, 231, 183, 0.12);
+    --lembretes: #FBBF24;
+    --lembretes-soft: rgba(251, 191, 36, 0.12);
+    --cofrinho: #F472B6;
+    --cofrinho-soft: rgba(244, 114, 182, 0.12);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -42,745 +47,202 @@
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
-    padding-bottom: 80px;
+    padding: 0 20px 40px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* glow decorativo de fundo */
+  .glow {
+    position: fixed;
+    top: -120px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 65%);
+    pointer-events: none;
+    z-index: 0;
   }
 
   .header {
-    padding: 24px 20px 16px;
-    position: sticky;
-    top: 0;
-    background: var(--bg);
-    z-index: 10;
-    border-bottom: 1px solid var(--border);
+    padding: 40px 0 28px;
+    position: relative;
+    z-index: 1;
   }
 
   .eyebrow {
     font-size: 11px;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--text-faint);
-    margin-bottom: 6px;
+    margin-bottom: 10px;
+    font-family: 'JetBrains Mono', monospace;
   }
 
   .header h1 {
     font-family: 'Instrument Serif', serif;
-    font-size: 32px;
+    font-size: 46px;
     font-weight: 400;
-    letter-spacing: -0.01em;
-    line-height: 1.1;
+    letter-spacing: -0.015em;
+    line-height: 1.02;
   }
 
-  .header h1 .focus {
+  .header h1 .accent {
     color: var(--accent);
     font-style: italic;
   }
 
-  .progress-row {
-    margin-top: 14px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-
-  .progress-bar {
-    flex: 1;
-    height: 4px;
-    background: var(--surface-2);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent-deep), var(--accent));
-    border-radius: 2px;
-    transition: width 0.4s ease;
-  }
-
-  .progress-text {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
+  .header .sub {
+    margin-top: 12px;
     color: var(--text-dim);
-    min-width: 38px;
-    text-align: right;
+    font-size: 14px;
   }
 
-  .day-tabs {
-    display: flex;
-    gap: 4px;
-    padding: 12px 16px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .day-tabs::-webkit-scrollbar { display: none; }
-
-  .day-tab {
-    flex: 1;
-    min-width: 44px;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    padding: 10px 6px;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: center;
-  }
-
-  .day-tab .day-letter { font-size: 13px; }
-
-  .day-tab .day-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: transparent;
-  }
-
-  .day-tab.active {
-    background: var(--accent-soft);
-    color: var(--accent);
-  }
-
-  .day-tab.has-progress .day-dot {
-    background: var(--success);
-  }
-
-  .day-tab.is-rest { color: var(--text-faint); }
-
-  .exercises { padding: 8px 16px 24px; }
-
-  .exercise {
-    border-bottom: 1px solid var(--border);
-    transition: opacity 0.2s ease;
-  }
-
-  .exercise.done { opacity: 0.55; }
-
-  .exercise-head {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    padding: 18px 4px;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .check {
-    flex-shrink: 0;
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    border: 1.5px solid var(--border);
-    background: transparent;
-    margin-top: 2px;
+  .grid {
     display: grid;
-    place-items: center;
-    cursor: pointer;
-    transition: all 0.15s ease;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
   }
 
-  .check:active { border-color: var(--accent); }
-
-  .check.done {
-    background: var(--success);
-    border-color: var(--success);
-  }
-
-  .check svg {
-    width: 12px;
-    height: 12px;
-    color: var(--bg);
-    opacity: 0;
-    transition: opacity 0.15s;
-  }
-
-  .check.done svg { opacity: 1; }
-
-  .exercise-body { flex: 1; min-width: 0; }
-
-  .exercise-name {
-    font-size: 15px;
-    font-weight: 600;
+  .card {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 20px 18px 22px;
+    text-decoration: none;
     color: var(--text);
-    line-height: 1.3;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    min-height: 152px;
+    overflow: hidden;
+    transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+  }
+
+  .card:active { transform: scale(0.97); }
+
+  .card.live { cursor: pointer; }
+  .card.live:hover { border-color: var(--c); background: var(--surface-2); }
+
+  .card.soon { opacity: 0.62; }
+
+  .card .icon-wrap {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: var(--c-soft);
     display: flex;
     align-items: center;
-    gap: 6px;
-    flex-wrap: wrap;
+    justify-content: center;
+    color: var(--c);
+    margin-bottom: 16px;
   }
+  .card .icon-wrap svg { width: 24px; height: 24px; }
 
-  .lipedema-badge {
-    background: var(--lipedema-soft);
-    color: var(--lipedema);
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 4px;
+  .card .title {
+    font-size: 17px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: -0.01em;
   }
 
-  .exercise-meta {
+  .card .desc {
     margin-top: 4px;
-    font-size: 13px;
+    font-size: 12.5px;
     color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.35;
   }
 
-  .chevron {
-    color: var(--text-faint);
-    transition: transform 0.2s ease;
-    margin-top: 4px;
-    flex-shrink: 0;
-  }
-
-  .exercise.open .chevron { transform: rotate(180deg); }
-
-  .exercise-detail {
-    display: none;
-    padding: 0 4px 18px 38px;
-    flex-direction: column;
-    gap: 14px;
-  }
-
-  .exercise.open .exercise-detail { display: flex; }
-
-  .tip {
-    background: var(--surface);
-    border-left: 2px solid var(--lipedema);
-    padding: 10px 12px;
-    border-radius: 4px;
-    font-size: 13px;
-    color: var(--text-dim);
-    line-height: 1.45;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .field label {
-    font-size: 11px;
-    letter-spacing: 0.1em;
+  .card .badge {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--text-faint);
-    font-weight: 600;
-  }
-
-  .field input,
-  .field textarea {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 12px;
-    border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 15px;
-    width: 100%;
-    transition: border-color 0.15s;
-  }
-
-  .field textarea {
-    font-family: 'Inter', sans-serif;
-    resize: none;
-    min-height: 56px;
-  }
-
-  .field input:focus,
-  .field textarea:focus {
-    outline: none;
-    border-color: var(--accent);
-  }
-
-  .field .hint {
-    font-size: 11px;
-    color: var(--text-faint);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  .field .hint strong { color: var(--text-dim); font-weight: 500; }
-
-  .rest-state {
-    text-align: center;
-    padding: 60px 24px;
-    color: var(--text-dim);
-  }
-  .rest-state h2 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 28px;
-    font-weight: 400;
-    margin-bottom: 8px;
-    color: var(--text);
-    font-style: italic;
-  }
-
-  .nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 480px;
-    margin: 0 auto;
-    background: var(--surface);
-    border-top: 1px solid var(--border);
-    display: flex;
-    padding: 8px;
-    gap: 4px;
-    z-index: 20;
-  }
-
-  .nav-btn {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text-dim);
-    padding: 10px 8px;
-    border-radius: 10px;
-    font-family: inherit;
-    font-size: 12px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .nav-btn.active {
-    color: var(--accent);
-    background: var(--accent-soft);
-  }
-
-  .nav-btn svg { width: 18px; height: 18px; }
-
-  .view { display: none; }
-  .view.active { display: block; }
-
-  .history-content { padding: 8px 20px 24px; }
-  .history-entry {
-    background: var(--surface);
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 10px;
-    border: 1px solid var(--border);
-  }
-  .history-entry-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 6px;
-  }
-  .history-entry-name { font-size: 14px; font-weight: 600; }
-  .history-entry-date {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--text-faint);
-  }
-  .history-entry-carga {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent);
-    font-size: 13px;
-  }
-  .history-entry-obs {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin-top: 4px;
-    font-style: italic;
-  }
-
-  .export-bar {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-  }
-  .btn {
-    background: var(--accent-soft);
-    color: var(--accent);
-    border: none;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-  }
-  .btn-secondary {
     background: var(--surface-2);
-    color: var(--text-dim);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    border-radius: 20px;
   }
 
-  .empty-state {
-    padding: 60px 24px;
+  .card .arrow {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    color: var(--c);
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .card.live:hover .arrow { opacity: 1; transform: translateX(0); }
+
+  .footer {
+    margin-top: 32px;
     text-align: center;
     color: var(--text-faint);
-    font-size: 14px;
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    position: relative;
+    z-index: 1;
   }
 </style>
 </head>
 <body>
+<div class="glow"></div>
 
-<div class="view active" id="view-treino">
-  <header class="header">
-    <div class="eyebrow" id="today-eyebrow">Hoje</div>
-    <h1>
-      <span id="day-name">—</span><br>
-      <span class="focus" id="day-focus">—</span>
-    </h1>
-    <div class="progress-row">
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
-      <div class="progress-text" id="progress-text">0/0</div>
+<header class="header">
+  <div class="eyebrow">Meu Mundo</div>
+  <h1>Oi, <span class="accent">Carol</span><br>por onde<br>começamos?</h1>
+  <p class="sub">Tudo da sua vida, num lugar só.</p>
+</header>
+
+<main class="grid">
+
+  <a class="card live" href="/treino.html" style="--c:var(--treino);--c-soft:var(--treino-soft);">
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 7v10M18 7v10M3 12h18"/></svg>
     </div>
-  </header>
-  <nav class="day-tabs" id="day-tabs"></nav>
-  <main class="exercises" id="exercises"></main>
-</div>
+    <div class="title">Treino</div>
+    <div class="desc">Seu plano da semana e progresso</div>
+    <span class="arrow"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+  </a>
 
-<div class="view" id="view-historico">
-  <header class="header">
-    <div class="eyebrow">Progresso</div>
-    <h1><span class="focus" style="font-style:normal">Histórico</span></h1>
-  </header>
-  <div class="export-bar">
-    <button class="btn" id="btn-export">Exportar CSV</button>
-    <button class="btn btn-secondary" id="btn-clear">Limpar tudo</button>
+  <div class="card soon" style="--c:var(--financas);--c-soft:var(--financas-soft);">
+    <span class="badge">Em breve</span>
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h18v12H3zM3 10h18M7 15h4"/></svg>
+    </div>
+    <div class="title">Finanças</div>
+    <div class="desc">Gastos, contas e pra onde vai o dinheiro</div>
   </div>
-  <div class="history-content" id="history-content"></div>
-</div>
 
-<nav class="nav">
-  <button class="nav-btn active" data-view="treino">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 7L6 17M18 7L18 17M3 12L21 12"/></svg>
-    Treino
-  </button>
-  <button class="nav-btn" data-view="historico">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V12L14.5 14.5M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/></svg>
-    Histórico
-  </button>
-</nav>
-
-<script>
-// ============================================
-// TREINO - dados embutidos direto no app
-// ============================================
-const TREINOS = {
-  'Segunda': {
-    foco: 'Inferior A · glúteo & quadríceps',
-    exercicios: [
-      { nome: 'Elevação Pélvica c/ Mini-band', series: 4, reps: '6-10', intervalo: '60s', sugerida: 0, lipedema: true, obs: 'Essencial — ativa glúteo sem impacto.' },
-      { nome: 'Leg Press 180° Inclinado', series: 4, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Controle total da carga sem impacto nas juntas.' },
-      { nome: 'Step Up no Smith', series: 3, reps: '8-10 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — assista o vídeo antes.' },
-      { nome: 'Cadeira Flexora', series: 4, reps: '10-12', intervalo: '60s', sugerida: 15, lipedema: true, obs: 'Ajuste bem a carga — movimento controlado.' },
-      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.' },
-    ]
-  },
-  'Terça': {
-    foco: 'Superior A · costas & bíceps',
-    exercicios: [
-      { nome: 'Puxada Alta Frontal Articulada', series: 4, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '' },
-      { nome: 'Remada Cavalinho Máquina', series: 4, reps: '8-10', intervalo: '30s', sugerida: 15, lipedema: false, obs: '' },
-      { nome: 'Remada Fechada Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 15, lipedema: false, obs: '' },
-      { nome: 'Rosca Scott Máquina', series: 4, reps: '8-10', intervalo: '60s', sugerida: 8, lipedema: false, obs: '' },
-      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '' },
-    ]
-  },
-  'Quarta': {
-    foco: 'Inferior B · posterior & isquios',
-    exercicios: [
-      { nome: 'Afundo no Smith com 2 Step', series: 3, reps: '10-12 cada lado', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Movimento educativo — controle o joelho.' },
-      { nome: 'Agachamento Pêndulo', series: 4, reps: '8-10', intervalo: '90s', sugerida: 15, lipedema: true, obs: 'Intervalo maior para controlar inchaço.' },
-      { nome: 'Mesa Flexora c/ Isometria', series: 4, reps: '10-12', intervalo: '60s', sugerida: 12, lipedema: false, obs: 'Faça igual ao vídeo.' },
-      { nome: 'Stiff com Barra', series: 4, reps: '10-12', intervalo: '90s', sugerida: 10, lipedema: false, obs: 'Jeito certo — assista o vídeo.' },
-      { nome: 'Panturrilha Hack', series: 4, reps: '12-15', intervalo: '60s', sugerida: 25, lipedema: true, obs: 'Circulação — muito importante para lipedema.' },
-    ]
-  },
-  'Quinta': {
-    foco: 'Superior B · ombro & tríceps',
-    exercicios: [
-      { nome: 'Desenvolvimento Smith', series: 4, reps: '10', intervalo: '90s', sugerida: 8, lipedema: false, obs: 'Jeito certo — assista o vídeo.' },
-      { nome: 'Elevação Lateral Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 8, lipedema: false, obs: '' },
-      { nome: 'Crucifixo Inverso Sentado', series: 4, reps: '10-12', intervalo: '30s', sugerida: 6, lipedema: false, obs: '' },
-      { nome: 'Tríceps Paralela Máquina', series: 4, reps: '10-12', intervalo: '30s', sugerida: 10, lipedema: false, obs: '' },
-      { nome: 'Abs Máquina', series: 4, reps: '12-15', intervalo: '60s', sugerida: 10, lipedema: false, obs: '' },
-    ]
-  },
-  'Sexta': {
-    foco: 'Full body · revisão leve',
-    exercicios: [
-      { nome: 'Leg Press 180° Inclinado', series: 3, reps: '10-12', intervalo: '90s', sugerida: 20, lipedema: true, obs: 'Revisão leve — não force demais.' },
-      { nome: 'Puxada Alta Frontal Articulada', series: 3, reps: '10-12', intervalo: '60s', sugerida: 20, lipedema: false, obs: '' },
-      { nome: 'Elevação Pélvica c/ Mini-band', series: 3, reps: '10-12', intervalo: '60s', sugerida: 0, lipedema: false, obs: '' },
-      { nome: 'Rosca Scott Máquina', series: 3, reps: '10-12', intervalo: '60s', sugerida: 8, lipedema: false, obs: '' },
-    ]
-  },
-  'Sábado': { foco: 'descanso', exercicios: [] },
-  'Domingo': { foco: 'descanso ou pilates', exercicios: [] },
-};
-
-const DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
-
-// ============================================
-// STORAGE
-// ============================================
-const KEY = 'meu-treino-v2';
-const initial = { cargas: {}, observacoes: {}, concluidos: {}, historico: [] };
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(KEY);
-    if (!raw) return { ...initial };
-    return { ...initial, ...JSON.parse(raw) };
-  } catch { return { ...initial }; }
-}
-function saveState() {
-  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
-}
-
-let state = loadState();
-let diaSelecionado = DIAS[new Date().getDay()];
-
-// ============================================
-// HELPERS
-// ============================================
-function todayKey() { return new Date().toISOString().slice(0,10); }
-
-function isConcluido(nome) {
-  const k = todayKey();
-  return !!(state.concluidos[k] && state.concluidos[k][nome]);
-}
-
-function ultimaCarga(nome) {
-  for (let i = state.historico.length - 1; i >= 0; i--) {
-    const h = state.historico[i];
-    if (h.exercicio === nome && h.carga != null && h.carga !== '') return h;
-  }
-  return null;
-}
-
-function diasAtras(dataStr) {
-  const d = new Date(dataStr + 'T00:00:00');
-  const hoje = new Date(todayKey() + 'T00:00:00');
-  const diff = Math.round((hoje - d) / 86400000);
-  if (diff === 0) return 'hoje';
-  if (diff === 1) return 'ontem';
-  return `${diff} dias atrás`;
-}
-
-function toggleConcluido(nome) {
-  const k = todayKey();
-  if (!state.concluidos[k]) state.concluidos[k] = {};
-  if (state.concluidos[k][nome]) {
-    delete state.concluidos[k][nome];
-  } else {
-    state.concluidos[k][nome] = true;
-    state.historico.push({
-      data: k, dia: diaSelecionado, exercicio: nome,
-      carga: state.cargas[nome] ?? null,
-      observacao: state.observacoes[nome] ?? '',
-      timestamp: Date.now(),
-    });
-  }
-  saveState();
-  render();
-}
-
-// ============================================
-// RENDER
-// ============================================
-function renderDayTabs() {
-  const wrap = document.getElementById('day-tabs');
-  wrap.innerHTML = '';
-  const ordem = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
-  ordem.forEach(dia => {
-    const treino = TREINOS[dia];
-    const isRest = treino.exercicios.length === 0;
-    const k = todayKey();
-    const feitos = treino.exercicios.filter(e => state.concluidos[k]?.[e.nome]).length;
-    const hasProgress = !isRest && feitos > 0;
-
-    const btn = document.createElement('button');
-    btn.className = 'day-tab' + (dia === diaSelecionado ? ' active' : '') +
-                    (isRest ? ' is-rest' : '') +
-                    (hasProgress ? ' has-progress' : '');
-    btn.innerHTML = `<span class="day-letter">${dia[0]}</span><span class="day-dot"></span>`;
-    btn.title = dia;
-    btn.onclick = () => { diaSelecionado = dia; render(); };
-    wrap.appendChild(btn);
-  });
-}
-
-function renderExercises() {
-  const treino = TREINOS[diaSelecionado];
-  const exs = treino.exercicios;
-
-  document.getElementById('day-name').textContent = diaSelecionado;
-  document.getElementById('day-focus').textContent = treino.foco;
-  document.getElementById('today-eyebrow').textContent =
-    diaSelecionado === DIAS[new Date().getDay()] ? 'Hoje' : 'Próximo treino';
-
-  const container = document.getElementById('exercises');
-
-  if (exs.length === 0) {
-    document.getElementById('progress-fill').style.width = '0%';
-    document.getElementById('progress-text').textContent = 'rest';
-    container.innerHTML = `
-      <div class="rest-state">
-        <h2>descanso</h2>
-        <p>Recuperação faz parte. Aproveite para fazer pilates, caminhar leve ou só descansar mesmo.</p>
-      </div>`;
-    return;
-  }
-
-  const k = todayKey();
-  const feitos = exs.filter(e => state.concluidos[k]?.[e.nome]).length;
-  document.getElementById('progress-fill').style.width = (feitos/exs.length*100) + '%';
-  document.getElementById('progress-text').textContent = `${feitos}/${exs.length}`;
-
-  container.innerHTML = '';
-  exs.forEach(ex => {
-    const done = isConcluido(ex.nome);
-    const cargaAtual = state.cargas[ex.nome] ?? '';
-    const obs = state.observacoes[ex.nome] ?? '';
-    const ultimo = ultimaCarga(ex.nome);
-    const meta = `${ex.series}×${ex.reps} · ${ex.intervalo}`;
-
-    const div = document.createElement('div');
-    div.className = 'exercise' + (done ? ' done' : '');
-    div.innerHTML = `
-      <div class="exercise-head">
-        <div class="check ${done ? 'done' : ''}" data-action="toggle">
-          <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 6L5 9L10 3"/></svg>
-        </div>
-        <div class="exercise-body" data-action="expand">
-          <div class="exercise-name">
-            ${ex.nome}
-            ${ex.lipedema ? '<span class="lipedema-badge">💜 lipedema</span>' : ''}
-          </div>
-          <div class="exercise-meta">${meta}</div>
-        </div>
-        <svg class="chevron" data-action="expand" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 5L7 9L11 5"/>
-        </svg>
-      </div>
-      <div class="exercise-detail">
-        ${ex.obs ? `<div class="tip">${ex.obs}</div>` : ''}
-        <div class="field">
-          <label>Carga (kg)</label>
-          <input type="number" inputmode="decimal" step="0.5" data-field="carga"
-                 value="${cargaAtual}"
-                 placeholder="${ex.sugerida === 0 ? 'sem peso' : ex.sugerida}">
-          <div class="hint">
-            ${ex.sugerida === 0
-              ? '<strong>Sugerido:</strong> só a mini-band'
-              : `<strong>Sugerido:</strong> ${ex.sugerida} kg`}
-            ${ultimo ? `<br><strong>Último:</strong> ${ultimo.carga}kg (${diasAtras(ultimo.data)})` : ''}
-          </div>
-        </div>
-        <div class="field">
-          <label>Observação</label>
-          <textarea data-field="obs" placeholder="Como foi? Doeu? Pegou pesado?">${obs}</textarea>
-        </div>
-      </div>
-    `;
-
-    div.querySelector('[data-action="toggle"]').onclick = (e) => {
-      e.stopPropagation();
-      toggleConcluido(ex.nome);
-    };
-    const expand = () => div.classList.toggle('open');
-    div.querySelector('.exercise-body').onclick = expand;
-    div.querySelector('.chevron').onclick = expand;
-
-    const inputCarga = div.querySelector('[data-field="carga"]');
-    inputCarga.onclick = (e) => e.stopPropagation();
-    inputCarga.oninput = (e) => {
-      const v = e.target.value;
-      state.cargas[ex.nome] = v === '' ? '' : Number(v);
-      saveState();
-    };
-
-    const txtObs = div.querySelector('[data-field="obs"]');
-    txtObs.onclick = (e) => e.stopPropagation();
-    txtObs.oninput = (e) => {
-      state.observacoes[ex.nome] = e.target.value;
-      saveState();
-    };
-
-    container.appendChild(div);
-  });
-}
-
-function renderHistorico() {
-  const container = document.getElementById('history-content');
-  if (state.historico.length === 0) {
-    container.innerHTML = '<div class="empty-state">Sem registros ainda — marque seu primeiro exercício como concluído.</div>';
-    return;
-  }
-  const sorted = [...state.historico].sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-  container.innerHTML = sorted.map(h => `
-    <div class="history-entry">
-      <div class="history-entry-head">
-        <div class="history-entry-name">${h.exercicio}</div>
-        <div class="history-entry-date">${h.data} · ${h.dia}</div>
-      </div>
-      <div class="history-entry-carga">${h.carga != null && h.carga !== '' ? h.carga + ' kg' : 'sem carga registrada'}</div>
-      ${h.observacao ? `<div class="history-entry-obs">"${h.observacao}"</div>` : ''}
+  <div class="card soon" style="--c:var(--lembretes);--c-soft:var(--lembretes-soft);">
+    <span class="badge">Em breve</span>
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
     </div>
-  `).join('');
-}
+    <div class="title">Lembretes</div>
+    <div class="desc">O que não pode escapar</div>
+  </div>
 
-function render() {
-  renderDayTabs();
-  renderExercises();
-}
+  <div class="card soon" style="--c:var(--cofrinho);--c-soft:var(--cofrinho-soft);">
+    <span class="badge">Em breve</span>
+    <div class="icon-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 10c0-3-3-5-7-5s-7 2-7 5c0 1.5.8 2.8 2 3.7V17h2v-1.5c.9.3 1.9.5 3 .5s2.1-.2 3-.5V17h2v-3.3c1.2-.9 2-2.2 2-3.7M9 9h.01M3 11H2"/></svg>
+    </div>
+    <div class="title">Cofrinho</div>
+    <div class="desc">Metas e dinheiro guardado</div>
+  </div>
 
-function exportCSV() {
-  const header = 'data,dia,exercicio,carga_kg,observacao';
-  const rows = state.historico.map(h => {
-    const esc = (s) => `"${String(s||'').replace(/"/g,'""')}"`;
-    return [h.data, h.dia, esc(h.exercicio), h.carga ?? '', esc(h.observacao)].join(',');
-  });
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `historico-treino-${todayKey()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+</main>
 
-function clearHistorico() {
-  if (!confirm('Apagar todo o histórico e cargas registradas?')) return;
-  state = { ...initial };
-  saveState();
-  renderHistorico();
-  render();
-}
+<p class="footer">feito com :sparkles: pela Carol</p>
 
-document.querySelectorAll('.nav-btn').forEach(btn => {
-  btn.onclick = () => {
-    const target = btn.dataset.view;
-    document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
-    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + target).classList.add('active');
-    if (target === 'historico') renderHistorico();
-    window.scrollTo(0,0);
-  };
-});
-
-document.getElementById('btn-export').onclick = exportCSV;
-document.getElementById('btn-clear').onclick = clearHistorico;
-
-render();
-</script>
 </body>
 </html>
