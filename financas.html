@@ -291,16 +291,16 @@ body {
 .col-labels {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding: 0 4px 4px;
+  padding: 0 40px 4px 4px;
   gap: 0;
 }
+.col-labels-spacer { flex: 1; }
 .col-labels-dates {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 .col-date-label {
-  width: 88px;
+  width: 97px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -858,20 +858,26 @@ function renderMensal() {
   document.getElementById('rows-entrada').innerHTML = entradas.map(c => rowHTML(c, g[c.id])).join('');
   document.getElementById('rows-saida').innerHTML   = saidas.map(c => rowHTML(c, g[c.id])).join('');
 
-  let totalEnt = 0, totalSai = 0;
+  let totalEnt = 0, totalSai = 0, ent1 = 0, sai1 = 0, ent2 = 0, sai2 = 0;
   entradas.forEach(c => {
     const r = g[c.id];
-    totalEnt += (parseFloat(r?.valor_1)||0) + (parseFloat(r?.valor_2)||0);
+    const v1 = parseFloat(r?.valor_1)||0, v2 = parseFloat(r?.valor_2)||0;
+    totalEnt += v1 + v2; ent1 += v1; ent2 += v2;
   });
   saidas.forEach(c => {
     const r = g[c.id];
-    totalSai += (parseFloat(r?.valor_1)||0) + (parseFloat(r?.valor_2)||0);
+    const v1 = parseFloat(r?.valor_1)||0, v2 = parseFloat(r?.valor_2)||0;
+    totalSai += v1 + v2; sai1 += v1; sai2 += v2;
   });
 
   document.getElementById('total-entrada').textContent = fmtBRL(totalEnt);
   document.getElementById('total-saida').textContent   = fmtBRL(totalSai);
   document.getElementById('sum-entrada').textContent   = fmtBRL(totalEnt);
   document.getElementById('sum-saida').textContent     = fmtBRL(totalSai);
+  document.getElementById('col-ent-1').textContent = fmtBRL(ent1);
+  document.getElementById('col-sai-1').textContent = fmtBRL(sai1);
+  document.getElementById('col-ent-2').textContent = fmtBRL(ent2);
+  document.getElementById('col-sai-2').textContent = fmtBRL(sai2);
 
   const saldo = totalEnt - totalSai;
   const sumSaldo = document.getElementById('sum-saldo');
