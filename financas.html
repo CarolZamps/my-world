@@ -177,11 +177,10 @@ body {
   padding: 10px 12px;
   margin-bottom: 6px;
   display: grid;
-  grid-template-columns: 32px 1fr auto;
+  grid-template-columns: 32px 1fr auto 28px;
   gap: 0 8px;
   align-items: center;
   transition: border-color .15s, background .15s;
-  position: relative;
 }
 
 .row.paid-full {
@@ -255,21 +254,21 @@ body {
 .pago-btn svg { width: 13px; height: 13px; stroke: var(--text-faint); stroke-width: 2.5; fill: none; }
 
 .row-menu-btn {
-  position: absolute;
-  top: 6px; right: 6px;
-  width: 24px; height: 24px;
+  width: 28px; height: 28px;
   border: none; background: none;
   color: var(--text-faint);
   cursor: pointer;
   font-size: 16px;
   line-height: 1;
   border-radius: 6px;
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
-  transition: color .15s, background .15s;
+  transition: color .15s, background .15s, opacity .15s;
+  opacity: 0;
+  pointer-events: none;
 }
-.row:hover .row-menu-btn { display: flex; }
+.row:hover .row-menu-btn { opacity: 1; pointer-events: auto; }
 .row-menu-btn:hover { color: var(--text-dim); background: var(--surface-2); }
 
 /* ── add button ── */
