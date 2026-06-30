@@ -653,7 +653,7 @@ async function loadExercicios() {
 
     const treinos = {};
     for (const d of dias) {
-      treinos[d.nome] = { foco: d.foco, exercicios: [] };
+      treinos[d.dia] = { foco: d.foco, exercicios: [] };
     }
     for (const e of exercicios) {
       if (!treinos[e.dia]) continue;
