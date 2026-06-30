@@ -722,10 +722,20 @@ async function loadGastos(mesAno) {
   // seed categorias que não têm gasto ainda neste mês
   const semGasto = categorias.filter(c => !gastosMes[mesAno][c.id]);
   if (semGasto.length) {
+    // pré-preenche com valores do mês anterior
+    const [ano, mes] = mesAno.split('-').map(Number);
+    const dPrev = new Date(ano, mes - 2, 1);
+    const mesPrev = `${dPrev.getFullYear()}-${String(dPrev.getMonth()+1).padStart(2,'0')}`;
+    if (!gastosMes[mesPrev]) {
+      try { await loadGastos(mesPrev); } catch {}
+    }
+    const gPrev = gastosMes[mesPrev] || {};
+
     const novos = semGasto.map(c => ({
       mes_ano: mesAno,
       categoria_id: c.id,
-      valor_1: 0, valor_2: 0,
+      valor_1: parseFloat(gPrev[c.id]?.valor_1) || 0,
+      valor_2: parseFloat(gPrev[c.id]?.valor_2) || 0,
       pago_1: false, pago_2: false,
     }));
     try {
