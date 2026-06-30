@@ -3,228 +3,380 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0F0E13">
+<meta name="theme-color" content="#0A0812">
 <title>Wishlist · Meu Mundo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Serif:ital@0;1&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0F0E13;
-    --surface: #18161F;
-    --surface-2: #221F2C;
-    --border: #2A2735;
-    --text: #F5F3F7;
-    --text-dim: #8B8595;
-    --text-faint: #5A5566;
-    --c: #F472B6;
-    --c-soft: rgba(244, 114, 182, 0.12);
-  }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --bg: #0A0812;
+  --pink: #F472B6;
+  --pink-dim: rgba(244,114,182,.15);
+  --pink-glow: rgba(244,114,182,.35);
+  --gold: #FBBF24;
+  --gold-dim: rgba(251,191,36,.15);
+  --text: #F5F0FF;
+  --text-dim: #9B93B0;
+  --text-faint: #5A5270;
+  --surface: rgba(255,255,255,.04);
+  --border: rgba(255,255,255,.07);
+}
 
-  html, body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
-    line-height: 1.5;
-    overscroll-behavior-y: contain;
-    -webkit-font-smoothing: antialiased;
-  }
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  min-height: 100vh; min-height: 100dvh;
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+}
 
-  body {
-    max-width: 480px;
-    margin: 0 auto;
-    min-height: 100vh;
-    min-height: 100dvh;
-    padding: 0 20px 120px;
-    overflow-x: hidden;
-  }
+body {
+  max-width: 520px; margin: 0 auto;
+  padding: 0 20px 100px;
+  overflow-x: hidden; position: relative;
+}
 
-  .glow {
-    position: fixed;
-    top: -120px; left: 50%;
-    transform: translateX(-50%);
-    width: 380px; height: 380px;
-    background: radial-gradient(circle, rgba(244,114,182,.18), transparent 65%);
-    pointer-events: none; z-index: 0;
-  }
+/* ── STARS ── */
+.stars {
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  overflow: hidden;
+}
+.star {
+  position: absolute; border-radius: 50%;
+  background: white;
+  animation: twinkle var(--d, 3s) var(--delay, 0s) infinite ease-in-out;
+}
+@keyframes twinkle {
+  0%,100% { opacity: var(--min, .1); transform: scale(1); }
+  50%      { opacity: var(--max, .7); transform: scale(1.3); }
+}
 
-  /* header */
-  .header {
-    padding: 40px 0 24px;
-    position: relative; z-index: 1;
-    display: flex; align-items: flex-start; justify-content: space-between;
-  }
+/* ── AURORA ── */
+.aurora {
+  position: fixed; top: -200px; left: 50%;
+  transform: translateX(-50%);
+  width: 600px; height: 500px;
+  background: conic-gradient(from 180deg at 50% 60%,
+    rgba(244,114,182,.22) 0deg,
+    rgba(139,92,246,.18) 90deg,
+    rgba(59,130,246,.12) 180deg,
+    rgba(244,114,182,.22) 360deg);
+  filter: blur(60px);
+  pointer-events: none; z-index: 0;
+  animation: aurora-drift 8s ease-in-out infinite alternate;
+}
+@keyframes aurora-drift {
+  0%   { transform: translateX(-50%) rotate(0deg) scale(1); }
+  100% { transform: translateX(-50%) rotate(8deg) scale(1.1); }
+}
 
-  .back-btn {
-    display: flex; align-items: center; gap: 6px;
-    color: var(--text-dim); text-decoration: none;
-    font-size: 13px; padding: 6px 0; margin-top: 2px;
-    transition: color .15s;
-  }
-  .back-btn:hover { color: var(--text); }
-  .back-btn svg { width: 16px; height: 16px; }
+/* ── HEADER ── */
+.header {
+  position: relative; z-index: 2;
+  padding: 44px 0 8px;
+  text-align: center;
+}
 
-  .header-text { flex: 1; }
+.back-btn {
+  position: absolute; top: 46px; left: 0;
+  display: flex; align-items: center; gap: 5px;
+  color: var(--text-faint); text-decoration: none;
+  font-size: 13px; transition: color .2s;
+}
+.back-btn:hover { color: var(--text-dim); }
+.back-btn svg { width: 15px; height: 15px; }
 
-  .eyebrow {
-    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
-    color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
-    margin-bottom: 6px;
-  }
+.moon {
+  font-size: 36px; display: block; margin-bottom: 10px;
+  filter: drop-shadow(0 0 12px var(--gold));
+  animation: float 4s ease-in-out infinite;
+}
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
 
-  h1 {
-    font-family: 'Instrument Serif', serif;
-    font-size: 36px; font-weight: 400; letter-spacing: -.015em; line-height: 1.05;
-  }
-  h1 .accent { color: var(--c); font-style: italic; }
+h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 42px; font-weight: 400;
+  letter-spacing: -.02em; line-height: 1;
+  color: var(--text);
+}
+h1 em {
+  font-style: italic; color: var(--pink);
+  text-shadow: 0 0 30px var(--pink-glow);
+}
 
-  .count-badge {
-    font-size: 11px; color: var(--text-faint);
-    font-family: 'JetBrains Mono', monospace;
-    margin-top: 6px;
-  }
+.subtitle {
+  margin-top: 8px; font-size: 13px;
+  color: var(--text-faint); font-family: 'Caveat', cursive;
+  font-size: 17px; letter-spacing: .02em;
+}
 
-  /* add bar */
-  .add-bar {
-    position: relative; z-index: 1;
-    display: flex; gap: 8px; margin-bottom: 24px;
-  }
+.count {
+  display: inline-block; margin-top: 12px;
+  font-size: 11px; color: var(--text-faint);
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 4px 12px; border-radius: 20px;
+  font-family: 'Inter', sans-serif;
+}
 
-  .add-input {
-    flex: 1;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 14px;
-    color: var(--text);
-    font-family: inherit; font-size: 14px;
-    outline: none; transition: border-color .15s;
-  }
-  .add-input::placeholder { color: var(--text-faint); }
-  .add-input:focus { border-color: var(--c); }
+/* ── ADD BAR ── */
+.add-wrap {
+  position: relative; z-index: 2;
+  margin: 28px 0 32px;
+}
 
-  .add-confirm {
-    width: 44px; height: 44px; border-radius: 12px;
-    background: var(--c); border: none; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    color: #0F0E13; flex-shrink: 0;
-    transition: opacity .15s; align-self: center;
-  }
-  .add-confirm:hover { opacity: .85; }
-  .add-confirm svg { width: 18px; height: 18px; }
+.add-label {
+  font-family: 'Caveat', cursive;
+  font-size: 19px; color: var(--pink);
+  margin-bottom: 8px; padding-left: 2px;
+  display: flex; align-items: center; gap: 6px;
+}
 
-  /* list */
-  .list { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+.add-field {
+  display: flex; gap: 10px; align-items: center;
+  background: var(--surface);
+  border: 1px solid rgba(244,114,182,.25);
+  border-radius: 18px;
+  padding: 4px 4px 4px 16px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.add-field:focus-within {
+  border-color: var(--pink);
+  box-shadow: 0 0 0 3px var(--pink-dim), 0 0 24px var(--pink-dim);
+}
 
-  .item {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 14px 12px;
-    display: flex; align-items: center; gap: 12px;
-    transition: opacity .2s, border-color .2s;
-  }
-  .item.done { opacity: .5; }
-  .item.done .item-text { text-decoration: line-through; color: var(--text-dim); }
+.add-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: var(--text); font-family: 'Caveat', cursive;
+  font-size: 18px; line-height: 1.4;
+  padding: 8px 0;
+}
+.add-input::placeholder { color: var(--text-faint); }
 
-  .check-btn {
-    width: 24px; height: 24px; border-radius: 50%;
-    border: 2px solid var(--border);
-    background: transparent; cursor: pointer; flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: border-color .15s, background .15s;
-  }
-  .check-btn.checked { border-color: var(--c); background: var(--c); }
-  .check-btn svg { width: 13px; height: 13px; color: #0F0E13; display: none; }
-  .check-btn.checked svg { display: block; }
+.add-btn {
+  width: 42px; height: 42px; border-radius: 14px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--pink), #c026d3);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: white; box-shadow: 0 4px 16px rgba(244,114,182,.4);
+  transition: transform .15s, box-shadow .15s;
+}
+.add-btn:hover { transform: scale(1.05); box-shadow: 0 6px 22px rgba(244,114,182,.55); }
+.add-btn:active { transform: scale(.96); }
+.add-btn svg { width: 18px; height: 18px; }
 
-  .item-text {
-    flex: 1; font-size: 14px; line-height: 1.4;
-    word-break: break-word;
-  }
+/* ── LIST ── */
+.list {
+  position: relative; z-index: 2;
+  display: flex; flex-direction: column; gap: 10px;
+}
 
-  .del-btn {
-    width: 28px; height: 28px; border-radius: 8px;
-    border: none; background: transparent; cursor: pointer;
-    color: var(--text-faint); display: flex; align-items: center; justify-content: center;
-    transition: color .15s, background .15s; flex-shrink: 0;
-  }
-  .del-btn:hover { color: #fb7185; background: rgba(251,113,133,.1); }
-  .del-btn svg { width: 15px; height: 15px; }
+/* ── ITEM ── */
+.item {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 16px 14px;
+  display: flex; align-items: flex-start; gap: 12px;
+  transform: rotate(var(--tilt, 0deg));
+  transition: transform .2s cubic-bezier(.34,1.56,.64,1),
+              border-color .2s, opacity .3s, background .2s;
+  cursor: default;
+  overflow: hidden;
+}
+.item::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: 20px;
+  background: linear-gradient(135deg, var(--item-tint, transparent) 0%, transparent 60%);
+  opacity: .5; pointer-events: none;
+}
+.item:hover { transform: rotate(0deg) scale(1.015); border-color: rgba(255,255,255,.12); }
+.item.done { opacity: .45; }
+.item.done .item-text { text-decoration: line-through; color: var(--text-faint); }
+.item.popping { animation: pop .35s cubic-bezier(.34,1.56,.64,1); }
+@keyframes pop {
+  0%   { transform: rotate(var(--tilt,0deg)) scale(1); }
+  40%  { transform: rotate(0deg) scale(1.08); }
+  100% { transform: rotate(0deg) scale(1); }
+}
 
-  /* divider entre pendentes e concluídos */
-  .done-divider {
-    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
-    color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
-    margin: 20px 0 10px;
-  }
+/* star check */
+.star-btn {
+  background: none; border: none; cursor: pointer;
+  flex-shrink: 0; padding: 0; margin-top: 1px;
+  width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .2s;
+}
+.star-btn:hover { transform: scale(1.2); }
+.star-btn svg { width: 24px; height: 24px; transition: all .2s; }
+.star-btn .star-outline { display: block; }
+.star-btn .star-filled  { display: none; }
+.star-btn.lit .star-outline { display: none; }
+.star-btn.lit .star-filled  { display: block; }
+.star-btn.lit { animation: star-pop .3s cubic-bezier(.34,1.56,.64,1); }
+@keyframes star-pop {
+  0%   { transform: scale(1); }
+  50%  { transform: scale(1.4) rotate(20deg); }
+  100% { transform: scale(1); }
+}
 
-  /* empty */
-  .empty {
-    text-align: center; padding: 48px 0;
-    color: var(--text-faint); font-size: 14px;
-  }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+.item-body { flex: 1; min-width: 0; }
 
-  /* toast */
-  .toast {
-    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-    background: var(--surface-2); border: 1px solid var(--border);
-    border-radius: 10px; padding: 10px 18px;
-    font-size: 13px; color: var(--text-dim);
-    opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 200;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; }
+.item-text {
+  font-family: 'Caveat', cursive;
+  font-size: 19px; line-height: 1.3;
+  word-break: break-word; color: var(--text);
+}
+
+.item-meta {
+  font-size: 11px; color: var(--text-faint);
+  margin-top: 3px; font-family: 'Inter', sans-serif;
+}
+
+.del-btn {
+  flex-shrink: 0; background: none; border: none;
+  color: var(--text-faint); cursor: pointer;
+  width: 26px; height: 26px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  transition: color .15s, background .15s; margin-top: 1px;
+}
+.del-btn:hover { color: #fb7185; background: rgba(251,113,133,.12); }
+.del-btn svg { width: 14px; height: 14px; }
+
+/* ── DONE DIVIDER ── */
+.divider {
+  position: relative; z-index: 2;
+  display: flex; align-items: center; gap: 10px;
+  margin: 20px 0 12px; color: var(--text-faint);
+  font-size: 11px; text-transform: uppercase; letter-spacing: .1em;
+  font-family: 'Inter', sans-serif;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* ── EMPTY ── */
+.empty {
+  position: relative; z-index: 2;
+  text-align: center; padding: 56px 0 20px;
+}
+.empty-art {
+  font-size: 48px; margin-bottom: 14px;
+  animation: float 3s ease-in-out infinite;
+}
+.empty-title {
+  font-family: 'Caveat', cursive; font-size: 22px;
+  color: var(--text-dim); margin-bottom: 6px;
+}
+.empty-sub { font-size: 13px; color: var(--text-faint); }
+
+/* ── SPARKLE BURST ── */
+.sparkle-container {
+  position: fixed; pointer-events: none; z-index: 999;
+}
+.sp {
+  position: absolute;
+  width: 6px; height: 6px; border-radius: 50%;
+  animation: sparkle-fly .6s ease-out forwards;
+}
+@keyframes sparkle-fly {
+  0%   { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--tx),var(--ty)) scale(0); opacity: 0; }
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(20,16,32,.95); border: 1px solid var(--border);
+  border-radius: 12px; padding: 10px 18px;
+  font-size: 13px; color: var(--text-dim);
+  font-family: 'Caveat', cursive; font-size: 16px;
+  opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 300;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; }
 </style>
 </head>
 <body>
-<div class="glow"></div>
+
+<div class="stars" id="stars"></div>
+<div class="aurora"></div>
+<div class="sparkle-container" id="sparks"></div>
 
 <header class="header">
-  <div class="header-text">
-    <div class="eyebrow">Meu Mundo</div>
-    <h1>Wish<span class="accent">list</span></h1>
-    <div class="count-badge" id="count-badge">— itens</div>
-  </div>
   <a class="back-btn" href="/">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
-    Voltar
+    voltar
   </a>
+  <span class="moon">🌙</span>
+  <h1>seus <em>desejos</em></h1>
+  <p class="subtitle">escreve aqui, o universo está ouvindo ✨</p>
+  <span class="count" id="count">— desejos</span>
 </header>
 
-<div class="add-bar">
-  <input class="add-input" id="add-input" type="text" placeholder="Adicionar item à wishlist…" maxlength="200">
-  <button class="add-confirm" id="add-btn" onclick="addItem()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-  </button>
+<div class="add-wrap">
+  <div class="add-label">✦ novo desejo</div>
+  <div class="add-field">
+    <input class="add-input" id="add-input" type="text"
+      placeholder="o que você quer conquistar?" maxlength="200">
+    <button class="add-btn" onclick="addItem()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+  </div>
 </div>
 
 <div class="list" id="list"></div>
 <div class="toast" id="toast"></div>
 
 <script>
+/* ── STARS ── */
+const starsEl = document.getElementById('stars');
+const COLORS = ['#fff','#F9A8D4','#C4B5FD','#BAE6FD'];
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div');
+  s.className = 'star';
+  const size = Math.random() * 2.5 + .5;
+  s.style.cssText = `
+    width:${size}px; height:${size}px;
+    left:${Math.random()*100}%; top:${Math.random()*100}%;
+    background:${COLORS[Math.floor(Math.random()*COLORS.length)]};
+    --d:${2+Math.random()*4}s; --delay:${Math.random()*5}s;
+    --min:${.05+Math.random()*.15}; --max:${.4+Math.random()*.6};
+  `;
+  starsEl.appendChild(s);
+}
+
+/* ── TILTS ── */
+const TILTS = ['-1.2deg','-.5deg','.4deg','1deg','-.8deg','.7deg','-1.5deg','.3deg'];
+const TINTS = [
+  'rgba(244,114,182,.08)','rgba(139,92,246,.08)',
+  'rgba(251,191,36,.06)','rgba(59,130,246,.06)',
+];
+
+/* ── SUPABASE ── */
 const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co/rest/v1';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
 
 async function sb(path, opts = {}) {
   const headers = {
-    'apikey': SB_KEY,
-    'Authorization': 'Bearer ' + SB_KEY,
+    'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY,
     'Content-Type': 'application/json',
     ...(opts.prefer ? { 'Prefer': opts.prefer } : {}),
   };
   const res = await fetch(`${SB_URL}/${path}`, {
-    method: opts.method || 'GET',
-    headers,
-    body: opts.body || undefined,
+    method: opts.method || 'GET', headers, body: opts.body,
   });
   if (!res.ok) throw new Error(await res.text());
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  const t = await res.text(); return t ? JSON.parse(t) : null;
 }
 
 let items = [];
@@ -233,95 +385,143 @@ async function load() {
   try {
     items = await sb('wishlist?order=criado_em.asc') || [];
   } catch {
-    items = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    items = JSON.parse(localStorage.getItem('wl') || '[]');
   }
   render();
 }
 
-function saveCache() {
-  localStorage.setItem('wishlist', JSON.stringify(items));
+function cache() { localStorage.setItem('wl', JSON.stringify(items)); }
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+}
+
+function escH(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function render() {
   const list = document.getElementById('list');
   const pendentes = items.filter(i => !i.concluido);
   const concluidos = items.filter(i => i.concluido);
+  const total = items.length;
 
-  document.getElementById('count-badge').textContent =
-    `${pendentes.length} pendente${pendentes.length !== 1 ? 's' : ''}` +
-    (concluidos.length ? ` · ${concluidos.length} concluído${concluidos.length !== 1 ? 's' : ''}` : '');
+  document.getElementById('count').textContent =
+    total === 0 ? '— desejos'
+    : total === 1 ? '1 desejo'
+    : `${total} desejos`;
 
-  if (!items.length) {
-    list.innerHTML = `<div class="empty"><div class="empty-icon">🌟</div>Nenhum desejo por aqui ainda.<br>Adiciona o primeiro!</div>`;
+  if (!total) {
+    list.innerHTML = `
+      <div class="empty">
+        <div class="empty-art">🌠</div>
+        <div class="empty-title">nenhum desejo ainda</div>
+        <div class="empty-sub">adicione o primeiro e deixe o universo ouvir</div>
+      </div>`;
     return;
   }
 
-  const itemHTML = (item) => `
-    <div class="item${item.concluido ? ' done' : ''}" data-id="${item.id}">
-      <button class="check-btn${item.concluido ? ' checked' : ''}" onclick="toggle('${item.id}')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  const card = (item, idx) => {
+    const tilt = TILTS[idx % TILTS.length];
+    const tint = TINTS[idx % TINTS.length];
+    return `
+    <div class="item${item.concluido ? ' done' : ''}"
+         data-id="${item.id}"
+         style="--tilt:${tilt};--item-tint:${tint}">
+      <button class="star-btn${item.concluido ? ' lit' : ''}" onclick="toggle('${item.id}')">
+        <svg class="star-outline" viewBox="0 0 24 24" fill="none" stroke="rgba(244,114,182,.5)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+        <svg class="star-filled" viewBox="0 0 24 24" fill="${'#FBBF24'}" stroke="#FBBF24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
       </button>
-      <span class="item-text">${escHtml(item.texto)}</span>
+      <div class="item-body">
+        <div class="item-text">${escH(item.texto)}</div>
+        ${item.criado_em ? `<div class="item-meta">adicionado em ${fmtDate(item.criado_em)}</div>` : ''}
+      </div>
       <button class="del-btn" onclick="deleteItem('${item.id}')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>`;
+  };
 
-  let html = pendentes.map(itemHTML).join('');
+  let html = pendentes.map((item, i) => card(item, i)).join('');
   if (concluidos.length) {
-    html += `<div class="done-divider">Concluídos (${concluidos.length})</div>`;
-    html += concluidos.map(itemHTML).join('');
+    html += `<div class="divider">conquistados ✦ ${concluidos.length}</div>`;
+    html += concluidos.map((item, i) => card(item, i + pendentes.length)).join('');
   }
   list.innerHTML = html;
-}
-
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 async function addItem() {
   const input = document.getElementById('add-input');
   const texto = input.value.trim();
-  if (!texto) return;
+  if (!texto) { input.focus(); return; }
   input.value = '';
 
   const novo = { texto, concluido: false };
   try {
     const [ins] = await sb('wishlist?select=*', {
-      method: 'POST',
-      prefer: 'return=representation',
+      method: 'POST', prefer: 'return=representation',
       body: JSON.stringify(novo),
     });
     items.push(ins);
   } catch {
     items.push({ id: crypto.randomUUID(), texto, concluido: false, criado_em: new Date().toISOString() });
   }
-  saveCache();
-  render();
+  cache(); render();
+  requestAnimationFrame(() => {
+    const first = document.querySelector('.item');
+    if (first) first.classList.add('popping');
+  });
 }
 
 async function toggle(id) {
   const item = items.find(i => i.id === id);
   if (!item) return;
   item.concluido = !item.concluido;
-  render();
-  saveCache();
-  try {
-    await sb(`wishlist?id=eq.${id}`, {
-      method: 'PATCH',
-      body: JSON.stringify({ concluido: item.concluido }),
-    });
-  } catch {}
+
+  if (item.concluido) {
+    const el = document.querySelector(`.item[data-id="${id}"]`);
+    if (el) burst(el);
+    toast('desejo conquistado ⭐');
+  }
+
+  render(); cache();
+  try { await sb(`wishlist?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ concluido: item.concluido }) }); }
+  catch {}
 }
 
 async function deleteItem(id) {
   items = items.filter(i => i.id !== id);
-  render();
-  saveCache();
-  try {
-    await sb(`wishlist?id=eq.${id}`, { method: 'DELETE' });
-  } catch {}
-  toast('Item removido');
+  render(); cache();
+  try { await sb(`wishlist?id=eq.${id}`, { method: 'DELETE' }); } catch {}
+  toast('removido ✦');
+}
+
+/* ── SPARKLE BURST ── */
+const SPARK_COLORS = ['#FBBF24','#F472B6','#C4B5FD','#FDE68A','#FCE7F3'];
+function burst(el) {
+  const rect = el.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
+  const container = document.getElementById('sparks');
+  for (let i = 0; i < 12; i++) {
+    const sp = document.createElement('div');
+    sp.className = 'sp';
+    const angle = (i / 12) * Math.PI * 2;
+    const dist = 40 + Math.random() * 50;
+    sp.style.cssText = `
+      left:${cx}px; top:${cy}px;
+      background:${SPARK_COLORS[i % SPARK_COLORS.length]};
+      --tx:${Math.cos(angle)*dist}px; --ty:${Math.sin(angle)*dist}px;
+      animation-delay:${Math.random()*100}ms;
+    `;
+    container.appendChild(sp);
+    sp.addEventListener('animationend', () => sp.remove());
+  }
 }
 
 let toastTimer;
@@ -330,7 +530,7 @@ function toast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
 }
 
 document.getElementById('add-input').addEventListener('keydown', e => {
