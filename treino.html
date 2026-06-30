@@ -456,9 +456,13 @@
 
   .alt-list {
     margin-top: 8px;
-    display: flex;
+    display: none;
     flex-wrap: wrap;
     gap: 6px;
+  }
+
+  .alt-list.open {
+    display: flex;
   }
 
   .alt-list span {
@@ -672,7 +676,8 @@ function todayKey() { return new Date().toISOString().slice(0,10); }
 
 function isConcluido(nome) {
   const k = todayKey();
-  return !!(state.concluidos[k] && state.concluidos[k][nome]);
+  const key = diaSelecionado + '|' + nome;
+  return !!(state.concluidos[k] && state.concluidos[k][key]);
 }
 
 function ultimaCarga(nome) {
@@ -694,11 +699,12 @@ function diasAtras(dataStr) {
 
 function toggleConcluido(nome) {
   const k = todayKey();
+  const key = diaSelecionado + '|' + nome;
   if (!state.concluidos[k]) state.concluidos[k] = {};
-  if (state.concluidos[k][nome]) {
-    delete state.concluidos[k][nome];
+  if (state.concluidos[k][key]) {
+    delete state.concluidos[k][key];
   } else {
-    state.concluidos[k][nome] = true;
+    state.concluidos[k][key] = true;
     const entry = {
       data: k, dia: diaSelecionado, exercicio: nome,
       carga: state.cargas[nome] ?? null,
@@ -723,7 +729,7 @@ function renderDayTabs() {
     const treino = TREINOS[dia];
     const isRest = treino.exercicios.length === 0;
     const k = todayKey();
-    const feitos = treino.exercicios.filter(e => state.concluidos[k]?.[e.nome]).length;
+    const feitos = treino.exercicios.filter(e => state.concluidos[k]?.[dia + '|' + e.nome]).length;
     const hasProgress = !isRest && feitos > 0;
 
     const btn = document.createElement('button');
@@ -760,7 +766,7 @@ function renderExercises() {
   }
 
   const k = todayKey();
-  const feitos = exs.filter(e => state.concluidos[k]?.[e.nome]).length;
+  const feitos = exs.filter(e => state.concluidos[k]?.[diaSelecionado + '|' + e.nome]).length;
   document.getElementById('progress-fill').style.width = (feitos/exs.length*100) + '%';
   document.getElementById('progress-text').textContent = `${feitos}/${exs.length}`;
 
@@ -813,7 +819,7 @@ function renderExercises() {
           ${ex.video ? `<a class="ex-link" href="${ex.video}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
           ${ex.alternativas && ex.alternativas.length ? `
             <button class="alt-toggle">↔ ver alternativa</button>
-            <div class="alt-list" hidden>
+            <div class="alt-list">
               ${ex.alternativas.map(a => `<span>${a}</span>`).join('')}
             </div>
           ` : ''}
@@ -848,9 +854,9 @@ function renderExercises() {
     if (altToggle) {
       altToggle.onclick = (e) => {
         e.stopPropagation();
-        const list = altToggle.nextElementSibling;
-        list.hidden = !list.hidden;
-        altToggle.textContent = list.hidden ? '↔ ver alternativa' : '↑ fechar alternativas';
+        const list = div.querySelector('.alt-list');
+        list.classList.toggle('open');
+        altToggle.textContent = list.classList.contains('open') ? '↑ fechar alternativas' : '↔ ver alternativa';
       };
     }
 
