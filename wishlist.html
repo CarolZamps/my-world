@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F0E13">
+<title>Wishlist · Meu Mundo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0E13;
+    --surface: #18161F;
+    --surface-2: #221F2C;
+    --border: #2A2735;
+    --text: #F5F3F7;
+    --text-dim: #8B8595;
+    --text-faint: #5A5566;
+    --c: #F472B6;
+    --c-soft: rgba(244, 114, 182, 0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 20px 120px;
+    overflow-x: hidden;
+  }
+
+  .glow {
+    position: fixed;
+    top: -120px; left: 50%;
+    transform: translateX(-50%);
+    width: 380px; height: 380px;
+    background: radial-gradient(circle, rgba(244,114,182,.18), transparent 65%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* header */
+  .header {
+    padding: 40px 0 24px;
+    position: relative; z-index: 1;
+    display: flex; align-items: flex-start; justify-content: space-between;
+  }
+
+  .back-btn {
+    display: flex; align-items: center; gap: 6px;
+    color: var(--text-dim); text-decoration: none;
+    font-size: 13px; padding: 6px 0; margin-top: 2px;
+    transition: color .15s;
+  }
+  .back-btn:hover { color: var(--text); }
+  .back-btn svg { width: 16px; height: 16px; }
+
+  .header-text { flex: 1; }
+
+  .eyebrow {
+    font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+    color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
+    margin-bottom: 6px;
+  }
+
+  h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 36px; font-weight: 400; letter-spacing: -.015em; line-height: 1.05;
+  }
+  h1 .accent { color: var(--c); font-style: italic; }
+
+  .count-badge {
+    font-size: 11px; color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 6px;
+  }
+
+  /* add bar */
+  .add-bar {
+    position: relative; z-index: 1;
+    display: flex; gap: 8px; margin-bottom: 24px;
+  }
+
+  .add-input {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: inherit; font-size: 14px;
+    outline: none; transition: border-color .15s;
+  }
+  .add-input::placeholder { color: var(--text-faint); }
+  .add-input:focus { border-color: var(--c); }
+
+  .add-confirm {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: var(--c); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #0F0E13; flex-shrink: 0;
+    transition: opacity .15s; align-self: center;
+  }
+  .add-confirm:hover { opacity: .85; }
+  .add-confirm svg { width: 18px; height: 18px; }
+
+  /* list */
+  .list { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 8px; }
+
+  .item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 12px;
+    display: flex; align-items: center; gap: 12px;
+    transition: opacity .2s, border-color .2s;
+  }
+  .item.done { opacity: .5; }
+  .item.done .item-text { text-decoration: line-through; color: var(--text-dim); }
+
+  .check-btn {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--border);
+    background: transparent; cursor: pointer; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color .15s, background .15s;
+  }
+  .check-btn.checked { border-color: var(--c); background: var(--c); }
+  .check-btn svg { width: 13px; height: 13px; color: #0F0E13; display: none; }
+  .check-btn.checked svg { display: block; }
+
+  .item-text {
+    flex: 1; font-size: 14px; line-height: 1.4;
+    word-break: break-word;
+  }
+
+  .del-btn {
+    width: 28px; height: 28px; border-radius: 8px;
+    border: none; background: transparent; cursor: pointer;
+    color: var(--text-faint); display: flex; align-items: center; justify-content: center;
+    transition: color .15s, background .15s; flex-shrink: 0;
+  }
+  .del-btn:hover { color: #fb7185; background: rgba(251,113,133,.1); }
+  .del-btn svg { width: 15px; height: 15px; }
+
+  /* divider entre pendentes e concluídos */
+  .done-divider {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--text-faint); font-family: 'JetBrains Mono', monospace;
+    margin: 20px 0 10px;
+  }
+
+  /* empty */
+  .empty {
+    text-align: center; padding: 48px 0;
+    color: var(--text-faint); font-size: 14px;
+  }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; }
+
+  /* toast */
+  .toast {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 18px;
+    font-size: 13px; color: var(--text-dim);
+    opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 200;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="glow"></div>
+
+<header class="header">
+  <div class="header-text">
+    <div class="eyebrow">Meu Mundo</div>
+    <h1>Wish<span class="accent">list</span></h1>
+    <div class="count-badge" id="count-badge">— itens</div>
+  </div>
+  <a class="back-btn" href="/">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Voltar
+  </a>
+</header>
+
+<div class="add-bar">
+  <input class="add-input" id="add-input" type="text" placeholder="Adicionar item à wishlist…" maxlength="200">
+  <button class="add-confirm" id="add-btn" onclick="addItem()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+</div>
+
+<div class="list" id="list"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co/rest/v1';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
+
+async function sb(path, opts = {}) {
+  const headers = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    ...(opts.prefer ? { 'Prefer': opts.prefer } : {}),
+  };
+  const res = await fetch(`${SB_URL}/${path}`, {
+    method: opts.method || 'GET',
+    headers,
+    body: opts.body || undefined,
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
+}
+
+let items = [];
+
+async function load() {
+  try {
+    items = await sb('wishlist?order=criado_em.asc') || [];
+  } catch {
+    items = JSON.parse(localStorage.getItem('wishlist') || '[]');
+  }
+  render();
+}
+
+function saveCache() {
+  localStorage.setItem('wishlist', JSON.stringify(items));
+}
+
+function render() {
+  const list = document.getElementById('list');
+  const pendentes = items.filter(i => !i.concluido);
+  const concluidos = items.filter(i => i.concluido);
+
+  document.getElementById('count-badge').textContent =
+    `${pendentes.length} pendente${pendentes.length !== 1 ? 's' : ''}` +
+    (concluidos.length ? ` · ${concluidos.length} concluído${concluidos.length !== 1 ? 's' : ''}` : '');
+
+  if (!items.length) {
+    list.innerHTML = `<div class="empty"><div class="empty-icon">🌟</div>Nenhum desejo por aqui ainda.<br>Adiciona o primeiro!</div>`;
+    return;
+  }
+
+  const itemHTML = (item) => `
+    <div class="item${item.concluido ? ' done' : ''}" data-id="${item.id}">
+      <button class="check-btn${item.concluido ? ' checked' : ''}" onclick="toggle('${item.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </button>
+      <span class="item-text">${escHtml(item.texto)}</span>
+      <button class="del-btn" onclick="deleteItem('${item.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`;
+
+  let html = pendentes.map(itemHTML).join('');
+  if (concluidos.length) {
+    html += `<div class="done-divider">Concluídos (${concluidos.length})</div>`;
+    html += concluidos.map(itemHTML).join('');
+  }
+  list.innerHTML = html;
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function addItem() {
+  const input = document.getElementById('add-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+  input.value = '';
+
+  const novo = { texto, concluido: false };
+  try {
+    const [ins] = await sb('wishlist?select=*', {
+      method: 'POST',
+      prefer: 'return=representation',
+      body: JSON.stringify(novo),
+    });
+    items.push(ins);
+  } catch {
+    items.push({ id: crypto.randomUUID(), texto, concluido: false, criado_em: new Date().toISOString() });
+  }
+  saveCache();
+  render();
+}
+
+async function toggle(id) {
+  const item = items.find(i => i.id === id);
+  if (!item) return;
+  item.concluido = !item.concluido;
+  render();
+  saveCache();
+  try {
+    await sb(`wishlist?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ concluido: item.concluido }),
+    });
+  } catch {}
+}
+
+async function deleteItem(id) {
+  items = items.filter(i => i.id !== id);
+  render();
+  saveCache();
+  try {
+    await sb(`wishlist?id=eq.${id}`, { method: 'DELETE' });
+  } catch {}
+  toast('Item removido');
+}
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2000);
+}
+
+document.getElementById('add-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') addItem();
+});
+
+load();
+</script>
+</body>
+</html>
