@@ -784,11 +784,12 @@ async function loadGastos(mesAno) {
 }
 
 async function upsertGasto(gasto) {
+  const { categorias: _cat, created_at: _ca, ...payload } = gasto;
   try {
     await sb('gastos', {
       method: 'POST',
       prefer: 'resolution=merge-duplicates',
-      body: JSON.stringify(gasto),
+      body: JSON.stringify(payload),
     });
   } catch(e) {
     toast('Erro ao salvar — verifique a conexão');
