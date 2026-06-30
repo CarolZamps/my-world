@@ -522,9 +522,15 @@
 
 <script>
 // ============================================
-// TREINO - dados embutidos direto no app
+// SUPABASE
 // ============================================
-const TREINOS = {
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
+
+// ============================================
+// TREINO - fallback embutido (usado se Supabase falhar)
+// ============================================
+const TREINOS_FALLBACK = {
   'Segunda': {
     foco: 'Inferior A · glúteo & quadríceps',
     exercicios: [
@@ -626,13 +632,54 @@ const TREINOS = {
   'Domingo': { foco: 'descanso ou pilates', exercicios: [] },
 };
 
+let TREINOS = TREINOS_FALLBACK;
 const DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+const EX_CACHE_KEY = 'meu-treino-exercicios';
 
-// ============================================
-// SUPABASE
-// ============================================
-const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
+async function sbFetch(path) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+  });
+  if (!res.ok) throw new Error(`supabase ${res.status}`);
+  return res.json();
+}
+
+async function loadExercicios() {
+  try {
+    const [dias, exercicios] = await Promise.all([
+      sbFetch('dias_treino?select=*&order=ordem'),
+      sbFetch('exercicios?select=*&order=dia,ordem'),
+    ]);
+
+    const treinos = {};
+    for (const d of dias) {
+      treinos[d.nome] = { foco: d.foco, exercicios: [] };
+    }
+    for (const e of exercicios) {
+      if (!treinos[e.dia]) continue;
+      treinos[e.dia].exercicios.push({
+        nome: e.nome,
+        series: e.series,
+        reps: e.reps,
+        intervalo: e.intervalo || '',
+        sugerida: e.sugerida ?? 0,
+        lipedema: e.lipedema ?? false,
+        obs: e.obs || '',
+        video: e.video || '',
+        alternativas: e.alternativas || [],
+      });
+    }
+
+    TREINOS = treinos;
+    try { localStorage.setItem(EX_CACHE_KEY, JSON.stringify(treinos)); } catch {}
+  } catch {
+    try {
+      const cached = localStorage.getItem(EX_CACHE_KEY);
+      if (cached) TREINOS = JSON.parse(cached);
+    } catch {}
+    // se tudo falhar, fica no TREINOS_FALLBACK já atribuído
+  }
+}
 
 async function logToSupabase(entry) {
   try {
@@ -929,7 +976,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 document.getElementById('btn-export').onclick = exportCSV;
 document.getElementById('btn-clear').onclick = clearHistorico;
 
-render();
+loadExercicios().then(() => render());
 </script>
 </body>
 </html>
