@@ -425,6 +425,84 @@
     font-size: 14px;
   }
 
+  .cal-wrap {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .cal-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .cal-nav-btn {
+    width: 32px; height: 32px;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .cal-nav-btn svg { width: 16px; height: 16px; }
+  .cal-nav-label {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .cal-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 14px;
+  }
+  .cal-dow {
+    font-size: 10px;
+    text-align: center;
+    color: var(--text-faint);
+    padding-bottom: 4px;
+  }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-radius: 8px;
+    position: relative;
+  }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day.future { color: var(--text-faint); }
+  .cal-day.done {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .cal-day.today { box-shadow: inset 0 0 0 1.5px var(--text-dim); }
+  .cal-summary {
+    display: flex;
+    gap: 10px;
+  }
+  .cal-stat {
+    flex: 1;
+    background: var(--surface-2);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .cal-stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .cal-stat-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: 2px;
+  }
+
   .ex-links {
     display: flex;
     flex-direction: column;
@@ -502,6 +580,28 @@
     <div class="eyebrow">Progresso</div>
     <h1><span class="focus" style="font-style:normal">Histórico</span></h1>
   </header>
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="cal-prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="cal-nav-label" id="cal-label"></div>
+      <button class="cal-nav-btn" id="cal-next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-summary">
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-total">—</div>
+        <div class="cal-stat-label">Dias treinados</div>
+      </div>
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-media">—</div>
+        <div class="cal-stat-label">Média / semana</div>
+      </div>
+    </div>
+  </div>
   <div class="export-bar">
     <button class="btn" id="btn-export">Exportar CSV</button>
     <button class="btn btn-secondary" id="btn-clear">Limpar tudo</button>
@@ -950,6 +1050,76 @@ function renderExercises() {
   });
 }
 
+// ============================================
+// CALENDÁRIO DE FREQUÊNCIA
+// ============================================
+const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const hoje = new Date();
+let calAno = hoje.getFullYear();
+let calMes = hoje.getMonth(); // 0-indexed
+
+async function fetchDiasTreinadosMes(ano, mes) {
+  const ini = `${ano}-${String(mes+1).padStart(2,'0')}-01`;
+  const ultimoDia = new Date(ano, mes+1, 0).getDate();
+  const fim = `${ano}-${String(mes+1).padStart(2,'0')}-${String(ultimoDia).padStart(2,'0')}`;
+  try {
+    const rows = await sbFetch(`treino_concluidos?data=gte.${ini}&data=lte.${fim}&select=data`);
+    return new Set(rows.map(r => r.data));
+  } catch(e) {
+    return new Set();
+  }
+}
+
+async function renderCalendario() {
+  document.getElementById('cal-label').textContent = `${MESES_PT[calMes]} ${calAno}`;
+
+  const diasTreinados = await fetchDiasTreinadosMes(calAno, calMes);
+  const primeiroDia = new Date(calAno, calMes, 1);
+  const ultimoDia = new Date(calAno, calMes+1, 0).getDate();
+  const offset = primeiroDia.getDay(); // 0 = domingo
+
+  const grid = document.getElementById('cal-grid');
+  const dows = ['D','S','T','Q','Q','S','S'];
+  let html = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+
+  for (let i = 0; i < offset; i++) html += `<div class="cal-day empty"></div>`;
+
+  const todayStr = todayKey();
+  const isMesAtual = calAno === hoje.getFullYear() && calMes === hoje.getMonth();
+
+  for (let d = 1; d <= ultimoDia; d++) {
+    const dataStr = `${calAno}-${String(calMes+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isFuture = dataStr > todayStr;
+    const isToday = dataStr === todayStr;
+    const isDone = diasTreinados.has(dataStr);
+    const cls = ['cal-day'];
+    if (isFuture) cls.push('future');
+    if (isDone) cls.push('done');
+    if (isToday) cls.push('today');
+    html += `<div class="${cls.join(' ')}">${d}</div>`;
+  }
+  grid.innerHTML = html;
+
+  const total = diasTreinados.size;
+  const diasNoPeriodo = isMesAtual ? hoje.getDate() : ultimoDia;
+  const semanas = diasNoPeriodo / 7;
+  const media = semanas > 0 ? (total / semanas) : 0;
+
+  document.getElementById('cal-total').textContent = total;
+  document.getElementById('cal-media').textContent = media.toFixed(1) + 'x';
+}
+
+document.getElementById('cal-prev').onclick = () => {
+  calMes--;
+  if (calMes < 0) { calMes = 11; calAno--; }
+  renderCalendario();
+};
+document.getElementById('cal-next').onclick = () => {
+  calMes++;
+  if (calMes > 11) { calMes = 0; calAno++; }
+  renderCalendario();
+};
+
 function renderHistorico() {
   const container = document.getElementById('history-content');
   if (state.historico.length === 0) {
@@ -1004,7 +1174,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b === btn));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + target).classList.add('active');
-    if (target === 'historico') renderHistorico();
+    if (target === 'historico') { renderHistorico(); renderCalendario(); }
     window.scrollTo(0,0);
   };
 });
