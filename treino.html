@@ -75,6 +75,14 @@
     font-style: italic;
   }
 
+  .day-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 400;
+    color: var(--text-faint);
+    vertical-align: middle;
+  }
+
   .progress-row {
     margin-top: 14px;
     display: flex;
@@ -395,29 +403,6 @@
     font-style: italic;
   }
 
-  .export-bar {
-    padding: 16px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-  }
-  .btn {
-    background: var(--accent-soft);
-    color: var(--accent);
-    border: none;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-family: inherit;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    flex: 1;
-  }
-  .btn-secondary {
-    background: var(--surface-2);
-    color: var(--text-dim);
-  }
-
   .empty-state {
     padding: 60px 24px;
     text-align: center;
@@ -563,7 +548,7 @@
     </a>
     <div class="eyebrow" id="today-eyebrow">Hoje</div>
     <h1>
-      <span id="day-name">—</span><br>
+      <span id="day-name">—</span> <span id="day-date" class="day-date">—</span><br>
       <span class="focus" id="day-focus">—</span>
     </h1>
     <div class="progress-row">
@@ -601,10 +586,6 @@
         <div class="cal-stat-label">Média / semana</div>
       </div>
     </div>
-  </div>
-  <div class="export-bar">
-    <button class="btn" id="btn-export">Exportar CSV</button>
-    <button class="btn btn-secondary" id="btn-clear">Limpar tudo</button>
   </div>
   <div class="history-content" id="history-content"></div>
 </div>
@@ -912,8 +893,10 @@ function renderDayTabs() {
     const treino = TREINOS[dia];
     const isRest = treino.exercicios.length === 0;
     const k = todayKey();
-    const feitos = treino.exercicios.filter(e => state.concluidos[k]?.[dia + '|' + e.nome]).length;
-    const hasProgress = !isRest && feitos > 0;
+    const feitos = isRest
+      ? (state.concluidos[k]?.[dia + '|' + ATIVIDADE_LIVRE] ? 1 : 0)
+      : treino.exercicios.filter(e => state.concluidos[k]?.[dia + '|' + e.nome]).length;
+    const hasProgress = feitos > 0;
 
     const btn = document.createElement('button');
     btn.className = 'day-tab' + (dia === diaSelecionado ? ' active' : '') +
@@ -926,11 +909,22 @@ function renderDayTabs() {
   });
 }
 
+const ATIVIDADE_LIVRE = 'Atividade física livre';
+
+function dataDaSemana(diaNome) {
+  const idx = DIAS.indexOf(diaNome);
+  const hojeIdx = new Date().getDay();
+  const d = new Date();
+  d.setDate(d.getDate() + (idx - hojeIdx));
+  return `${d.getDate()} ${MESES_PT[d.getMonth()].slice(0,3)}`;
+}
+
 function renderExercises() {
   const treino = TREINOS[diaSelecionado];
   const exs = treino.exercicios;
 
   document.getElementById('day-name').textContent = diaSelecionado;
+  document.getElementById('day-date').textContent = dataDaSemana(diaSelecionado);
   document.getElementById('day-focus').textContent = treino.foco;
   document.getElementById('today-eyebrow').textContent =
     diaSelecionado === DIAS[new Date().getDay()] ? 'Hoje' : 'Próximo treino';
@@ -938,13 +932,26 @@ function renderExercises() {
   const container = document.getElementById('exercises');
 
   if (exs.length === 0) {
-    document.getElementById('progress-fill').style.width = '0%';
-    document.getElementById('progress-text').textContent = 'rest';
+    const done = isConcluido(ATIVIDADE_LIVRE);
+    document.getElementById('progress-fill').style.width = done ? '100%' : '0%';
+    document.getElementById('progress-text').textContent = done ? '1/1' : '0/1';
     container.innerHTML = `
       <div class="rest-state">
         <h2>descanso</h2>
-        <p>Recuperação faz parte. Aproveite para fazer pilates, caminhar leve ou só descansar mesmo.</p>
+        <p>Recuperação faz parte. Escolha 1 atividade física livre — caminhada, pilates, alongamento — com no mínimo 30 minutos.</p>
+      </div>
+      <div class="exercise ${done ? 'done' : ''}">
+        <div class="exercise-head">
+          <div class="check ${done ? 'done' : ''}" data-action="toggle" data-nome="${ATIVIDADE_LIVRE}">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 6L5 9L10 3"/></svg>
+          </div>
+          <div class="exercise-body">
+            <div class="exercise-name">${ATIVIDADE_LIVRE}</div>
+            <div class="exercise-meta">mínimo 30 min</div>
+          </div>
+        </div>
       </div>`;
+    container.querySelector('[data-action="toggle"]').onclick = () => { toggleConcluido(ATIVIDADE_LIVRE); };
     return;
   }
 
@@ -1144,30 +1151,6 @@ function render() {
   renderExercises();
 }
 
-function exportCSV() {
-  const header = 'data,dia,exercicio,carga_kg,observacao';
-  const rows = state.historico.map(h => {
-    const esc = (s) => `"${String(s||'').replace(/"/g,'""')}"`;
-    return [h.data, h.dia, esc(h.exercicio), h.carga ?? '', esc(h.observacao)].join(',');
-  });
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `historico-treino-${todayKey()}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
-function clearHistorico() {
-  if (!confirm('Apagar todo o histórico e cargas registradas?')) return;
-  state = { ...initial };
-  saveState();
-  renderHistorico();
-  render();
-}
-
 document.querySelectorAll('.nav-btn').forEach(btn => {
   btn.onclick = () => {
     const target = btn.dataset.view;
@@ -1178,9 +1161,6 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     window.scrollTo(0,0);
   };
 });
-
-document.getElementById('btn-export').onclick = exportCSV;
-document.getElementById('btn-clear').onclick = clearHistorico;
 
 Promise.all([loadExercicios(), loadConcluidosHoje()]).then(() => render());
 </script>
