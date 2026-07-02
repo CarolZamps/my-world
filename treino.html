@@ -696,6 +696,40 @@ async function logToSupabase(entry) {
   } catch(e) { /* silencioso — localStorage é o fallback */ }
 }
 
+async function marcarConcluidoSupabase(data, dia, exercicio) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/treino_concluidos`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify({ data, dia, exercicio }),
+    });
+  } catch(e) { /* silencioso — localStorage é o fallback */ }
+}
+
+async function desmarcarConcluidoSupabase(data, dia, exercicio) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/treino_concluidos?data=eq.${data}&dia=eq.${encodeURIComponent(dia)}&exercicio=eq.${encodeURIComponent(exercicio)}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+    });
+  } catch(e) { /* silencioso */ }
+}
+
+async function loadConcluidosHoje() {
+  try {
+    const k = todayKey();
+    const rows = await sbFetch(`treino_concluidos?data=eq.${k}&select=dia,exercicio`);
+    if (!state.concluidos[k]) state.concluidos[k] = {};
+    rows.forEach(r => { state.concluidos[k][r.dia + '|' + r.exercicio] = true; });
+    saveState();
+  } catch(e) { /* offline — fica só com o que tem local */ }
+}
+
 // ============================================
 // STORAGE
 // ============================================
@@ -750,8 +784,10 @@ function toggleConcluido(nome) {
   if (!state.concluidos[k]) state.concluidos[k] = {};
   if (state.concluidos[k][key]) {
     delete state.concluidos[k][key];
+    desmarcarConcluidoSupabase(k, diaSelecionado, nome);
   } else {
     state.concluidos[k][key] = true;
+    marcarConcluidoSupabase(k, diaSelecionado, nome);
     const entry = {
       data: k, dia: diaSelecionado, exercicio: nome,
       carga: state.cargas[nome] ?? null,
@@ -976,7 +1012,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
 document.getElementById('btn-export').onclick = exportCSV;
 document.getElementById('btn-clear').onclick = clearHistorico;
 
-loadExercicios().then(() => render());
+Promise.all([loadExercicios(), loadConcluidosHoje()]).then(() => render());
 </script>
 </body>
 </html>
