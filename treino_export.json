@@ -1,0 +1,99 @@
+{
+  "metadata": {
+    "project": "Meu Mundo",
+    "type": "Workout Training Data",
+    "exported_date": "2026-07-29T17:20:03.054216",
+    "user": "Carolina Zamprônio"
+  },
+  "schedule": {
+    "Segunda": {
+      "foco": "Inferior A · glúteo & quadríceps",
+      "exercicios": [
+        {
+          "nome": "Elevação Pélvica c/ Mini-band",
+          "series": 4,
+          "reps": "6-10",
+          "intervalo": "60s",
+          "carga_sugerida": "0 kg",
+          "lipedema": true,
+          "obs": "Essencial — ativa glúteo sem impacto.",
+          "video": "https://www.youtube.com/results?search_query=elevação+pélvica+mini+band+execução+correta",
+          "alternativas": [
+            "Hip Thrust com Barra",
+            "Glúteo no cabo (kickback)"
+          ]
+        },
+        {
+          "nome": "Leg Press 180° Inclinado",
+          "series": 4,
+          "reps": "10-12",
+          "intervalo": "90s",
+          "carga_sugerida": "20 kg",
+          "lipedema": true,
+          "obs": "Controle total da carga sem impacto nas juntas."
+        },
+        {
+          "nome": "Step Up no Smith",
+          "series": 3,
+          "reps": "8-10 cada lado",
+          "intervalo": "90s",
+          "carga_sugerida": "10 kg",
+          "lipedema": false,
+          "obs": "Movimento educativo — assista o vídeo antes."
+        },
+        {
+          "nome": "Cadeira Flexora",
+          "series": 4,
+          "reps": "10-12",
+          "intervalo": "60s",
+          "carga_sugerida": "15 kg",
+          "lipedema": true,
+          "obs": "Ajuste bem a carga — movimento controlado."
+        },
+        {
+          "nome": "Panturrilha Hack",
+          "series": 4,
+          "reps": "12-15",
+          "intervalo": "60s",
+          "carga_sugerida": "25 kg",
+          "lipedema": true,
+          "obs": "Circulação — muito importante para lipedema."
+        }
+      ]
+    },
+    "Terça": {
+      "foco": "Superior A · costas & bíceps",
+      "exercicios": [
+        {
+          "nome": "Puxada Alta Frontal Articulada",
+          "series": 4,
+          "reps": "10-12",
+          "intervalo": "60s",
+          "carga_sugerida": "20 kg",
+          "lipedema": false
+        },
+        {
+          "nome": "Remada Cavalinho Máquina",
+          "series": 4,
+          "reps": "8-10",
+          "intervalo": "30s",
+          "carga_sugerida": "15 kg",
+          "lipedema": false
+        },
+        {
+          "nome": "Remada Fechada Máquina",
+          "series": 4,
+          "reps": "10-12",
+          "intervalo": "30s",
+          "carga_sugerida": "15 kg",
+          "lipedema": false
+        }
+      ]
+    }
+  },
+  "notes": {
+    "lipedema": "Exercícios marcados com lipedema=true são adaptados para o tratamento da lipedema e priorizam movimento sem impacto.",
+    "carga": "Cargas sugeridas em kg. Ajuste conforme sua capacidade e feedback corporal.",
+    "frequencia": "Treino de segunda a sábado, com domingo de descanso."
+  }
+}

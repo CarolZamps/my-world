@@ -536,6 +536,112 @@
     font-size: 12px;
     color: var(--text-dim);
   }
+
+  @media (min-width: 768px) {
+    body {
+      max-width: none;
+      padding-bottom: 100px;
+    }
+
+    .header {
+      padding: 32px 32px 20px;
+      position: sticky;
+    }
+
+    .header-title {
+      font-size: 20px;
+    }
+
+    .progress-bar {
+      height: 5px;
+      margin-top: 12px;
+    }
+
+    .day-tabs {
+      padding: 0 32px;
+      gap: 12px;
+      overflow-x: auto;
+    }
+
+    .day-tab {
+      font-size: 15px;
+      padding: 10px 16px;
+      min-width: fit-content;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 32px;
+    }
+
+    .exercise-card {
+      margin-bottom: 16px;
+      padding: 18px;
+    }
+
+    .exercise-name {
+      font-size: 16px;
+    }
+
+    .sets-info {
+      font-size: 14px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    body {
+      padding-bottom: 120px;
+    }
+
+    .header {
+      padding: 40px 48px 24px;
+    }
+
+    .header-title {
+      font-size: 24px;
+    }
+
+    .day-tabs {
+      padding: 0 48px;
+      gap: 16px;
+    }
+
+    .day-tab {
+      font-size: 16px;
+      padding: 12px 20px;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 48px;
+    }
+
+    .exercise-card {
+      margin-bottom: 20px;
+      padding: 20px;
+    }
+
+    .exercise-name {
+      font-size: 18px;
+    }
+
+    .sets-info {
+      font-size: 15px;
+    }
+
+    .calendar {
+      max-width: none;
+      margin-top: 32px;
+    }
+
+    .calendar-grid {
+      grid-template-columns: repeat(7, 1fr);
+      gap: 12px;
+    }
+  }
+
 </style>
 </head>
 <body>
