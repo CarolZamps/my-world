@@ -908,12 +908,15 @@ async function desmarcarConcluidoSupabase(data, dia, exercicio) {
   } catch(e) { /* silencioso */ }
 }
 
-async function loadConcluidosHoje() {
+async function loadConcluidosSupabase() {
   try {
-    const k = todayKey();
-    const rows = await sbFetch(`treino_concluidos?data=eq.${k}&select=dia,exercicio`);
-    if (!state.concluidos[k]) state.concluidos[k] = {};
-    rows.forEach(r => { state.concluidos[k][r.dia + '|' + r.exercicio] = true; });
+    // Carrega TODOS os treino_concluidos (não só de hoje)
+    const rows = await sbFetch(`treino_concluidos?select=data,dia,exercicio`);
+    rows.forEach(r => {
+      const data = r.data;
+      if (!state.concluidos[data]) state.concluidos[data] = {};
+      state.concluidos[data][r.dia + '|' + r.exercicio] = true;
+    });
     saveState();
   } catch(e) { /* offline — fica só com o que tem local */ }
 }
@@ -938,13 +941,19 @@ function saveState() {
 let state = loadState();
 let diaSelecionado = DIAS[new Date().getDay()];
 
+function inicializarDataSelecionada() {
+  return getDataDoDia(diaSelecionado);
+}
+
+let dataSelecionada = inicializarDataSelecionada(); // ← NOVO: rastreia a data real do dia sendo visualizado
+
 // ============================================
 // HELPERS
 // ============================================
 function todayKey() { return new Date().toISOString().slice(0,10); }
 
 function isConcluido(nome) {
-  const k = todayKey();
+  const k = dataSelecionada; // ← CORRIGIDO: usa a data selecionada, não sempre hoje
   const key = diaSelecionado + '|' + nome;
   return !!(state.concluidos[k] && state.concluidos[k][key]);
 }
@@ -967,7 +976,7 @@ function diasAtras(dataStr) {
 }
 
 function toggleConcluido(nome) {
-  const k = todayKey();
+  const k = dataSelecionada; // ← CORRIGIDO: usa a data selecionada, não sempre hoje
   const key = diaSelecionado + '|' + nome;
   if (!state.concluidos[k]) state.concluidos[k] = {};
   if (state.concluidos[k][key]) {
@@ -999,10 +1008,10 @@ function renderDayTabs() {
   ordem.forEach(dia => {
     const treino = TREINOS[dia];
     const isRest = treino.exercicios.length === 0;
-    const k = todayKey();
+    const dataDoDia = getDataDoDia(dia); // ← NOVO: usa a data específica do dia
     const feitos = isRest
-      ? (state.concluidos[k]?.[dia + '|' + ATIVIDADE_LIVRE] ? 1 : 0)
-      : treino.exercicios.filter(e => state.concluidos[k]?.[dia + '|' + e.nome]).length;
+      ? (state.concluidos[dataDoDia]?.[dia + '|' + ATIVIDADE_LIVRE] ? 1 : 0)
+      : treino.exercicios.filter(e => state.concluidos[dataDoDia]?.[dia + '|' + e.nome]).length;
     const hasProgress = feitos > 0;
 
     const btn = document.createElement('button');
@@ -1011,12 +1020,24 @@ function renderDayTabs() {
                     (hasProgress ? ' has-progress' : '');
     btn.innerHTML = `<span class="day-letter">${dia[0]}</span><span class="day-dot"></span>`;
     btn.title = dia;
-    btn.onclick = () => { diaSelecionado = dia; render(); };
+    btn.onclick = () => {
+      diaSelecionado = dia;
+      dataSelecionada = getDataDoDia(dia); // ← NOVO: atualiza a data também
+      render();
+    };
     wrap.appendChild(btn);
   });
 }
 
 const ATIVIDADE_LIVRE = 'Atividade física livre';
+
+function getDataDoDia(diaNome) {
+  const idx = DIAS.indexOf(diaNome);
+  const hojeIdx = new Date().getDay();
+  const d = new Date();
+  d.setDate(d.getDate() + (idx - hojeIdx));
+  return d.toISOString().slice(0, 10);
+}
 
 function dataDaSemana(diaNome) {
   const idx = DIAS.indexOf(diaNome);
@@ -1269,7 +1290,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
   };
 });
 
-Promise.all([loadExercicios(), loadConcluidosHoje()]).then(() => render());
+Promise.all([loadExercicios(), loadConcluidosSupabase()]).then(() => render());
 </script>
 </body>
 </html>
