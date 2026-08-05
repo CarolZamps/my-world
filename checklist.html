@@ -214,19 +214,26 @@
   }
 
   .btn-delete {
-    padding: 6px 8px;
+    padding: 8px 10px;
     background: transparent;
     border: 1px solid var(--border);
     color: var(--text-dim);
     border-radius: 8px;
     cursor: pointer;
     font-size: 12px;
+    font-weight: 500;
     transition: all 0.2s ease;
+    white-space: nowrap;
   }
 
   .btn-delete:hover {
+    background: rgba(239, 68, 68, 0.1);
     border-color: #EF4444;
     color: #EF4444;
+  }
+
+  .btn-delete:active {
+    background: rgba(239, 68, 68, 0.2);
   }
 
   /* EMPTY STATE */
@@ -304,7 +311,7 @@
   <!-- ABA: DIA A DIA -->
   <div class="tab-pane active" id="daily">
     <div class="input-form">
-      <input type="text" id="daily-input" placeholder="Adicionar tarefa do dia..." maxlength="100">
+      <input type="text" id="daily-input" placeholder="Adicionar tarefa do dia..." maxlength="100" onkeypress="if(event.key==='Enter') addDaily()">
       <button class="btn-add" onclick="addDaily()">Adicionar</button>
     </div>
     <div id="daily-list" class="checklist"></div>
@@ -314,7 +321,7 @@
   <!-- ABA: VIAGEM -->
   <div class="tab-pane" id="travel">
     <div class="input-form">
-      <input type="text" id="travel-input" placeholder="Adicionar item da mala..." maxlength="100">
+      <input type="text" id="travel-input" placeholder="Adicionar item da mala..." maxlength="100" onkeypress="if(event.key==='Enter') addTravel()">
       <button class="btn-add" onclick="addTravel()">Adicionar</button>
     </div>
     <div id="travel-list" class="checklist"></div>
@@ -422,10 +429,20 @@ function updateProgress(elementId, items) {
 // TOGGLE & DELETE
 function toggleItem(id, wasCompleted, tipo) {
   const arr = tipo === 'daily' ? checklists.daily : checklists.travel;
-  const item = arr.find(i => i.id == id);
-  if (item) {
+  const itemIdx = arr.findIndex(i => i.id == id);
+  if (itemIdx > -1) {
+    const item = arr[itemIdx];
     item.concluido = !wasCompleted;
     updateSupabase(item);
+
+    // Reordenar: tarefas concluídas vão para o final
+    arr.splice(itemIdx, 1);
+    if (item.concluido) {
+      arr.push(item); // Adiciona no final se completo
+    } else {
+      arr.unshift(item); // Adiciona no início se descompleto
+    }
+
     tipo === 'daily' ? renderDaily() : renderTravel();
   }
 }
