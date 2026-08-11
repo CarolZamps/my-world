@@ -683,10 +683,19 @@ async function loadFromSupabase() {
     if (res.ok) {
       const data = await res.json();
       const todayISO = getTodayISO();
-      // Daily items: apenas os de hoje
-      checklists.daily = data
-        .filter(i => i.tipo === 'daily' && i.data === todayISO)
-        .map(i => ({ ...i, id: i.id || i.texto }));
+
+      // Daily items: carregar os de hoje + os antigos sem data (para recuperação)
+      const todaysItems = data.filter(i => i.tipo === 'daily' && i.data === todayISO);
+      const legacyItems = data.filter(i => i.tipo === 'daily' && !i.data);
+
+      // Adicionar data aos itens legados
+      legacyItems.forEach(item => {
+        item.data = todayISO;
+        updateSupabase(item); // Atualizar no Supabase
+      });
+
+      checklists.daily = [...todaysItems, ...legacyItems].map(i => ({ ...i, id: i.id || i.texto }));
+
       // Travel items: todos (não filtram por data)
       checklists.travel = data.filter(i => i.tipo === 'travel').map(i => ({ ...i, id: i.id || i.texto }));
     }
