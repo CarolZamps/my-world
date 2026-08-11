@@ -408,6 +408,12 @@ let checklists = {
   travel: []
 };
 
+// Obter data de hoje em formato ISO (YYYY-MM-DD)
+function getTodayISO() {
+  const today = new Date();
+  return today.toISOString().split('T')[0];
+}
+
 // ITENS SUGERIDOS PARA MALA
 const TRAVEL_SUGGESTIONS = [
   {
@@ -510,7 +516,7 @@ function addDaily() {
   const input = document.getElementById('daily-input');
   if (!input.value.trim()) return;
 
-  const item = { id: Date.now(), tipo: 'daily', texto: input.value, concluido: false };
+  const item = { id: Date.now(), tipo: 'daily', texto: input.value, concluido: false, data: getTodayISO() };
   checklists.daily.push(item);
   input.value = '';
 
@@ -676,7 +682,21 @@ async function loadFromSupabase() {
     });
     if (res.ok) {
       const data = await res.json();
-      checklists.daily = data.filter(i => i.tipo === 'daily').map(i => ({ ...i, id: i.id || i.texto }));
+      const todayISO = getTodayISO();
+
+      // Daily items: carregar os de hoje + os antigos sem data (para recuperação)
+      const todaysItems = data.filter(i => i.tipo === 'daily' && i.data === todayISO);
+      const legacyItems = data.filter(i => i.tipo === 'daily' && !i.data);
+
+      // Adicionar data aos itens legados
+      legacyItems.forEach(item => {
+        item.data = todayISO;
+        updateSupabase(item); // Atualizar no Supabase
+      });
+
+      checklists.daily = [...todaysItems, ...legacyItems].map(i => ({ ...i, id: i.id || i.texto }));
+
+      // Travel items: todos (não filtram por data)
       checklists.travel = data.filter(i => i.tipo === 'travel').map(i => ({ ...i, id: i.id || i.texto }));
     }
   } catch(e) { console.log('Supabase load falhou, usando fallback'); }
@@ -684,6 +704,11 @@ async function loadFromSupabase() {
 
 async function saveToSupabase(item) {
   try {
+    const payload = { id: item.id, tipo: item.tipo, texto: item.texto, concluido: item.concluido };
+    // Daily items: incluir data
+    if (item.tipo === 'daily') {
+      payload.data = item.data;
+    }
     await fetch(`${SB_URL}/rest/v1/checklists`, {
       method: 'POST',
       headers: {
@@ -692,7 +717,7 @@ async function saveToSupabase(item) {
         'Content-Type': 'application/json',
         'Prefer': 'return=minimal',
       },
-      body: JSON.stringify({ id: item.id, tipo: item.tipo, texto: item.texto, concluido: item.concluido }),
+      body: JSON.stringify(payload),
     });
   } catch(e) { /* silencioso */ }
 }
