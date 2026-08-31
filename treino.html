@@ -902,6 +902,8 @@ async function loadExercicios() {
         sugeridaCasa: e.sugerida_casa ?? null,
         obsCasa: e.obs_casa || '',
         precisaBanco: e.precisa_banco ?? false,
+        videoCasa: e.video_casa || '',
+        alternativasCasa: e.alternativas_casa || [],
       });
     }
 
@@ -1163,6 +1165,9 @@ function renderExercises() {
     const nomeExibido = isCasa && ex.nomeCasa ? ex.nomeCasa : ex.nome;
     const sugeridaExibida = isCasa && ex.sugeridaCasa != null ? ex.sugeridaCasa : ex.sugerida;
     const obsExibida = isCasa && ex.obsCasa ? ex.obsCasa : ex.obs;
+    const videoExibido = isCasa && ex.videoCasa ? ex.videoCasa : ex.video;
+    const alternativasExibidas = isCasa && ex.alternativasCasa && ex.alternativasCasa.length
+      ? ex.alternativasCasa : ex.alternativas;
 
     const div = document.createElement('div');
     div.className = 'exercise' + (done ? ' done' : '');
@@ -1201,13 +1206,13 @@ function renderExercises() {
           <label>Observação</label>
           <textarea data-field="obs" placeholder="Como foi? Doeu? Pegou pesado?">${obs}</textarea>
         </div>
-        ${(ex.video || (ex.alternativas && ex.alternativas.length)) ? `
+        ${(videoExibido || (alternativasExibidas && alternativasExibidas.length)) ? `
         <div class="ex-links">
-          ${ex.video ? `<a class="ex-link" href="${ex.video}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
-          ${ex.alternativas && ex.alternativas.length ? `
+          ${videoExibido ? `<a class="ex-link" href="${videoExibido}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
+          ${alternativasExibidas && alternativasExibidas.length ? `
             <button class="alt-toggle">↔ ver alternativa</button>
             <div class="alt-list">
-              ${ex.alternativas.map(a => `<span>${a}</span>`).join('')}
+              ${alternativasExibidas.map(a => `<span>${a}</span>`).join('')}
             </div>
           ` : ''}
         </div>` : ''}
