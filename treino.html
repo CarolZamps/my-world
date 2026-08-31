@@ -113,6 +113,45 @@
     text-align: right;
   }
 
+  .local-toggle {
+    margin-top: 14px;
+    display: flex;
+    gap: 6px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+  }
+
+  .local-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 8px 10px;
+    border-radius: 9px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .local-btn.active {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .banco-badge {
+    background: var(--lipedema-soft);
+    color: var(--lipedema);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
   .day-tabs {
     display: flex;
     gap: 4px;
@@ -661,6 +700,10 @@
       <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       <div class="progress-text" id="progress-text">0/0</div>
     </div>
+    <div class="local-toggle" id="local-toggle">
+      <button class="local-btn active" data-local="academia">🏋️ Academia</button>
+      <button class="local-btn" data-local="casa">🏠 Casa</button>
+    </div>
   </header>
   <nav class="day-tabs" id="day-tabs"></nav>
   <main class="exercises" id="exercises"></main>
@@ -854,6 +897,10 @@ async function loadExercicios() {
         obs: e.obs || '',
         video: e.video || '',
         alternativas: e.alternativas || [],
+        nomeCasa: e.nome_casa || '',
+        sugeridaCasa: e.sugerida_casa ?? null,
+        obsCasa: e.obs_casa || '',
+        precisaBanco: e.precisa_banco ?? false,
       });
     }
 
@@ -921,7 +968,7 @@ async function loadConcluidosHoje() {
 // STORAGE
 // ============================================
 const KEY = 'meu-treino-v2';
-const initial = { cargas: {}, observacoes: {}, concluidos: {}, historico: [] };
+const initial = { cargas: {}, observacoes: {}, concluidos: {}, historico: [], locais: {} };
 
 function loadState() {
   try {
@@ -946,6 +993,23 @@ function isConcluido(nome) {
   const k = todayKey();
   const key = diaSelecionado + '|' + nome;
   return !!(state.concluidos[k] && state.concluidos[k][key]);
+}
+
+function dataKeyDoDia(diaNome) {
+  const idx = DIAS.indexOf(diaNome);
+  const hojeIdx = new Date().getDay();
+  const d = new Date();
+  d.setDate(d.getDate() + (idx - hojeIdx));
+  return d.toISOString().slice(0,10);
+}
+
+function localDoDia(diaNome) {
+  return state.locais[dataKeyDoDia(diaNome)] || 'academia';
+}
+
+function setLocalDoDia(diaNome, local) {
+  state.locais[dataKeyDoDia(diaNome)] = local;
+  saveState();
 }
 
 function ultimaCarga(nome) {
@@ -1035,6 +1099,11 @@ function renderExercises() {
   document.getElementById('today-eyebrow').textContent =
     diaSelecionado === DIAS[new Date().getDay()] ? 'Hoje' : 'Próximo treino';
 
+  const localAtual = localDoDia(diaSelecionado);
+  document.querySelectorAll('.local-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.local === localAtual);
+  });
+
   const container = document.getElementById('exercises');
 
   if (exs.length === 0) {
@@ -1067,12 +1136,19 @@ function renderExercises() {
   document.getElementById('progress-text').textContent = `${feitos}/${exs.length}`;
 
   container.innerHTML = '';
+  const local = localDoDia(diaSelecionado);
+  const isCasa = local === 'casa';
+
   exs.forEach(ex => {
     const done = isConcluido(ex.nome);
     const cargaAtual = state.cargas[ex.nome] ?? '';
     const obs = state.observacoes[ex.nome] ?? '';
     const ultimo = ultimaCarga(ex.nome);
     const meta = `${ex.series}×${ex.reps} · ${ex.intervalo}`;
+
+    const nomeExibido = isCasa && ex.nomeCasa ? ex.nomeCasa : ex.nome;
+    const sugeridaExibida = isCasa && ex.sugeridaCasa != null ? ex.sugeridaCasa : ex.sugerida;
+    const obsExibida = isCasa && ex.obsCasa ? ex.obsCasa : ex.obs;
 
     const div = document.createElement('div');
     div.className = 'exercise' + (done ? ' done' : '');
@@ -1083,26 +1159,27 @@ function renderExercises() {
         </div>
         <div class="exercise-body" data-action="expand">
           <div class="exercise-name">
-            ${ex.nome}
+            ${nomeExibido}
             ${ex.lipedema ? '<span class="lipedema-badge">💜 lipedema</span>' : ''}
+            ${isCasa && ex.precisaBanco ? '<span class="banco-badge">🛋️ precisa banco</span>' : ''}
           </div>
-          <div class="exercise-meta">${meta}</div>
+          <div class="exercise-meta">${meta}${isCasa && ex.nomeCasa ? ` · <span style="color:var(--accent)">🏠 adaptado</span>` : ''}</div>
         </div>
         <svg class="chevron" data-action="expand" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 5L7 9L11 5"/>
         </svg>
       </div>
       <div class="exercise-detail">
-        ${ex.obs ? `<div class="tip">${ex.obs}</div>` : ''}
+        ${obsExibida ? `<div class="tip">${obsExibida}</div>` : ''}
         <div class="field">
           <label>Carga (kg)</label>
           <input type="number" inputmode="decimal" step="0.5" data-field="carga"
                  value="${cargaAtual}"
-                 placeholder="${ex.sugerida === 0 ? 'sem peso' : ex.sugerida}">
+                 placeholder="${sugeridaExibida === 0 ? 'sem peso' : sugeridaExibida}">
           <div class="hint">
-            ${ex.sugerida === 0
+            ${sugeridaExibida === 0
               ? '<strong>Sugerido:</strong> só a mini-band'
-              : `<strong>Sugerido:</strong> ${ex.sugerida} kg`}
+              : `<strong>Sugerido:</strong> ${sugeridaExibida} kg`}
             ${ultimo ? `<br><strong>Último:</strong> ${ultimo.carga}kg (${diasAtras(ultimo.data)})` : ''}
           </div>
         </div>
@@ -1266,6 +1343,13 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     if (target === 'historico') { renderHistorico(); renderCalendario(); }
     window.scrollTo(0,0);
   };
+});
+
+document.getElementById('local-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('.local-btn');
+  if (!btn) return;
+  setLocalDoDia(diaSelecionado, btn.dataset.local);
+  render();
 });
 
 Promise.all([loadExercicios(), loadConcluidosHoje()]).then(() => render());
