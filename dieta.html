@@ -1,0 +1,1350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F0E13">
+<title>Dieta · Meu Mundo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🌍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0E13;
+    --surface: #18161F;
+    --surface-2: #221F2C;
+    --border: #2A2735;
+    --text: #F5F3F7;
+    --text-dim: #8B8595;
+    --text-faint: #5A5566;
+    --accent: #A78BFA;
+    --accent-soft: rgba(167, 139, 250, 0.12);
+    --accent-mid: rgba(167, 139, 250, 0.25);
+    --accent-deep: #7C5CE0;
+    --success: #6EE7B7;
+    --water: #60A5FA;
+    --water-soft: rgba(96, 165, 250, 0.12);
+    --warn: #FBBF24;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: 90px;
+  }
+
+  .header {
+    padding: 24px 20px 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 30px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  .header h1 .focus {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .day-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-faint);
+    vertical-align: middle;
+  }
+
+  .progress-row {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-deep), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+
+  .progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  main.content { padding: 16px 20px 24px; }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 22px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* CARD "REFEIÇÃO DA VEZ" */
+  .meal-current {
+    background: var(--surface);
+    border: 1px solid var(--accent-mid);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 0 0 1px var(--accent-soft);
+  }
+
+  .meal-current-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .meal-current-tag .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .meal-current-tag.late { color: var(--warn); }
+  .meal-current-tag.late .dot { background: var(--warn); }
+
+  .meal-current-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 4px;
+  }
+
+  .meal-current-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  .meal-current-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .empty-day {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-dim);
+  }
+  .empty-day h2 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px;
+    font-weight: 400;
+    font-style: italic;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .empty-day p { font-size: 13px; }
+
+  /* OPÇÕES (pills) */
+  .opcoes-row {
+    display: flex;
+    gap: 8px;
+    margin: 12px 0 4px;
+    flex-wrap: wrap;
+  }
+  .opcao-pill {
+    padding: 7px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .opcao-pill.active {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+  }
+  .opcao-badge {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 3px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+  }
+
+  /* LISTA DE ALIMENTOS */
+  .food-list {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .food-item {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.4;
+    padding-left: 16px;
+    position: relative;
+  }
+  .food-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 7px;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--accent-mid);
+  }
+  .food-sub {
+    display: block;
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  .meal-check-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 13px;
+    border-radius: 12px;
+    border: none;
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.15s ease;
+  }
+  .meal-check-btn:active { transform: scale(0.98); }
+  .meal-check-btn.done {
+    background: var(--surface-2);
+    color: var(--success);
+    border: 1px solid var(--border);
+  }
+  .meal-check-btn svg { width: 16px; height: 16px; }
+
+  /* LISTA SECUNDÁRIA DE REFEIÇÕES */
+  .meal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .meal {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--surface);
+    overflow: hidden;
+    transition: opacity 0.2s ease;
+  }
+
+  .meal.done { opacity: 0.55; }
+
+  .meal-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .check:active { border-color: var(--accent); }
+  .check.done { background: var(--success); border-color: var(--success); }
+  .check svg { width: 11px; height: 11px; color: var(--bg); opacity: 0; transition: opacity 0.15s; }
+  .check.done svg { opacity: 1; }
+
+  .meal-body { flex: 1; min-width: 0; }
+  .meal-name {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .meal.done .meal-name { text-decoration: line-through; color: var(--text-dim); }
+  .meal-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    margin-top: 2px;
+  }
+
+  .meal-optional-badge {
+    font-size: 9.5px;
+    font-weight: 600;
+    color: var(--text-faint);
+    background: var(--surface-2);
+    padding: 2px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .chevron {
+    color: var(--text-faint);
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+  .meal.open .chevron { transform: rotate(180deg); }
+
+  .meal-detail {
+    display: none;
+    padding: 2px 14px 16px 48px;
+  }
+  .meal.open .meal-detail { display: block; }
+
+  /* CHECKLIST GENÉRICO (suplementos) */
+  .simple-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .simple-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .simple-item.done { opacity: 0.55; }
+  .simple-item-body { flex: 1; min-width: 0; }
+  .simple-item-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .simple-item.done .simple-item-name { text-decoration: line-through; color: var(--text-dim); }
+  .simple-item-meta {
+    font-size: 12px;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  /* ÁGUA */
+  .water-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .water-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .water-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--water);
+  }
+  .water-value span { font-size: 13px; color: var(--text-faint); font-weight: 400; }
+  .water-bar {
+    height: 8px;
+    background: var(--surface-2);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  .water-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3B82F6, var(--water));
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .water-actions {
+    display: flex;
+    gap: 8px;
+  }
+  .water-btn {
+    flex: 1;
+    padding: 10px 6px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--water-soft);
+    color: var(--water);
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .water-btn:active { transform: scale(0.96); }
+  .water-btn.minus {
+    flex: 0 0 44px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+  }
+
+  /* REFEIÇÃO LIVRE */
+  .free-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 18px;
+  }
+  .free-card.unlocked { border-color: var(--accent-mid); }
+  .free-summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .free-summary-text { font-size: 13px; color: var(--text-dim); }
+  .free-summary-pct {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .free-summary-pct.full { color: var(--success); }
+  .free-lock-msg {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    line-height: 1.5;
+  }
+  .free-days-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .free-day-pill {
+    flex: 1;
+    padding: 10px;
+    text-align: center;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface-2);
+    color: var(--text-dim);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .free-day-pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .free-check-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: none;
+    background: var(--accent);
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .free-check-btn.done { background: var(--surface-2); color: var(--success); border: 1px solid var(--border); }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px;
+    gap: 4px;
+    z-index: 20;
+  }
+  .nav-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 10px 8px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-btn.active { color: var(--accent); background: var(--accent-soft); }
+  .nav-btn svg { width: 18px; height: 18px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* HISTÓRICO / CALENDÁRIO */
+  .cal-wrap { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-nav-btn {
+    width: 32px; height: 32px;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .cal-nav-btn svg { width: 16px; height: 16px; }
+  .cal-nav-label { font-size: 14px; font-weight: 600; text-transform: capitalize; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 14px; }
+  .cal-dow { font-size: 10px; text-align: center; color: var(--text-faint); padding-bottom: 4px; }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-radius: 8px;
+    position: relative;
+  }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day.future { color: var(--text-faint); }
+  .cal-day.partial { background: rgba(167,139,250,0.08); color: var(--text-dim); }
+  .cal-day.full { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .cal-day.today { box-shadow: inset 0 0 0 1.5px var(--text-dim); }
+  .cal-summary { display: flex; gap: 10px; }
+  .cal-stat { flex: 1; background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+  .cal-stat-value { font-size: 18px; font-weight: 700; color: var(--text); }
+  .cal-stat-label { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+
+  .history-content { padding: 8px 20px 24px; }
+  .history-entry {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+  }
+  .history-entry-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .history-entry-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .history-entry-pct { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
+  .history-entry-list { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+
+  @media (min-width: 768px) {
+    body { max-width: 640px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="view active" id="view-dieta">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <h1><span id="day-name">—</span> <span class="day-date" id="day-date">—</span><br><span class="focus" id="day-focus">Seu plano de hoje</span></h1>
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">0/0</div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="section-title" id="current-section-title">Refeição da vez</div>
+    <div id="meal-current-slot"></div>
+
+    <div class="section-title">Hoje</div>
+    <div class="meal-list" id="meal-list"></div>
+
+    <div class="section-title">Suplementos</div>
+    <div class="simple-list" id="supplement-list"></div>
+
+    <div class="section-title">Água</div>
+    <div class="water-card">
+      <div class="water-top">
+        <div class="water-value"><span id="water-value">0</span><span> / 3.0 L</span></div>
+      </div>
+      <div class="water-bar"><div class="water-bar-fill" id="water-bar-fill" style="width:0%"></div></div>
+      <div class="water-actions">
+        <button class="water-btn minus" onclick="ajustarAgua(-250)">−</button>
+        <button class="water-btn" onclick="ajustarAgua(200)">+200ml</button>
+        <button class="water-btn" onclick="ajustarAgua(300)">+300ml</button>
+        <button class="water-btn" onclick="ajustarAgua(500)">+500ml</button>
+      </div>
+    </div>
+
+    <div id="free-meal-section"></div>
+  </main>
+</div>
+
+<div class="view" id="view-historico">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <h1><span class="focus" style="font-style:normal">Histórico</span></h1>
+  </header>
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="cal-prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="cal-nav-label" id="cal-label"></div>
+      <button class="cal-nav-btn" id="cal-next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-summary">
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-total">—</div>
+        <div class="cal-stat-label">Dias 100%</div>
+      </div>
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-media">—</div>
+        <div class="cal-stat-label">Média semanal</div>
+      </div>
+    </div>
+  </div>
+  <div class="history-content" id="history-content"></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" data-view="dieta">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+    Hoje
+  </button>
+  <button class="nav-btn" data-view="historico">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V12L14.5 14.5M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/></svg>
+    Histórico
+  </button>
+</nav>
+
+<script>
+// ============================================
+// SUPABASE
+// ============================================
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk2NDM3MzksImV4cCI6MjAzNTIyMzczOX0.2lJ3LdKI8-fVL6lRjxChMxMaLPFMN5HtLqzb3jnbP9M';
+
+async function sbFetch(path) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+  });
+  if (!res.ok) throw new Error(`supabase ${res.status}`);
+  return res.json();
+}
+
+async function sbUpsert(table, body, onConflict) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?on_conflict=${onConflict}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(body),
+    });
+  } catch(e) { /* silencioso — localStorage é o fallback */ }
+}
+
+async function sbDelete(table, query) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?${query}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+    });
+  } catch(e) { /* silencioso */ }
+}
+
+// ============================================
+// PLANO ALIMENTAR — config única, fácil de editar
+// (se a nutricionista atualizar o plano, é só mexer aqui)
+// ============================================
+const REFEICOES = [
+  {
+    id: 'cafe',
+    nome: 'Café da manhã',
+    horarioPadrao: '07:30',
+    horariosPorDia: { 'Quarta': '07:45' }, // Pilates às 6:30 na quarta
+    opcional: false,
+    opcoes: [
+      { id: 'unica', rotulo: null, itens: [
+        { texto: '2 ovos (100 g), mexidos, cozidos ou fritos com 1 fio de azeite; temperos a gosto' },
+        { texto: 'Creme de ricota light 30 g', troca: 'requeijão light 25 g' },
+        { texto: 'Leite desnatado 150 ml' },
+        { texto: 'Café sem açúcar à vontade' },
+      ] },
+    ],
+  },
+  {
+    id: 'pretreino',
+    nome: 'Pré-treino',
+    horarioPadrao: '11:30',
+    opcional: false,
+    opcoes: [
+      { id: 'unica', rotulo: null, itens: [
+        { texto: 'Whey Protein 3.0 Physical Pharma, 1 dose (30 g)' },
+        { texto: 'Banana 80 g', troca: '1 fruta da lista' },
+      ] },
+    ],
+  },
+  {
+    id: 'almoco',
+    nome: 'Almoço (pós-treino)',
+    horarioPadrao: '13:00',
+    opcional: false,
+    opcoes: [
+      { id: 'unica', rotulo: null, itens: [
+        { texto: 'Arroz integral 100 g', troca: 'mandioquinha/batata-doce cozida 100 g, ou batata inglesa cozida 150 g, ou macarrão integral cozido 100 g' },
+        { texto: 'Peito de frango grelhado 80 g' },
+        { texto: 'Legumes cozidos/refogados, mais de 100 g' },
+        { texto: 'Salada crua à vontade' },
+      ] },
+    ],
+  },
+  {
+    id: 'lanche',
+    nome: 'Lanche',
+    horarioPadrao: '16:00',
+    opcional: false,
+    opcoes: [
+      { id: 'op1', rotulo: 'Opção 1', itens: [
+        { texto: 'Pão de forma integral 2 fatias (50 g)', troca: 'Rap10 integral 1 un, 40 g' },
+        { texto: '2 ovos', troca: 'atum sólido ao natural 100 g ou frango desfiado 80 g' },
+        { texto: 'Creme de ricota light 20 g' },
+        { texto: 'Alface, tomate e cenoura crua à vontade' },
+      ] },
+      { id: 'op2', rotulo: 'Opção 2', itens: [
+        { texto: '2 ovos (100 g)' },
+        { texto: '1 banana média (75 g)', troca: 'maçã média 130 g' },
+        { texto: 'Aveia em flocos finos 20 g' },
+        { texto: 'Canela e adoçante à vontade' },
+      ] },
+    ],
+  },
+  {
+    id: 'jantar',
+    nome: 'Jantar',
+    horarioPadrao: '19:00',
+    opcional: false,
+    opcoes: [
+      { id: 'unica', rotulo: null, itens: [
+        { texto: 'Arroz integral 100 g', troca: 'mandioquinha/batata-doce cozida 60 g, ou batata inglesa cozida 90 g, ou macarrão integral cozido 60 g' },
+        { texto: 'Peito de frango grelhado 100 g' },
+        { texto: 'Legumes cozidos/refogados 100 g' },
+        { texto: 'Salada crua à vontade' },
+      ] },
+    ],
+  },
+  {
+    id: 'ceia',
+    nome: 'Ceia',
+    horarioPadrao: '20:15',
+    opcional: true, // não conta como pendência/atrasada se não for marcada
+    opcoes: [
+      { id: 'unica', rotulo: null, itens: [
+        { texto: 'Iogurte grego light 90 g' },
+        { texto: 'Mamão 170 g' },
+      ] },
+    ],
+  },
+];
+
+const SUPLEMENTOS = [
+  { id: 'termogenico', nome: 'Termogênico', dose: '1 dose', horario: '06:00' },
+  { id: 'vitd3', nome: 'Vitamina D3', dose: '1 cápsula', horario: '06:00' },
+  { id: 'creatina', nome: 'Creatina', dose: '1 dose', horario: '11:30 · pré-treino' },
+  { id: 'omega3', nome: 'Ômega 3', dose: '2 cápsulas', horario: '19:15 · após o jantar' },
+];
+
+const AGUA_META_ML = 3000;
+const DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+// ============================================
+// DATA/HORA — sempre em fuso de Brasília
+// ============================================
+function hojeISO() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+}
+function horaAtualStr() {
+  return new Intl.DateTimeFormat('en-GB', { timeZone: 'America/Sao_Paulo', hour:'2-digit', minute:'2-digit', hour12:false }).format(new Date());
+}
+function diaSemanaAtual() {
+  const w = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(new Date());
+  const map = { Sunday:'Domingo', Monday:'Segunda', Tuesday:'Terça', Wednesday:'Quarta', Thursday:'Quinta', Friday:'Sexta', Saturday:'Sábado' };
+  return map[w];
+}
+function horarioDe(refeicao, dia) {
+  return (refeicao.horariosPorDia && refeicao.horariosPorDia[dia]) || refeicao.horarioPadrao;
+}
+function segundaDaSemana(dataISO) {
+  const [y,m,d] = dataISO.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m-1, d));
+  const dow = date.getUTCDay();
+  const diff = dow === 0 ? -6 : 1 - dow;
+  date.setUTCDate(date.getUTCDate() + diff);
+  return date.toISOString().slice(0,10);
+}
+function formatarDataCurta(dataISO) {
+  const [y,m,d] = dataISO.split('-');
+  return `${d}/${m}`;
+}
+
+// ============================================
+// STORAGE
+// ============================================
+const KEY = 'meu-dieta-v1';
+const initial = { concluidos: {}, suplementos: {}, agua: {}, refeicaoLivre: {} };
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return { ...initial };
+    return { ...initial, ...JSON.parse(raw) };
+  } catch { return { ...initial }; }
+}
+function saveState() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+let state = loadState();
+let diaSelecionado = diaSemanaAtual();
+let dataSelecionada = hojeISO();
+let opcaoTmp = {}; // seleção temporária de opção antes do check, por refeicaoId
+let mealOpenState = {}; // quais refeições secundárias estão expandidas
+
+// ============================================
+// SUPABASE — carregar tudo
+// ============================================
+async function loadTudoSupabase() {
+  try {
+    const [dieta, sup, agua, livre] = await Promise.all([
+      sbFetch('dieta_concluidos?select=data,refeicao_id,opcao_id'),
+      sbFetch('suplementos_concluidos?select=data,suplemento_id'),
+      sbFetch('agua_registro?select=data,quantidade_ml'),
+      sbFetch('refeicao_livre?select=semana_iso,usada,dia,observacao'),
+    ]);
+    dieta.forEach(r => {
+      if (!state.concluidos[r.data]) state.concluidos[r.data] = {};
+      state.concluidos[r.data][r.refeicao_id] = r.opcao_id || 'unica';
+    });
+    sup.forEach(r => {
+      if (!state.suplementos[r.data]) state.suplementos[r.data] = {};
+      state.suplementos[r.data][r.suplemento_id] = true;
+    });
+    agua.forEach(r => { state.agua[r.data] = r.quantidade_ml; });
+    livre.forEach(r => { state.refeicaoLivre[r.semana_iso] = { usada: r.usada, dia: r.dia, observacao: r.observacao }; });
+    saveState();
+  } catch(e) { /* offline — segue só com o que tem local */ }
+}
+
+// ============================================
+// AÇÕES — refeições
+// ============================================
+function isRefeicaoConcluida(refeicaoId) {
+  return !!(state.concluidos[dataSelecionada] && state.concluidos[dataSelecionada][refeicaoId]);
+}
+
+function marcarRefeicao(refeicaoId, opcaoId) {
+  if (!state.concluidos[dataSelecionada]) state.concluidos[dataSelecionada] = {};
+  state.concluidos[dataSelecionada][refeicaoId] = opcaoId || 'unica';
+  saveState();
+  sbUpsert('dieta_concluidos', { data: dataSelecionada, refeicao_id: refeicaoId, opcao_id: opcaoId || 'unica' }, 'data,refeicao_id');
+  render();
+}
+
+function desmarcarRefeicao(refeicaoId) {
+  if (state.concluidos[dataSelecionada]) delete state.concluidos[dataSelecionada][refeicaoId];
+  saveState();
+  sbDelete('dieta_concluidos', `data=eq.${dataSelecionada}&refeicao_id=eq.${refeicaoId}`);
+  render();
+}
+
+function toggleRefeicao(refeicaoId) {
+  if (isRefeicaoConcluida(refeicaoId)) {
+    desmarcarRefeicao(refeicaoId);
+  } else {
+    const refeicao = REFEICOES.find(r => r.id === refeicaoId);
+    const opcaoEscolhida = refeicao.opcoes.length > 1 ? (opcaoTmp[refeicaoId] || refeicao.opcoes[0].id) : 'unica';
+    marcarRefeicao(refeicaoId, opcaoEscolhida);
+  }
+}
+
+function selecionarOpcao(refeicaoId, opcaoId) {
+  opcaoTmp[refeicaoId] = opcaoId;
+  render();
+}
+
+function toggleMealOpen(refeicaoId) {
+  mealOpenState[refeicaoId] = !mealOpenState[refeicaoId];
+  render();
+}
+
+// ============================================
+// AÇÕES — suplementos
+// ============================================
+function isSuplementoConcluido(id) {
+  return !!(state.suplementos[dataSelecionada] && state.suplementos[dataSelecionada][id]);
+}
+function toggleSuplemento(id) {
+  if (!state.suplementos[dataSelecionada]) state.suplementos[dataSelecionada] = {};
+  if (state.suplementos[dataSelecionada][id]) {
+    delete state.suplementos[dataSelecionada][id];
+    sbDelete('suplementos_concluidos', `data=eq.${dataSelecionada}&suplemento_id=eq.${id}`);
+  } else {
+    state.suplementos[dataSelecionada][id] = true;
+    sbUpsert('suplementos_concluidos', { data: dataSelecionada, suplemento_id: id }, 'data,suplemento_id');
+  }
+  saveState();
+  render();
+}
+
+// ============================================
+// AÇÕES — água
+// ============================================
+function ajustarAgua(deltaMl) {
+  const atual = state.agua[dataSelecionada] || 0;
+  const novo = Math.max(0, atual + deltaMl);
+  state.agua[dataSelecionada] = novo;
+  saveState();
+  sbUpsert('agua_registro', { data: dataSelecionada, quantidade_ml: novo }, 'data');
+  render();
+}
+
+// ============================================
+// AÇÕES — refeição livre
+// ============================================
+let freeDiaEscolhido = null;
+
+function calcularAderenciaSemana(segundaISO) {
+  const obrigatorias = REFEICOES.filter(r => !r.opcional);
+  let esperadas = 0, feitas = 0;
+  for (let i = 0; i < 5; i++) { // segunda a sexta
+    const d = new Date(segundaISO + 'T00:00:00Z');
+    d.setUTCDate(d.getUTCDate() + i);
+    const dataISO = d.toISOString().slice(0,10);
+    obrigatorias.forEach(r => {
+      esperadas++;
+      if (state.concluidos[dataISO] && state.concluidos[dataISO][r.id]) feitas++;
+    });
+  }
+  return { feitas, esperadas, pct: esperadas ? Math.round((feitas / esperadas) * 100) : 0 };
+}
+
+function toggleRefeicaoLivre(semanaIso, dia) {
+  const atual = state.refeicaoLivre[semanaIso];
+  if (atual && atual.usada) {
+    state.refeicaoLivre[semanaIso] = { usada: false, dia: null, observacao: '' };
+    sbUpsert('refeicao_livre', { semana_iso: semanaIso, usada: false, dia: null, observacao: '' }, 'semana_iso');
+  } else {
+    state.refeicaoLivre[semanaIso] = { usada: true, dia, observacao: '' };
+    sbUpsert('refeicao_livre', { semana_iso: semanaIso, usada: true, dia, observacao: '' }, 'semana_iso');
+  }
+  saveState();
+  render();
+}
+
+// ============================================
+// LÓGICA — refeição da vez
+// ============================================
+function calcularRefeicaoDaVez() {
+  const concluidasHoje = state.concluidos[dataSelecionada] || {};
+  const pendentesObrigatorias = REFEICOES.filter(r => !r.opcional && !concluidasHoje[r.id]);
+  if (pendentesObrigatorias.length > 0) return pendentesObrigatorias[0];
+  const ceia = REFEICOES.find(r => r.id === 'ceia');
+  if (ceia && !concluidasHoje[ceia.id]) return ceia;
+  return null;
+}
+
+// ============================================
+// RENDER
+// ============================================
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function renderFoodList(refeicao) {
+  const temOpcoes = refeicao.opcoes.length > 1;
+  const opcaoAtivaId = temOpcoes ? (opcaoTmp[refeicao.id] || refeicao.opcoes[0].id) : 'unica';
+  const opcaoAtiva = refeicao.opcoes.find(o => o.id === opcaoAtivaId) || refeicao.opcoes[0];
+
+  let html = '';
+  if (temOpcoes) {
+    html += `<div class="opcoes-row">`;
+    refeicao.opcoes.forEach(op => {
+      html += `<button class="opcao-pill ${op.id === opcaoAtivaId ? 'active' : ''}" onclick="event.stopPropagation(); selecionarOpcao('${refeicao.id}','${op.id}')">${escapeHtml(op.rotulo)}</button>`;
+    });
+    html += `</div>`;
+  }
+
+  html += `<div class="food-list">`;
+  opcaoAtiva.itens.forEach(item => {
+    html += `<div class="food-item">${escapeHtml(item.texto)}${item.troca ? `<span class="food-sub">Troca: ${escapeHtml(item.troca)}</span>` : ''}</div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderMealCurrent(refeicao) {
+  const slot = document.getElementById('meal-current-slot');
+  const titleEl = document.getElementById('current-section-title');
+
+  if (!refeicao) {
+    titleEl.textContent = 'Refeição da vez';
+    slot.innerHTML = `
+      <div class="empty-day">
+        <h2>Dia completo! 🎉</h2>
+        <p>Todas as refeições de hoje foram marcadas certinho.</p>
+      </div>`;
+    return;
+  }
+
+  titleEl.textContent = 'Refeição da vez';
+  const horario = horarioDe(refeicao, diaSelecionado);
+  const atrasada = !refeicao.opcional && horario < horaAtualStr();
+  const done = isRefeicaoConcluida(refeicao.id);
+
+  slot.innerHTML = `
+    <div class="meal-current">
+      <div class="meal-current-tag ${atrasada && !done ? 'late' : ''}"><span class="dot"></span>${done ? 'Concluída' : (atrasada ? 'Atrasada' : 'Agora')}</div>
+      <div class="meal-current-head">
+        <div class="meal-current-name">${escapeHtml(refeicao.nome)}</div>
+        <div class="meal-current-time">${horario}</div>
+      </div>
+      ${renderFoodList(refeicao)}
+      <button class="meal-check-btn ${done ? 'done' : ''}" onclick="toggleRefeicao('${refeicao.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        ${done ? 'Comi certinho' : 'Marcar como feita'}
+      </button>
+    </div>`;
+}
+
+function renderMealList(refeicaoDaVezId) {
+  const wrap = document.getElementById('meal-list');
+  const outras = REFEICOES.filter(r => r.id !== refeicaoDaVezId);
+  const concluidasHoje = state.concluidos[dataSelecionada] || {};
+
+  wrap.innerHTML = outras.map(r => {
+    const done = !!concluidasHoje[r.id];
+    const horario = horarioDe(r, diaSelecionado);
+    const open = !!mealOpenState[r.id];
+    const opcaoEscolhidaId = done ? concluidasHoje[r.id] : null;
+    const opcaoEscolhida = r.opcoes.length > 1 && opcaoEscolhidaId ? r.opcoes.find(o => o.id === opcaoEscolhidaId) : null;
+
+    return `
+      <div class="meal ${done ? 'done' : ''} ${open ? 'open' : ''}">
+        <div class="meal-head" onclick="toggleMealOpen('${r.id}')">
+          <div class="check ${done ? 'done' : ''}" onclick="event.stopPropagation(); toggleRefeicao('${r.id}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="meal-body">
+            <div class="meal-name">
+              ${escapeHtml(r.nome)}
+              ${r.opcional ? '<span class="meal-optional-badge">opcional</span>' : ''}
+              ${opcaoEscolhida ? `<span class="opcao-badge">${escapeHtml(opcaoEscolhida.rotulo)}</span>` : ''}
+            </div>
+            <div class="meal-time">${horario}</div>
+          </div>
+          <div class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+        </div>
+        <div class="meal-detail">${renderFoodList(r)}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderSupplements() {
+  const wrap = document.getElementById('supplement-list');
+  wrap.innerHTML = SUPLEMENTOS.map(s => {
+    const done = isSuplementoConcluido(s.id);
+    return `
+      <div class="simple-item ${done ? 'done' : ''}" onclick="toggleSuplemento('${s.id}')">
+        <div class="check ${done ? 'done' : ''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="simple-item-body">
+          <div class="simple-item-name">${escapeHtml(s.nome)} · ${escapeHtml(s.dose)}</div>
+          <div class="simple-item-meta">${escapeHtml(s.horario)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderWater() {
+  const ml = state.agua[dataSelecionada] || 0;
+  const litros = (ml / 1000).toFixed(1);
+  const pct = Math.min(100, Math.round((ml / AGUA_META_ML) * 100));
+  document.getElementById('water-value').textContent = litros;
+  document.getElementById('water-bar-fill').style.width = pct + '%';
+}
+
+function renderFreeMeal() {
+  const section = document.getElementById('free-meal-section');
+  if (diaSelecionado !== 'Sábado' && diaSelecionado !== 'Domingo') {
+    section.innerHTML = '';
+    return;
+  }
+
+  const segunda = segundaDaSemana(dataSelecionada);
+  const { feitas, esperadas, pct } = calcularAderenciaSemana(segunda);
+  const liberado = pct >= 100;
+  const registro = state.refeicaoLivre[segunda] || { usada: false, dia: null };
+
+  let html = `<div class="section-title">Refeição livre da semana</div>`;
+  html += `<div class="free-card ${liberado ? 'unlocked' : ''}">`;
+  html += `<div class="free-summary">
+      <div class="free-summary-text">Dieta seguida essa semana (seg–sex)</div>
+      <div class="free-summary-pct ${liberado ? 'full' : ''}">${feitas}/${esperadas}</div>
+    </div>`;
+
+  if (!liberado) {
+    html += `<div class="free-lock-msg">🔒 Siga certinho de segunda a sexta pra liberar sua refeição livre do fim de semana. Faltam ${esperadas - feitas} refeições.</div>`;
+  } else if (registro.usada) {
+    html += `<div class="free-lock-msg">Refeição livre usada no ${registro.dia}. Aproveitou! ✨</div>`;
+    html += `<button class="free-check-btn done" onclick="toggleRefeicaoLivre('${segunda}', null)">Desmarcar</button>`;
+  } else {
+    const escolhido = freeDiaEscolhido || diaSelecionado;
+    html += `<div class="free-days-row">
+        <button class="free-day-pill ${escolhido === 'Sábado' ? 'active' : ''}" onclick="freeDiaEscolhido='Sábado'; render()">Sábado</button>
+        <button class="free-day-pill ${escolhido === 'Domingo' ? 'active' : ''}" onclick="freeDiaEscolhido='Domingo'; render()">Domingo</button>
+      </div>`;
+    html += `<button class="free-check-btn" onclick="toggleRefeicaoLivre('${segunda}', '${escolhido}')">🎉 Usar refeição livre no ${escolhido}</button>`;
+  }
+  html += `</div>`;
+  section.innerHTML = html;
+}
+
+function renderProgress() {
+  const concluidasHoje = state.concluidos[dataSelecionada] || {};
+  const total = REFEICOES.length;
+  const feitas = REFEICOES.filter(r => concluidasHoje[r.id]).length;
+  const pct = total ? Math.round((feitas / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${feitas}/${total}`;
+}
+
+function renderHeader() {
+  document.getElementById('day-name').textContent = diaSelecionado;
+  document.getElementById('day-date').textContent = formatarDataCurta(dataSelecionada);
+}
+
+function render() {
+  renderHeader();
+  const refeicaoDaVez = calcularRefeicaoDaVez();
+  renderMealCurrent(refeicaoDaVez);
+  renderMealList(refeicaoDaVez ? refeicaoDaVez.id : null);
+  renderSupplements();
+  renderWater();
+  renderFreeMeal();
+  renderProgress();
+}
+
+// ============================================
+// NAV entre views
+// ============================================
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'historico') renderHistorico();
+  });
+});
+
+// ============================================
+// HISTÓRICO
+// ============================================
+const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const hoje = new Date();
+let calAno = hoje.getFullYear();
+let calMes = hoje.getMonth();
+
+function diaStatus(dataISO) {
+  const concluidas = state.concluidos[dataISO];
+  if (!concluidas) return 'none';
+  const obrigatorias = REFEICOES.filter(r => !r.opcional);
+  const feitas = obrigatorias.filter(r => concluidas[r.id]).length;
+  if (feitas === 0) return 'none';
+  if (feitas === obrigatorias.length) return 'full';
+  return 'partial';
+}
+
+function renderHistorico() {
+  document.getElementById('cal-label').textContent = `${MESES_PT[calMes]} de ${calAno}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  ['D','S','T','Q','Q','S','S'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const primeiroDia = new Date(calAno, calMes, 1).getDay();
+  const totalDias = new Date(calAno, calMes + 1, 0).getDate();
+  const hojeISOStr = hojeISO();
+
+  for (let i = 0; i < primeiroDia; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  let diasCompletos = 0;
+  for (let dia = 1; dia <= totalDias; dia++) {
+    const dataISO = `${calAno}-${String(calMes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    const status = diaStatus(dataISO);
+    const isFuture = dataISO > hojeISOStr;
+    el.className = 'cal-day' + (isFuture ? ' future' : '') + (status === 'full' ? ' full' : '') + (status === 'partial' ? ' partial' : '') + (dataISO === hojeISOStr ? ' today' : '');
+    el.textContent = dia;
+    grid.appendChild(el);
+    if (status === 'full') diasCompletos++;
+  }
+
+  document.getElementById('cal-total').textContent = diasCompletos;
+
+  // média semanal do mês (aproximada: dias completos / semanas do mês)
+  const semanasNoMes = Math.ceil(totalDias / 7);
+  document.getElementById('cal-media').textContent = semanasNoMes ? (diasCompletos / semanasNoMes).toFixed(1) : '0';
+
+  renderHistoryList();
+}
+
+function renderHistoryList() {
+  const wrap = document.getElementById('history-content');
+  const dias = Object.keys(state.concluidos)
+    .filter(d => d.startsWith(`${calAno}-${String(calMes+1).padStart(2,'0')}`))
+    .sort()
+    .reverse();
+
+  if (dias.length === 0) {
+    wrap.innerHTML = `<div class="empty-state" style="padding:40px 0;text-align:center;color:var(--text-faint);font-size:13px;">Nenhum dia registrado neste mês ainda.</div>`;
+    return;
+  }
+
+  const obrigatorias = REFEICOES.filter(r => !r.opcional);
+  wrap.innerHTML = dias.map(dataISO => {
+    const concluidas = state.concluidos[dataISO];
+    const feitas = obrigatorias.filter(r => concluidas[r.id]).length;
+    const nomesFeitos = REFEICOES.filter(r => concluidas[r.id]).map(r => r.nome).join(', ');
+    return `
+      <div class="history-entry">
+        <div class="history-entry-head">
+          <span class="history-entry-date">${formatarDataCurta(dataISO)}</span>
+          <span class="history-entry-pct">${feitas}/${obrigatorias.length}</span>
+        </div>
+        <div class="history-entry-list">${escapeHtml(nomesFeitos || 'Nenhuma refeição marcada')}</div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMes--;
+  if (calMes < 0) { calMes = 11; calAno--; }
+  renderHistorico();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMes++;
+  if (calMes > 11) { calMes = 0; calAno++; }
+  renderHistorico();
+});
+
+// ============================================
+// INIT
+// ============================================
+async function init() {
+  render(); // renderiza imediato com dados locais
+  await loadTudoSupabase();
+  render(); // re-renderiza com dados sincronizados
+}
+
+init();
+</script>
+
+</body>
+</html>
