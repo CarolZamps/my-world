@@ -750,9 +750,8 @@ const REFEICOES = [
     opcional: false,
     opcoes: [
       { id: 'unica', rotulo: null, itens: [
-        { texto: '2 ovos (100 g), mexidos, cozidos ou fritos com 1 fio de azeite; temperos a gosto' },
-        { texto: 'Creme de ricota light 30 g', troca: 'requeijão light 25 g' },
-        { texto: 'Leite desnatado 150 ml' },
+        { texto: '1 ovo, mexido, cozido ou frito com 1 fio de azeite; temperos a gosto' },
+        { texto: '1 banana média (~100 g)' },
         { texto: 'Café sem açúcar à vontade' },
       ] },
     ],
@@ -777,7 +776,7 @@ const REFEICOES = [
     opcoes: [
       { id: 'unica', rotulo: null, itens: [
         { texto: 'Arroz integral 100 g', troca: 'mandioquinha/batata-doce cozida 100 g, ou batata inglesa cozida 150 g, ou macarrão integral cozido 100 g' },
-        { texto: 'Peito de frango grelhado 80 g' },
+        { texto: 'Peito de frango grelhado 125 g', obs: 'Aumentado de 80g para compensar a proteína do novo café da manhã (1 ovo + banana)' },
         { texto: 'Legumes cozidos/refogados, mais de 100 g' },
         { texto: 'Salada crua à vontade' },
       ] },
@@ -1062,7 +1061,7 @@ function renderFoodList(refeicao) {
 
   html += `<div class="food-list">`;
   opcaoAtiva.itens.forEach(item => {
-    html += `<div class="food-item">${escapeHtml(item.texto)}${item.troca ? `<span class="food-sub">Troca: ${escapeHtml(item.troca)}</span>` : ''}</div>`;
+    html += `<div class="food-item">${escapeHtml(item.texto)}${item.troca ? `<span class="food-sub">Troca: ${escapeHtml(item.troca)}</span>` : ''}${item.obs ? `<span class="food-sub">${escapeHtml(item.obs)}</span>` : ''}</div>`;
   });
   html += `</div>`;
   return html;
