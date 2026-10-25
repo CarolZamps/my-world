@@ -78,7 +78,7 @@
 
   .header h1 {
     font-family: 'Instrument Serif', serif;
-    font-size: 30px;
+    font-size: 28px;
     font-weight: 400;
     letter-spacing: -0.01em;
     line-height: 1.15;
@@ -95,6 +95,33 @@
     font-weight: 400;
     color: var(--text-faint);
     vertical-align: middle;
+  }
+
+  .plano-meta-row {
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .plano-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+  }
+  .plano-carb-note {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: var(--text-dim);
+  }
+  .plano-proibidos {
+    margin-top: 4px;
+    font-size: 11px;
+    color: var(--text-faint);
+    line-height: 1.4;
   }
 
   .progress-row {
@@ -138,6 +165,12 @@
     margin: 22px 0 10px;
   }
   .section-title:first-child { margin-top: 0; }
+  .section-title .hint {
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--text-faint);
+  }
 
   /* CARD "REFEIÇÃO DA VEZ" */
   .meal-current {
@@ -377,7 +410,7 @@
   }
   .meal.open .meal-detail { display: block; }
 
-  /* CHECKLIST GENÉRICO (suplementos) */
+  /* CHECKLIST GENÉRICO (suplementos / rituais / compras) */
   .simple-list {
     display: flex;
     flex-direction: column;
@@ -404,7 +437,7 @@
   .simple-item-meta {
     font-size: 12px;
     color: var(--text-faint);
-    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.4;
     margin-top: 2px;
   }
 
@@ -463,71 +496,26 @@
     color: var(--text-dim);
   }
 
-  /* REFEIÇÃO LIVRE */
-  .free-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 18px;
-  }
-  .free-card.unlocked { border-color: var(--accent-mid); }
-  .free-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-  .free-summary-text { font-size: 13px; color: var(--text-dim); }
-  .free-summary-pct {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 18px;
-    font-weight: 600;
-  }
-  .free-summary-pct.full { color: var(--success); }
-  .free-lock-msg {
+  /* LISTA DE COMPRAS */
+  .compras-note {
     font-size: 12.5px;
     color: var(--text-faint);
     line-height: 1.5;
-  }
-  .free-days-row {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .free-day-pill {
-    flex: 1;
-    padding: 10px;
-    text-align: center;
-    border-radius: 10px;
+    margin-bottom: 4px;
+    padding: 12px 14px;
+    background: var(--surface);
     border: 1px solid var(--border);
-    background: var(--surface-2);
-    color: var(--text-dim);
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
+    border-radius: 12px;
   }
-  .free-day-pill.active { background: var(--accent); color: var(--bg); border-color: var(--accent); }
-  .free-check-btn {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    background: var(--accent);
-    color: var(--bg);
-    font-weight: 700;
-    font-size: 13.5px;
-    cursor: pointer;
-  }
-  .free-check-btn.done { background: var(--surface-2); color: var(--success); border: 1px solid var(--border); }
 
   /* NAV */
   .nav {
     position: fixed;
     bottom: 0;
-    left: 0;
-    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
     max-width: 480px;
-    margin: 0 auto;
     background: var(--surface);
     border-top: 1px solid var(--border);
     display: flex;
@@ -540,10 +528,10 @@
     background: transparent;
     border: none;
     color: var(--text-dim);
-    padding: 10px 8px;
+    padding: 10px 4px;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 11.5px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
@@ -604,8 +592,12 @@
   .history-entry-pct { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
   .history-entry-list { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
 
-  @media (min-width: 768px) {
-    body { max-width: 640px; }
+  @media (min-width: 640px) {
+    body { max-width: 680px; }
+    .header h1 { font-size: 32px; }
+  }
+  @media (min-width: 1024px) {
+    body { max-width: 760px; }
   }
 </style>
 </head>
@@ -617,8 +609,9 @@
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
       Início
     </a>
-    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <div class="eyebrow">Dieta &amp; alimentação · Protocolo Detox 7D</div>
     <h1><span id="day-name">—</span> <span class="day-date" id="day-date">—</span><br><span class="focus" id="day-focus">Seu plano de hoje</span></h1>
+    <div id="plano-meta"></div>
     <div class="progress-row">
       <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
       <div class="progress-text" id="progress-text">0/0</div>
@@ -631,6 +624,12 @@
 
     <div class="section-title">Hoje</div>
     <div class="meal-list" id="meal-list"></div>
+
+    <div class="section-title">Ritual detox diário <span class="hint">· escolha até 2, opcional</span></div>
+    <div class="simple-list" id="ritual-list"></div>
+
+    <div class="section-title">Saciedade <span class="hint">· estratégia "Mounjaro natural"</span></div>
+    <div class="simple-list" id="saciedade-list"></div>
 
     <div class="section-title">Suplementos</div>
     <div class="simple-list" id="supplement-list"></div>
@@ -648,9 +647,19 @@
         <button class="water-btn" onclick="ajustarAgua(500)">+500ml</button>
       </div>
     </div>
-
-    <div id="free-meal-section"></div>
   </main>
+</div>
+
+<div class="view" id="view-compras">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <h1><span class="focus" style="font-style:normal">Lista de compras</span></h1>
+  </header>
+  <main class="content" id="compras-content"></main>
 </div>
 
 <div class="view" id="view-historico">
@@ -691,6 +700,10 @@
   <button class="nav-btn active" data-view="dieta">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
     Hoje
+  </button>
+  <button class="nav-btn" data-view="compras">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+    Compras
   </button>
   <button class="nav-btn" data-view="historico">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V12L14.5 14.5M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/></svg>
@@ -738,104 +751,249 @@ async function sbDelete(table, query) {
 }
 
 // ============================================
-// PLANO ALIMENTAR — config única, fácil de editar
-// (se a nutricionista atualizar o plano, é só mexer aqui)
+// PLANO ALIMENTAR — Protocolo Detox 7D (Dr. Renan Botelho)
+// Dia 1 = Segunda ... Dia 7 = Domingo, repete toda semana.
+// Fácil de editar: mexa só aqui se o cardápio mudar.
 // ============================================
-const REFEICOES = [
-  {
-    id: 'cafe',
-    nome: 'Café da manhã',
-    horarioPadrao: '07:30',
-    horariosPorDia: { 'Quarta': '07:45' }, // Pilates às 6:30 na quarta
-    opcional: false,
-    opcoes: [
-      { id: 'unica', rotulo: null, itens: [
-        { texto: '2 ovos (100 g), mexidos, cozidos ou fritos com 1 fio de azeite; temperos a gosto' },
-        { texto: 'Creme de ricota light 30 g', troca: 'requeijão light 25 g' },
-        { texto: 'Leite desnatado 150 ml' },
-        { texto: 'Café sem açúcar à vontade' },
-      ] },
+const PLANO_SEMANA = {
+  'Segunda': {
+    dia: 1, estrategia: 'Desinflamar', jejum: 12,
+    carboInfo: 'Com carboidrato no café, almoço e lanche · jantar sem carboidrato',
+    refeicoes: [
+      { id:'cafe', nome:'Café da manhã', horario:'08:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'2 ovos mexidos', troca:'1 porção de proteína (ex.: claras, frango desfiado)' },
+        { texto:'1 fatia de mamão papaia', troca:'1 fruta à sua escolha (prefira baixo açúcar)' },
+        { texto:'Folhas verdes à vontade' },
+      ]}]},
+      { id:'almoco', nome:'Almoço', horario:'12:30', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'120 g de peito de frango grelhado', troca:'peixe, ovos ou camarão' },
+        { texto:'3 col. de sopa de batata-doce ou inhame (~70 g)', troca:'mandioca, cará ou abóbora cozida' },
+        { texto:'Legumes low-carb cozidos no vapor (até 200 g)' },
+        { texto:'1 col. de chá de azeite para temperar' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'1 fruta (ex.: maçã pequena)', troca:'pera, morango ou mamão' },
+        { texto:'1 ovo cozido', troca:'1 punhado de castanhas' },
+      ]}]},
+      { id:'jantar', nome:'Jantar · sem carboidrato', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado', troca:'frango, ovos ou camarão' },
+        { texto:'Folhas verdes e legumes low-carb à vontade' },
+      ]}]},
     ],
   },
-  {
-    id: 'pretreino',
-    nome: 'Pré-treino',
-    horarioPadrao: '11:30',
-    opcional: false,
-    opcoes: [
-      { id: 'unica', rotulo: null, itens: [
-        { texto: 'Whey Protein 3.0 Physical Pharma, 1 dose (30 g)' },
-        { texto: 'Banana 80 g', troca: '1 fruta da lista' },
-      ] },
+  'Terça': {
+    dia: 2, estrategia: 'Desinflamar', jejum: 16,
+    carboInfo: 'Carboidrato no almoço e no lanche · jantar sem carboidrato',
+    refeicoes: [
+      { id:'almoco', nome:'Almoço · quebra de jejum', horario:'12:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'3 ovos inteiros (mexidos ou cozidos)', troca:'frango ou peixe' },
+        { texto:'4 col. de sopa de batata-doce ou mandioca (~90 g)', troca:'inhame, cará ou abóbora cozida' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'100 g de frango desfiado', troca:'1 ovo cozido ou atum' },
+        { texto:'1 fruta (ex.: pera)', troca:'maçã ou kiwi' },
+      ]}]},
+      { id:'jantar', nome:'Jantar · sem carboidrato', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe (ex.: tilápia)', troca:'frango ou ovos' },
+        { texto:'Salada de folhas e legumes low-carb à vontade' },
+        { texto:'1 col. de sopa de azeite' },
+      ]}]},
     ],
   },
-  {
-    id: 'almoco',
-    nome: 'Almoço (pós-treino)',
-    horarioPadrao: '13:00',
-    opcional: false,
-    opcoes: [
-      { id: 'unica', rotulo: null, itens: [
-        { texto: 'Arroz integral 100 g', troca: 'mandioquinha/batata-doce cozida 100 g, ou batata inglesa cozida 150 g, ou macarrão integral cozido 100 g' },
-        { texto: 'Peito de frango grelhado 80 g' },
-        { texto: 'Legumes cozidos/refogados, mais de 100 g' },
-        { texto: 'Salada crua à vontade' },
-      ] },
+  'Quarta': {
+    dia: 3, estrategia: 'Drenar & Desinchar', jejum: 12,
+    carboInfo: 'Carboidrato reduzido — porção menor, só no almoço',
+    refeicoes: [
+      { id:'cafe', nome:'Café da manhã', horario:'08:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'2 ovos mexidos', troca:'1 porção de proteína' },
+        { texto:'Folhas verdes à vontade' },
+      ]}]},
+      { id:'almoco', nome:'Almoço', horario:'12:30', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado (ex.: salmão ou tilápia)', troca:'frango ou ovos' },
+        { texto:'2 col. de sopa de batata-doce (~50 g)', troca:'outro tubérculo da lista' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'1 fruta low-carb (ex.: punhado de morangos)', troca:'melancia ou melão' },
+        { texto:'1 ovo cozido', troca:'1 punhado de castanhas' },
+      ]}]},
+      { id:'jantar', nome:'Jantar · sem carboidrato', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado', troca:'frango ou ovos' },
+        { texto:'Folhas e legumes low-carb à vontade' },
+      ]}]},
     ],
   },
-  {
-    id: 'lanche',
-    nome: 'Lanche',
-    horarioPadrao: '16:00',
-    opcional: false,
-    opcoes: [
-      { id: 'op1', rotulo: 'Opção 1', itens: [
-        { texto: 'Pão de forma integral 2 fatias (50 g)', troca: 'Rap10 integral 1 un, 40 g' },
-        { texto: '2 ovos', troca: 'atum sólido ao natural 100 g ou frango desfiado 80 g' },
-        { texto: 'Creme de ricota light 20 g' },
-        { texto: 'Alface, tomate e cenoura crua à vontade' },
-      ] },
-      { id: 'op2', rotulo: 'Opção 2', itens: [
-        { texto: '2 ovos (100 g)' },
-        { texto: '1 banana média (75 g)', troca: 'maçã média 130 g' },
-        { texto: 'Aveia em flocos finos 20 g' },
-        { texto: 'Canela e adoçante à vontade' },
-      ] },
+  'Quinta': {
+    dia: 4, estrategia: 'Drenar & Desinchar', jejum: 16,
+    carboInfo: 'Carboidrato só no almoço · demais refeições low-carb',
+    refeicoes: [
+      { id:'almoco', nome:'Almoço · com carboidrato', horario:'12:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de frango grelhado', troca:'peixe ou ovos' },
+        { texto:'3 col. de sopa de batata-doce (~70 g)', troca:'outro tubérculo da lista' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde · sem carboidrato', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'100 g de frango desfiado', troca:'1 ovo cozido' },
+        { texto:'Legumes low-carb à vontade' },
+      ]}]},
+      { id:'jantar', nome:'Jantar · sem carboidrato', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado', troca:'frango ou ovos' },
+        { texto:'Folhas verdes e legumes à vontade' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
     ],
   },
-  {
-    id: 'jantar',
-    nome: 'Jantar',
-    horarioPadrao: '19:00',
-    opcional: false,
-    opcoes: [
-      { id: 'unica', rotulo: null, itens: [
-        { texto: 'Arroz integral 100 g', troca: 'mandioquinha/batata-doce cozida 60 g, ou batata inglesa cozida 90 g, ou macarrão integral cozido 60 g' },
-        { texto: 'Peito de frango grelhado 100 g' },
-        { texto: 'Legumes cozidos/refogados 100 g' },
-        { texto: 'Salada crua à vontade' },
-      ] },
+  'Sexta': {
+    dia: 5, estrategia: 'Ativação do Metabolismo', jejum: 12,
+    carboInfo: 'Dia low-carb · energia vem da proteína e da gordura boa',
+    refeicoes: [
+      { id:'cafe', nome:'Café da manhã', horario:'08:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'2 ovos mexidos', troca:'1 porção de proteína' },
+        { texto:'Folhas verdes à vontade' },
+      ]}]},
+      { id:'almoco', nome:'Almoço', horario:'12:30', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado (ex.: salmão ou tilápia)', troca:'frango ou ovos' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'1 punhado de castanhas ou amêndoas' },
+        { texto:'Chá verde ou chá de gengibre' },
+      ]}]},
+      { id:'jantar', nome:'Jantar', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'140 g de peixe grelhado', troca:'frango ou ovos' },
+        { texto:'Legumes low-carb à vontade' },
+      ]}]},
     ],
   },
-  {
-    id: 'ceia',
-    nome: 'Ceia',
-    horarioPadrao: '20:15',
-    opcional: true, // não conta como pendência/atrasada se não for marcada
-    opcoes: [
-      { id: 'unica', rotulo: null, itens: [
-        { texto: 'Iogurte grego light 90 g' },
-        { texto: 'Mamão 170 g' },
-      ] },
+  'Sábado': {
+    dia: 6, estrategia: 'Ativação do Metabolismo', jejum: 16,
+    carboInfo: 'Dia low-carb · proteína magra e vegetais como base',
+    refeicoes: [
+      { id:'almoco', nome:'Almoço · quebra de jejum', horario:'12:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'3 ovos inteiros', troca:'frango ou peixe' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'100 g de frango grelhado', troca:'1 ovo cozido' },
+        { texto:'Folhas verdes à vontade' },
+      ]}]},
+      { id:'jantar', nome:'Jantar', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado', troca:'frango ou ovos' },
+        { texto:'Folhas e legumes low-carb à vontade' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
     ],
   },
+  'Domingo': {
+    dia: 7, estrategia: 'Ativação do Metabolismo', jejum: 12,
+    carboInfo: 'Último dia, low-carb · fechamento leve da semana',
+    refeicoes: [
+      { id:'cafe', nome:'Café da manhã', horario:'08:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'2 ovos mexidos', troca:'1 porção de proteína' },
+        { texto:'Folhas verdes à vontade' },
+      ]}]},
+      { id:'almoco', nome:'Almoço', horario:'12:30', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de frango grelhado', troca:'peixe ou ovos' },
+        { texto:'Legumes low-carb (até 200 g)' },
+        { texto:'1 col. de chá de azeite' },
+      ]}]},
+      { id:'lanche', nome:'Lanche da tarde', horario:'16:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'1 fruta low-carb (ex.: morangos)', troca:'melancia ou melão' },
+        { texto:'1 ovo cozido' },
+      ]}]},
+      { id:'jantar', nome:'Jantar', horario:'20:00', opcoes:[{ id:'unica', rotulo:null, itens:[
+        { texto:'150 g de peixe grelhado', troca:'frango ou ovos' },
+        { texto:'Folhas e legumes low-carb à vontade' },
+      ]}]},
+    ],
+  },
+};
+
+const PROIBIDOS_TEXTO = '🚫 Sempre proibido: farinhas, açúcar, embutidos, industrializados, refrigerantes, álcool e derivados de leite (leite, queijo, iogurte, requeijão, manteiga)';
+
+// Ritual detox diário — do Protocolo Detox 7D (mesmo nos 7 dias, escolha até 2)
+const RITUAL_DETOX = [
+  { id:'cha', nome:'Chá detox', detalhe:'Chá verde com hortelã · ou oolong · ou cavalinha · ou hibisco com chá verde. Sem açúcar.' },
+  { id:'shot_antioxidante', nome:'Shot antioxidante', detalhe:'1 col. chá cúrcuma + pitada pimenta-preta + pitada pimenta caiena + 1 col. sobremesa vinagre de maçã + ½ copo de água + 20 gotas de própolis verde' },
+  { id:'suco_verde', nome:'Suco verde', detalhe:'1 folha (couve, espinafre ou rúcula) + 1 maçã com casca + suco de 1 limão (ou 1 maracujá) + pitada de cúrcuma + 200 ml de água. Bater e beber na hora.' },
 ];
+
+// Rituais de saciedade — do Protocolo "Mounjaro" natural
+// Obs.: o creme noturno usa iogurte de coco (sem laticínios) pra respeitar a regra do Detox 7D.
+const SACIEDADE = [
+  { id:'shot_saciedade', nome:'Shot da Saciedade', horario:'20 min antes do almoço', detalhe:'300 ml de água + 1 col. sopa de chia + 1 col. sopa rasa de psyllium + suco de ½ limão. Misture e aguarde 5–10 min.' },
+  { id:'farinha_saciedade', nome:'Farinha da Saciedade', horario:'No lanche da tarde', detalhe:'1 col. sopa cheia da Farinha da Saciedade (receita abaixo) em água, kefir de coco ou vitamina' },
+  { id:'creme_saciedade', nome:'Creme da Saciedade Noturna', horario:'Depois do jantar', detalhe:'170 g de iogurte de coco (sem lactose) + 1 col. sopa de chia + 1 col. sopa de linhaça triturada + 1 col. sopa rasa de psyllium + canela a gosto. Aguarde 10 min e coma devagar.' },
+];
+
+const FARINHA_SACIEDADE_RECEITA = '200 g de chia + 200 g de linhaça dourada triturada + 100 g de psyllium. Misture tudo e guarde em pote de vidro bem fechado. Rende ~500 g.';
 
 const SUPLEMENTOS = [
   { id: 'termogenico', nome: 'Termogênico', dose: '1 dose', horario: '06:00' },
   { id: 'vitd3', nome: 'Vitamina D3', dose: '1 cápsula', horario: '06:00' },
   { id: 'creatina', nome: 'Creatina', dose: '1 dose', horario: '11:30 · pré-treino' },
   { id: 'omega3', nome: 'Ômega 3', dose: '2 cápsulas', horario: '19:15 · após o jantar' },
+];
+
+// ============================================
+// LISTA DE COMPRAS — quantidades para 1 semana do cardápio padrão
+// (sem contar trocas; ajuste pra mais ou pra menos conforme seu apetite)
+// ============================================
+const LISTA_COMPRAS = [
+  { categoria: 'Proteínas', itens: [
+    { id:'ovos', nome:'Ovos', qtd:'18 unidades (1½ dúzia)' },
+    { id:'frango', nome:'Peito de frango', qtd:'~700 g (5–6 filés)' },
+    { id:'peixe_branco', nome:'Filé de peixe branco (tilápia, pescada ou merluza)', qtd:'~1 kg' },
+    { id:'salmao', nome:'Salmão', qtd:'~300 g (opcional — pode usar só peixe branco)' },
+  ]},
+  { categoria: 'Carboidratos (tubérculos)', itens: [
+    { id:'batata_doce', nome:'Batata-doce', qtd:'~300 g (2–3 unidades médias)' },
+    { id:'inhame_mandioca', nome:'Inhame ou mandioca', qtd:'~200 g (pra variar)' },
+  ]},
+  { categoria: 'Frutas', itens: [
+    { id:'maca', nome:'Maçã', qtd:'6 unidades (lanches + suco verde)' },
+    { id:'pera', nome:'Pera', qtd:'1 unidade' },
+    { id:'morango', nome:'Morango', qtd:'~300 g' },
+    { id:'mamao', nome:'Mamão papaia', qtd:'1 unidade pequena' },
+    { id:'limao', nome:'Limão', qtd:'~10 unidades (shots, suco verde e água)' },
+    { id:'maracuja', nome:'Maracujá', qtd:'2 unidades (opcional, alternativa ao limão no suco verde)' },
+  ]},
+  { categoria: 'Gorduras boas', itens: [
+    { id:'azeite', nome:'Azeite de oliva extravirgem', qtd:'1 garrafa (uso diário)' },
+    { id:'castanhas', nome:'Castanhas ou amêndoas mistas', qtd:'~150 g' },
+    { id:'abacate', nome:'Abacate', qtd:'1–2 unidades (opcional)' },
+  ]},
+  { categoria: 'Legumes e folhas', itens: [
+    { id:'couve', nome:'Couve', qtd:'1 maço' },
+    { id:'espinafre_rucula', nome:'Espinafre ou rúcula', qtd:'1 maço' },
+    { id:'alface', nome:'Alface ou outra folha verde', qtd:'1 pé' },
+    { id:'brocolis', nome:'Brócolis ou couve-flor', qtd:'1 unidade' },
+    { id:'abobrinha', nome:'Abobrinha', qtd:'3 unidades' },
+    { id:'pepino_tomate', nome:'Pepino e tomate', qtd:'~500 g no total' },
+    { id:'pimentao', nome:'Pimentão (cores variadas)', qtd:'2 unidades' },
+  ]},
+  { categoria: 'Temperos & chás detox', itens: [
+    { id:'curcuma', nome:'Cúrcuma em pó', qtd:'1 pote pequeno' },
+    { id:'gengibre', nome:'Gengibre', qtd:'1 raiz' },
+    { id:'alho', nome:'Alho', qtd:'1 cabeça' },
+    { id:'canela', nome:'Canela em pó', qtd:'1 pote pequeno' },
+    { id:'pimentas', nome:'Pimenta caiena e pimenta-preta', qtd:'1 pote de cada' },
+    { id:'vinagre_maca', nome:'Vinagre de maçã', qtd:'1 garrafa' },
+    { id:'propolis', nome:'Própolis verde (gotas)', qtd:'1 frasco' },
+    { id:'chas', nome:'Chá verde, hibisco, cavalinha ou oolong', qtd:'1 caixa (misturar à vontade)' },
+  ]},
+  { categoria: 'Fibras da saciedade', itens: [
+    { id:'chia', nome:'Chia em grãos', qtd:'~250 g' },
+    { id:'linhaca', nome:'Linhaça dourada', qtd:'~250 g' },
+    { id:'psyllium', nome:'Psyllium em pó', qtd:'~150 g' },
+    { id:'iogurte_coco', nome:'Iogurte de coco (sem lactose)', qtd:'~1,2 kg (ou 7 potes individuais)' },
+  ]},
 ];
 
 const AGUA_META_ML = 3000;
@@ -855,8 +1013,12 @@ function diaSemanaAtual() {
   const map = { Sunday:'Domingo', Monday:'Segunda', Tuesday:'Terça', Wednesday:'Quarta', Thursday:'Quinta', Friday:'Sexta', Saturday:'Sábado' };
   return map[w];
 }
-function horarioDe(refeicao, dia) {
-  return (refeicao.horariosPorDia && refeicao.horariosPorDia[dia]) || refeicao.horarioPadrao;
+function diaSemanaDeData(dataISO) {
+  const [y,m,d] = dataISO.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m-1, d, 12));
+  const w = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(date);
+  const map = { Sunday:'Domingo', Monday:'Segunda', Tuesday:'Terça', Wednesday:'Quarta', Thursday:'Quinta', Friday:'Sexta', Saturday:'Sábado' };
+  return map[w];
 }
 function segundaDaSemana(dataISO) {
   const [y,m,d] = dataISO.split('-').map(Number);
@@ -874,8 +1036,8 @@ function formatarDataCurta(dataISO) {
 // ============================================
 // STORAGE
 // ============================================
-const KEY = 'meu-dieta-v1';
-const initial = { concluidos: {}, suplementos: {}, agua: {}, refeicaoLivre: {} };
+const KEY = 'meu-dieta-v2';
+const initial = { concluidos: {}, suplementos: {}, agua: {}, ritual: {}, saciedade: {}, compras: {} };
 
 function loadState() {
   try {
@@ -891,19 +1053,18 @@ function saveState() {
 let state = loadState();
 let diaSelecionado = diaSemanaAtual();
 let dataSelecionada = hojeISO();
-let opcaoTmp = {}; // seleção temporária de opção antes do check, por refeicaoId
 let mealOpenState = {}; // quais refeições secundárias estão expandidas
 
 // ============================================
-// SUPABASE — carregar tudo
+// SUPABASE — carregar tudo (refeições, suplementos e água seguem sincronizados;
+// rituais, saciedade e lista de compras ficam só neste aparelho)
 // ============================================
 async function loadTudoSupabase() {
   try {
-    const [dieta, sup, agua, livre] = await Promise.all([
+    const [dieta, sup, agua] = await Promise.all([
       sbFetch('dieta_concluidos?select=data,refeicao_id,opcao_id'),
       sbFetch('suplementos_concluidos?select=data,suplemento_id'),
       sbFetch('agua_registro?select=data,quantidade_ml'),
-      sbFetch('refeicao_livre?select=semana_iso,usada,dia,observacao'),
     ]);
     dieta.forEach(r => {
       if (!state.concluidos[r.data]) state.concluidos[r.data] = {};
@@ -914,7 +1075,6 @@ async function loadTudoSupabase() {
       state.suplementos[r.data][r.suplemento_id] = true;
     });
     agua.forEach(r => { state.agua[r.data] = r.quantidade_ml; });
-    livre.forEach(r => { state.refeicaoLivre[r.semana_iso] = { usada: r.usada, dia: r.dia, observacao: r.observacao }; });
     saveState();
   } catch(e) { /* offline — segue só com o que tem local */ }
 }
@@ -926,11 +1086,11 @@ function isRefeicaoConcluida(refeicaoId) {
   return !!(state.concluidos[dataSelecionada] && state.concluidos[dataSelecionada][refeicaoId]);
 }
 
-function marcarRefeicao(refeicaoId, opcaoId) {
+function marcarRefeicao(refeicaoId) {
   if (!state.concluidos[dataSelecionada]) state.concluidos[dataSelecionada] = {};
-  state.concluidos[dataSelecionada][refeicaoId] = opcaoId || 'unica';
+  state.concluidos[dataSelecionada][refeicaoId] = 'unica';
   saveState();
-  sbUpsert('dieta_concluidos', { data: dataSelecionada, refeicao_id: refeicaoId, opcao_id: opcaoId || 'unica' }, 'data,refeicao_id');
+  sbUpsert('dieta_concluidos', { data: dataSelecionada, refeicao_id: refeicaoId, opcao_id: 'unica' }, 'data,refeicao_id');
   render();
 }
 
@@ -945,15 +1105,8 @@ function toggleRefeicao(refeicaoId) {
   if (isRefeicaoConcluida(refeicaoId)) {
     desmarcarRefeicao(refeicaoId);
   } else {
-    const refeicao = REFEICOES.find(r => r.id === refeicaoId);
-    const opcaoEscolhida = refeicao.opcoes.length > 1 ? (opcaoTmp[refeicaoId] || refeicao.opcoes[0].id) : 'unica';
-    marcarRefeicao(refeicaoId, opcaoEscolhida);
+    marcarRefeicao(refeicaoId);
   }
-}
-
-function selecionarOpcao(refeicaoId, opcaoId) {
-  opcaoTmp[refeicaoId] = opcaoId;
-  render();
 }
 
 function toggleMealOpen(refeicaoId) {
@@ -981,6 +1134,31 @@ function toggleSuplemento(id) {
 }
 
 // ============================================
+// AÇÕES — ritual detox e saciedade (local, por dia)
+// ============================================
+function isRitualFeito(id) {
+  return !!(state.ritual[dataSelecionada] && state.ritual[dataSelecionada][id]);
+}
+function toggleRitual(id) {
+  if (!state.ritual[dataSelecionada]) state.ritual[dataSelecionada] = {};
+  if (state.ritual[dataSelecionada][id]) delete state.ritual[dataSelecionada][id];
+  else state.ritual[dataSelecionada][id] = true;
+  saveState();
+  render();
+}
+
+function isSaciedadeFeita(id) {
+  return !!(state.saciedade[dataSelecionada] && state.saciedade[dataSelecionada][id]);
+}
+function toggleSaciedade(id) {
+  if (!state.saciedade[dataSelecionada]) state.saciedade[dataSelecionada] = {};
+  if (state.saciedade[dataSelecionada][id]) delete state.saciedade[dataSelecionada][id];
+  else state.saciedade[dataSelecionada][id] = true;
+  saveState();
+  render();
+}
+
+// ============================================
 // AÇÕES — água
 // ============================================
 function ajustarAgua(deltaMl) {
@@ -993,48 +1171,29 @@ function ajustarAgua(deltaMl) {
 }
 
 // ============================================
-// AÇÕES — refeição livre
+// AÇÕES — lista de compras (local, por semana)
 // ============================================
-let freeDiaEscolhido = null;
-
-function calcularAderenciaSemana(segundaISO) {
-  const obrigatorias = REFEICOES.filter(r => !r.opcional);
-  let esperadas = 0, feitas = 0;
-  for (let i = 0; i < 5; i++) { // segunda a sexta
-    const d = new Date(segundaISO + 'T00:00:00Z');
-    d.setUTCDate(d.getUTCDate() + i);
-    const dataISO = d.toISOString().slice(0,10);
-    obrigatorias.forEach(r => {
-      esperadas++;
-      if (state.concluidos[dataISO] && state.concluidos[dataISO][r.id]) feitas++;
-    });
-  }
-  return { feitas, esperadas, pct: esperadas ? Math.round((feitas / esperadas) * 100) : 0 };
+function isCompraMarcada(itemId) {
+  const semana = segundaDaSemana(hojeISO());
+  return !!(state.compras[semana] && state.compras[semana][itemId]);
 }
-
-function toggleRefeicaoLivre(semanaIso, dia) {
-  const atual = state.refeicaoLivre[semanaIso];
-  if (atual && atual.usada) {
-    state.refeicaoLivre[semanaIso] = { usada: false, dia: null, observacao: '' };
-    sbUpsert('refeicao_livre', { semana_iso: semanaIso, usada: false, dia: null, observacao: '' }, 'semana_iso');
-  } else {
-    state.refeicaoLivre[semanaIso] = { usada: true, dia, observacao: '' };
-    sbUpsert('refeicao_livre', { semana_iso: semanaIso, usada: true, dia, observacao: '' }, 'semana_iso');
-  }
+function toggleCompra(itemId) {
+  const semana = segundaDaSemana(hojeISO());
+  if (!state.compras[semana]) state.compras[semana] = {};
+  if (state.compras[semana][itemId]) delete state.compras[semana][itemId];
+  else state.compras[semana][itemId] = true;
   saveState();
-  render();
+  renderCompras();
 }
 
 // ============================================
 // LÓGICA — refeição da vez
 // ============================================
 function calcularRefeicaoDaVez() {
+  const refeicoes = PLANO_SEMANA[diaSelecionado].refeicoes;
   const concluidasHoje = state.concluidos[dataSelecionada] || {};
-  const pendentesObrigatorias = REFEICOES.filter(r => !r.opcional && !concluidasHoje[r.id]);
-  if (pendentesObrigatorias.length > 0) return pendentesObrigatorias[0];
-  const ceia = REFEICOES.find(r => r.id === 'ceia');
-  if (ceia && !concluidasHoje[ceia.id]) return ceia;
-  return null;
+  const pendentes = refeicoes.filter(r => !concluidasHoje[r.id]);
+  return pendentes.length ? pendentes[0] : null;
 }
 
 // ============================================
@@ -1047,20 +1206,8 @@ function escapeHtml(text) {
 }
 
 function renderFoodList(refeicao) {
-  const temOpcoes = refeicao.opcoes.length > 1;
-  const opcaoAtivaId = temOpcoes ? (opcaoTmp[refeicao.id] || refeicao.opcoes[0].id) : 'unica';
-  const opcaoAtiva = refeicao.opcoes.find(o => o.id === opcaoAtivaId) || refeicao.opcoes[0];
-
-  let html = '';
-  if (temOpcoes) {
-    html += `<div class="opcoes-row">`;
-    refeicao.opcoes.forEach(op => {
-      html += `<button class="opcao-pill ${op.id === opcaoAtivaId ? 'active' : ''}" onclick="event.stopPropagation(); selecionarOpcao('${refeicao.id}','${op.id}')">${escapeHtml(op.rotulo)}</button>`;
-    });
-    html += `</div>`;
-  }
-
-  html += `<div class="food-list">`;
+  const opcaoAtiva = refeicao.opcoes[0];
+  let html = `<div class="food-list">`;
   opcaoAtiva.itens.forEach(item => {
     html += `<div class="food-item">${escapeHtml(item.texto)}${item.troca ? `<span class="food-sub">Troca: ${escapeHtml(item.troca)}</span>` : ''}</div>`;
   });
@@ -1083,8 +1230,8 @@ function renderMealCurrent(refeicao) {
   }
 
   titleEl.textContent = 'Refeição da vez';
-  const horario = horarioDe(refeicao, diaSelecionado);
-  const atrasada = !refeicao.opcional && horario < horaAtualStr();
+  const horario = refeicao.horario;
+  const atrasada = horario < horaAtualStr();
   const done = isRefeicaoConcluida(refeicao.id);
 
   slot.innerHTML = `
@@ -1104,15 +1251,14 @@ function renderMealCurrent(refeicao) {
 
 function renderMealList(refeicaoDaVezId) {
   const wrap = document.getElementById('meal-list');
-  const outras = REFEICOES.filter(r => r.id !== refeicaoDaVezId);
+  const refeicoes = PLANO_SEMANA[diaSelecionado].refeicoes;
+  const outras = refeicoes.filter(r => r.id !== refeicaoDaVezId);
   const concluidasHoje = state.concluidos[dataSelecionada] || {};
 
   wrap.innerHTML = outras.map(r => {
     const done = !!concluidasHoje[r.id];
-    const horario = horarioDe(r, diaSelecionado);
+    const horario = r.horario;
     const open = !!mealOpenState[r.id];
-    const opcaoEscolhidaId = done ? concluidasHoje[r.id] : null;
-    const opcaoEscolhida = r.opcoes.length > 1 && opcaoEscolhidaId ? r.opcoes.find(o => o.id === opcaoEscolhidaId) : null;
 
     return `
       <div class="meal ${done ? 'done' : ''} ${open ? 'open' : ''}">
@@ -1121,16 +1267,49 @@ function renderMealList(refeicaoDaVezId) {
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
           </div>
           <div class="meal-body">
-            <div class="meal-name">
-              ${escapeHtml(r.nome)}
-              ${r.opcional ? '<span class="meal-optional-badge">opcional</span>' : ''}
-              ${opcaoEscolhida ? `<span class="opcao-badge">${escapeHtml(opcaoEscolhida.rotulo)}</span>` : ''}
-            </div>
+            <div class="meal-name">${escapeHtml(r.nome)}</div>
             <div class="meal-time">${horario}</div>
           </div>
           <div class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
         </div>
         <div class="meal-detail">${renderFoodList(r)}</div>
+      </div>`;
+  }).join('');
+}
+
+function renderRitualDetox() {
+  const wrap = document.getElementById('ritual-list');
+  wrap.innerHTML = RITUAL_DETOX.map(item => {
+    const done = isRitualFeito(item.id);
+    return `
+      <div class="simple-item ${done ? 'done' : ''}" onclick="toggleRitual('${item.id}')">
+        <div class="check ${done ? 'done' : ''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="simple-item-body">
+          <div class="simple-item-name">${escapeHtml(item.nome)}</div>
+          <div class="simple-item-meta">${escapeHtml(item.detalhe)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderSaciedade() {
+  const wrap = document.getElementById('saciedade-list');
+  wrap.innerHTML = SACIEDADE.map(item => {
+    const done = isSaciedadeFeita(item.id);
+    const detalheCompleto = item.id === 'farinha_saciedade'
+      ? `${item.horario} · ${item.detalhe}<br><em>Receita da farinha: ${FARINHA_SACIEDADE_RECEITA}</em>`
+      : `${item.horario} · ${item.detalhe}`;
+    return `
+      <div class="simple-item ${done ? 'done' : ''}" onclick="toggleSaciedade('${item.id}')">
+        <div class="check ${done ? 'done' : ''}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <div class="simple-item-body">
+          <div class="simple-item-name">${escapeHtml(item.nome)}</div>
+          <div class="simple-item-meta">${detalheCompleto}</div>
+        </div>
       </div>`;
   }).join('');
 }
@@ -1160,46 +1339,35 @@ function renderWater() {
   document.getElementById('water-bar-fill').style.width = pct + '%';
 }
 
-function renderFreeMeal() {
-  const section = document.getElementById('free-meal-section');
-  if (diaSelecionado !== 'Sábado' && diaSelecionado !== 'Domingo') {
-    section.innerHTML = '';
-    return;
-  }
-
-  const segunda = segundaDaSemana(dataSelecionada);
-  const { feitas, esperadas, pct } = calcularAderenciaSemana(segunda);
-  const liberado = pct >= 100;
-  const registro = state.refeicaoLivre[segunda] || { usada: false, dia: null };
-
-  let html = `<div class="section-title">Refeição livre da semana</div>`;
-  html += `<div class="free-card ${liberado ? 'unlocked' : ''}">`;
-  html += `<div class="free-summary">
-      <div class="free-summary-text">Dieta seguida essa semana (seg–sex)</div>
-      <div class="free-summary-pct ${liberado ? 'full' : ''}">${feitas}/${esperadas}</div>
-    </div>`;
-
-  if (!liberado) {
-    html += `<div class="free-lock-msg">🔒 Siga certinho de segunda a sexta pra liberar sua refeição livre do fim de semana. Faltam ${esperadas - feitas} refeições.</div>`;
-  } else if (registro.usada) {
-    html += `<div class="free-lock-msg">Refeição livre usada no ${registro.dia}. Aproveitou! ✨</div>`;
-    html += `<button class="free-check-btn done" onclick="toggleRefeicaoLivre('${segunda}', null)">Desmarcar</button>`;
-  } else {
-    const escolhido = freeDiaEscolhido || diaSelecionado;
-    html += `<div class="free-days-row">
-        <button class="free-day-pill ${escolhido === 'Sábado' ? 'active' : ''}" onclick="freeDiaEscolhido='Sábado'; render()">Sábado</button>
-        <button class="free-day-pill ${escolhido === 'Domingo' ? 'active' : ''}" onclick="freeDiaEscolhido='Domingo'; render()">Domingo</button>
-      </div>`;
-    html += `<button class="free-check-btn" onclick="toggleRefeicaoLivre('${segunda}', '${escolhido}')">🎉 Usar refeição livre no ${escolhido}</button>`;
-  }
-  html += `</div>`;
-  section.innerHTML = html;
+function renderCompras() {
+  const wrap = document.getElementById('compras-content');
+  let html = `<div class="compras-note">Quantidades para 1 semana do protocolo (cardápio padrão, sem contar trocas). A Farinha da Saciedade rende ~500 g e dura além de uma semana — não precisa comprar de novo toda semana.</div>`;
+  LISTA_COMPRAS.forEach(cat => {
+    html += `<div class="section-title">${escapeHtml(cat.categoria)}</div>`;
+    html += `<div class="simple-list">`;
+    cat.itens.forEach(item => {
+      const done = isCompraMarcada(item.id);
+      html += `
+        <div class="simple-item ${done ? 'done' : ''}" onclick="toggleCompra('${item.id}')">
+          <div class="check ${done ? 'done' : ''}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+          </div>
+          <div class="simple-item-body">
+            <div class="simple-item-name">${escapeHtml(item.nome)}</div>
+            <div class="simple-item-meta">${escapeHtml(item.qtd)}</div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
 }
 
 function renderProgress() {
+  const refeicoes = PLANO_SEMANA[diaSelecionado].refeicoes;
   const concluidasHoje = state.concluidos[dataSelecionada] || {};
-  const total = REFEICOES.length;
-  const feitas = REFEICOES.filter(r => concluidasHoje[r.id]).length;
+  const total = refeicoes.length;
+  const feitas = refeicoes.filter(r => concluidasHoje[r.id]).length;
   const pct = total ? Math.round((feitas / total) * 100) : 0;
   document.getElementById('progress-fill').style.width = pct + '%';
   document.getElementById('progress-text').textContent = `${feitas}/${total}`;
@@ -1208,6 +1376,16 @@ function renderProgress() {
 function renderHeader() {
   document.getElementById('day-name').textContent = diaSelecionado;
   document.getElementById('day-date').textContent = formatarDataCurta(dataSelecionada);
+  const plano = PLANO_SEMANA[diaSelecionado];
+  document.getElementById('day-focus').textContent = `Dia ${plano.dia} — ${plano.estrategia}`;
+  document.getElementById('plano-meta').innerHTML = `
+    <div class="plano-meta-row">
+      <span class="plano-badge">Jejum ${plano.jejum}h</span>
+      <span class="plano-badge">${plano.refeicoes.length} refeições</span>
+    </div>
+    <div class="plano-carb-note">${escapeHtml(plano.carboInfo)}</div>
+    <div class="plano-proibidos">${PROIBIDOS_TEXTO}</div>
+  `;
 }
 
 function render() {
@@ -1215,9 +1393,10 @@ function render() {
   const refeicaoDaVez = calcularRefeicaoDaVez();
   renderMealCurrent(refeicaoDaVez);
   renderMealList(refeicaoDaVez ? refeicaoDaVez.id : null);
+  renderRitualDetox();
+  renderSaciedade();
   renderSupplements();
   renderWater();
-  renderFreeMeal();
   renderProgress();
 }
 
@@ -1231,6 +1410,7 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     btn.classList.add('active');
     document.getElementById('view-' + btn.dataset.view).classList.add('active');
     if (btn.dataset.view === 'historico') renderHistorico();
+    if (btn.dataset.view === 'compras') renderCompras();
   });
 });
 
@@ -1245,10 +1425,11 @@ let calMes = hoje.getMonth();
 function diaStatus(dataISO) {
   const concluidas = state.concluidos[dataISO];
   if (!concluidas) return 'none';
-  const obrigatorias = REFEICOES.filter(r => !r.opcional);
-  const feitas = obrigatorias.filter(r => concluidas[r.id]).length;
+  const diaSemana = diaSemanaDeData(dataISO);
+  const refeicoes = PLANO_SEMANA[diaSemana].refeicoes;
+  const feitas = refeicoes.filter(r => concluidas[r.id]).length;
   if (feitas === 0) return 'none';
-  if (feitas === obrigatorias.length) return 'full';
+  if (feitas === refeicoes.length) return 'full';
   return 'partial';
 }
 
@@ -1288,7 +1469,6 @@ function renderHistorico() {
 
   document.getElementById('cal-total').textContent = diasCompletos;
 
-  // média semanal do mês (aproximada: dias completos / semanas do mês)
   const semanasNoMes = Math.ceil(totalDias / 7);
   document.getElementById('cal-media').textContent = semanasNoMes ? (diasCompletos / semanasNoMes).toFixed(1) : '0';
 
@@ -1307,16 +1487,17 @@ function renderHistoryList() {
     return;
   }
 
-  const obrigatorias = REFEICOES.filter(r => !r.opcional);
   wrap.innerHTML = dias.map(dataISO => {
     const concluidas = state.concluidos[dataISO];
-    const feitas = obrigatorias.filter(r => concluidas[r.id]).length;
-    const nomesFeitos = REFEICOES.filter(r => concluidas[r.id]).map(r => r.nome).join(', ');
+    const diaSemana = diaSemanaDeData(dataISO);
+    const refeicoes = PLANO_SEMANA[diaSemana].refeicoes;
+    const feitas = refeicoes.filter(r => concluidas[r.id]).length;
+    const nomesFeitos = refeicoes.filter(r => concluidas[r.id]).map(r => r.nome).join(', ');
     return `
       <div class="history-entry">
         <div class="history-entry-head">
           <span class="history-entry-date">${formatarDataCurta(dataISO)}</span>
-          <span class="history-entry-pct">${feitas}/${obrigatorias.length}</span>
+          <span class="history-entry-pct">${feitas}/${refeicoes.length}</span>
         </div>
         <div class="history-entry-list">${escapeHtml(nomesFeitos || 'Nenhuma refeição marcada')}</div>
       </div>`;
