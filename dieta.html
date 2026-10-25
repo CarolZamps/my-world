@@ -508,6 +508,77 @@
     border-radius: 12px;
   }
 
+  /* RECEITAS */
+  .ingrediente-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin-top: 10px;
+  }
+  .ingrediente-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+  .ingrediente-row .check { width: 18px; height: 18px; }
+  .ingrediente-row .check svg { width: 10px; height: 10px; }
+  .ingrediente-text { font-size: 13.5px; color: var(--text); }
+  .ingrediente-row.done .ingrediente-text { text-decoration: line-through; color: var(--text-faint); }
+  .modo-preparo {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed var(--border);
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+  .modo-preparo strong { color: var(--text); }
+  .receita-clear {
+    margin-top: 12px;
+    background: none;
+    border: none;
+    color: var(--text-faint);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+  }
+
+  /* TABELAS DE SUBSTITUIÇÃO */
+  .tabela-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2px 14px;
+    margin-bottom: 4px;
+  }
+  .tabela-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .tabela-row:last-child { border-bottom: none; }
+  .tabela-row-nome { font-size: 13.5px; color: var(--text); line-height: 1.4; }
+  .tabela-row-qtd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    white-space: nowrap;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .tabela-lista-texto {
+    padding: 12px 0;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
   /* NAV */
   .nav {
     position: fixed;
@@ -528,16 +599,16 @@
     background: transparent;
     border: none;
     color: var(--text-dim);
-    padding: 10px 4px;
+    padding: 9px 2px;
     border-radius: 10px;
     font-family: inherit;
-    font-size: 11.5px;
+    font-size: 10px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 3px;
   }
   .nav-btn.active { color: var(--accent); background: var(--accent-soft); }
   .nav-btn svg { width: 18px; height: 18px; }
@@ -662,6 +733,30 @@
   <main class="content" id="compras-content"></main>
 </div>
 
+<div class="view" id="view-receitas">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <h1><span class="focus" style="font-style:normal">Receitas</span></h1>
+  </header>
+  <main class="content" id="receitas-content"></main>
+</div>
+
+<div class="view" id="view-substituicoes">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Dieta &amp; alimentação</div>
+    <h1><span class="focus" style="font-style:normal">Trocas</span></h1>
+  </header>
+  <main class="content" id="substituicoes-content"></main>
+</div>
+
 <div class="view" id="view-historico">
   <header class="header">
     <a href="/" class="back-link">
@@ -704,6 +799,14 @@
   <button class="nav-btn" data-view="compras">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     Compras
+  </button>
+  <button class="nav-btn" data-view="receitas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z"/></svg>
+    Receitas
+  </button>
+  <button class="nav-btn" data-view="substituicoes">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    Trocas
   </button>
   <button class="nav-btn" data-view="historico">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V12L14.5 14.5M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/></svg>
@@ -934,6 +1037,139 @@ const SACIEDADE = [
 
 const FARINHA_SACIEDADE_RECEITA = '200 g de chia + 200 g de linhaça dourada triturada + 100 g de psyllium. Misture tudo e guarde em pote de vidro bem fechado. Rende ~500 g.';
 
+// ============================================
+// RECEITAS — rituais detox e saciedade, com checklist de ingredientes
+// ============================================
+const RECEITAS = [
+  { id:'cha_detox', categoria:'Ritual Detox', nome:'Chá detox', ingredientes:[
+    { id:'folha_cha', texto:'Chá verde com hortelã · ou chá oolong · ou chá de cavalinha · ou chá de hibisco com chá verde' },
+  ], modoPreparo:'Prepare sem açúcar. Pode tomar ao longo do dia — vale usar adoçante stévia se quiser.' },
+  { id:'shot_antioxidante', categoria:'Ritual Detox', nome:'Shot antioxidante', ingredientes:[
+    { id:'curcuma', texto:'1 col. de chá de cúrcuma' },
+    { id:'pimenta_preta', texto:'1 pitada de pimenta-preta' },
+    { id:'pimenta_caiena', texto:'1 pitada de pimenta caiena' },
+    { id:'vinagre', texto:'1 col. de sobremesa de vinagre de maçã' },
+    { id:'agua', texto:'Meio copo de água' },
+    { id:'propolis', texto:'20 gotas de própolis verde' },
+  ], modoPreparo:'Misture tudo em um copo até dissolver. Tome de uma vez, em qualquer horário do dia.' },
+  { id:'suco_verde', categoria:'Ritual Detox', nome:'Suco verde detox', ingredientes:[
+    { id:'folha', texto:'1 folha (couve, espinafre ou rúcula)' },
+    { id:'maca', texto:'1 maçã com casca' },
+    { id:'limao', texto:'Suco de 1 limão (ou 1 maracujá)' },
+    { id:'curcuma2', texto:'1 pitada de cúrcuma' },
+    { id:'agua2', texto:'200 ml de água' },
+  ], modoPreparo:'Bater tudo no liquidificador e beber na hora — não guarda de um dia para o outro.' },
+  { id:'shot_saciedade', categoria:'Saciedade', nome:'Shot da Saciedade', ingredientes:[
+    { id:'agua_shot', texto:'300 ml de água' },
+    { id:'chia_shot', texto:'1 col. de sopa de chia' },
+    { id:'psyllium_shot', texto:'1 col. de sopa rasa de psyllium' },
+    { id:'limao_shot', texto:'Suco de meio limão' },
+  ], modoPreparo:'Misture tudo e aguarde de 5 a 10 minutos até engrossar. Consuma 20 minutos antes do almoço (ou de outra refeição principal).' },
+  { id:'farinha_saciedade', categoria:'Saciedade', nome:'Farinha da Saciedade', ingredientes:[
+    { id:'chia_f', texto:'200 g de chia' },
+    { id:'linhaca_f', texto:'200 g de linhaça dourada triturada' },
+    { id:'psyllium_f', texto:'100 g de psyllium' },
+  ], modoPreparo:'Misture tudo e guarde em pote de vidro bem fechado. Rende aproximadamente 500 g — dura além de uma semana.',
+    extra:'Como usar: 1 colher de sopa cheia, 20 minutos antes do almoço e 20 minutos antes do jantar. Dá pra usar em água, iogurte de coco, kefir de coco, vitaminas ou shakes proteicos.' },
+  { id:'creme_saciedade', categoria:'Saciedade', nome:'Creme da Saciedade Noturna', ingredientes:[
+    { id:'iogurte_c', texto:'170 g de iogurte de coco (sem lactose)' },
+    { id:'chia_c', texto:'1 col. de sopa de chia' },
+    { id:'linhaca_c', texto:'1 col. de sopa de linhaça triturada' },
+    { id:'psyllium_c', texto:'1 col. de sopa rasa de psyllium' },
+    { id:'canela_c', texto:'Canela a gosto' },
+  ], modoPreparo:'Misture todos os ingredientes e aguarde 10 minutos. Coma devagar, depois do jantar.' },
+];
+
+// ============================================
+// SUBSTITUIÇÕES — tabelas do Protocolo Detox 7D
+// ============================================
+const TABELA_PROTEINAS = [
+  { nome:'Peito de frango grelhado', qtd:'~100 g' },
+  { nome:'Coxa/sobrecoxa de frango sem pele', qtd:'~90 g' },
+  { nome:'Peru (peito) grelhado', qtd:'~100 g' },
+  { nome:'Tilápia / pescada / merluza', qtd:'~120 g' },
+  { nome:'Salmão grelhado ou assado', qtd:'~70–80 g' },
+  { nome:'Sardinha fresca grelhada', qtd:'~90 g' },
+  { nome:'Atum em lata (em água, drenado)', qtd:'~120 g' },
+  { nome:'Camarão cozido', qtd:'~120 g' },
+  { nome:'Ovos inteiros', qtd:'2 unidades' },
+  { nome:'Claras de ovo', qtd:'6 unidades' },
+  { nome:'Lombo suíno magro grelhado', qtd:'~90 g' },
+  { nome:'Fígado bovino grelhado', qtd:'~90 g' },
+  { nome:'Tofu firme grelhado (opção vegetal)', qtd:'~120 g' },
+  { nome:'Whey protein isolado sem lactose (em água)', qtd:'30 g' },
+];
+const TABELA_CARBOIDRATOS = [
+  { nome:'Batata-doce cozida', qtd:'~80–90 g' },
+  { nome:'Batata inglesa cozida', qtd:'~80–90 g' },
+  { nome:'Inhame cozido', qtd:'~70 g' },
+  { nome:'Cará cozido', qtd:'~70 g' },
+  { nome:'Mandioca / aipim cozida', qtd:'~60 g' },
+  { nome:'Mandioquinha / batata-baroa cozida', qtd:'~70 g' },
+  { nome:'Abóbora cabotiá cozida', qtd:'~150 g' },
+  { nome:'Abóbora moranga cozida', qtd:'~150 g' },
+  { nome:'Beterraba cozida', qtd:'~120 g' },
+  { nome:'Cenoura cozida', qtd:'~120 g' },
+];
+const TABELA_FRUTAS = [
+  { nome:'Morango', qtd:'~200 g' },
+  { nome:'Melancia', qtd:'~200 g' },
+  { nome:'Melão', qtd:'~200 g' },
+  { nome:'Abacaxi', qtd:'~140 g' },
+  { nome:'Maçã (com casca)', qtd:'~130 g' },
+  { nome:'Pera', qtd:'~120 g' },
+  { nome:'Mamão papaia', qtd:'~160 g' },
+  { nome:'Banana', qtd:'~75–80 g' },
+  { nome:'Laranja (sem casca)', qtd:'~120 g' },
+  { nome:'Tangerina / mexerica', qtd:'~130 g' },
+  { nome:'Kiwi', qtd:'~110 g' },
+  { nome:'Manga', qtd:'~120 g' },
+  { nome:'Pêssego', qtd:'~130 g' },
+  { nome:'Ameixa fresca', qtd:'~120 g' },
+  { nome:'Uvas', qtd:'~100 g' },
+  { nome:'Maracujá (polpa)', qtd:'~2 unidades' },
+  { nome:'Goiaba', qtd:'~120 g' },
+  { nome:'Frutas vermelhas (amora, framboesa)', qtd:'~150 g' },
+];
+const TABELA_GORDURAS = [
+  { nome:'Azeite de oliva extravirgem', qtd:'~5 g (1 col. chá)' },
+  { nome:'Óleo de coco', qtd:'~5 g' },
+  { nome:'Abacate', qtd:'~30 g' },
+  { nome:'Castanha-do-Pará', qtd:'2 unidades (~10 g)' },
+  { nome:'Castanha de caju', qtd:'~12 g' },
+  { nome:'Amêndoas', qtd:'~12 g' },
+  { nome:'Nozes', qtd:'~10 g' },
+  { nome:'Avelã', qtd:'~12 g' },
+  { nome:'Macadâmia', qtd:'~10 g' },
+  { nome:'Pasta de amendoim integral (sem açúcar)', qtd:'~10 g' },
+  { nome:'Sementes de chia', qtd:'~10 g' },
+  { nome:'Sementes de linhaça', qtd:'~10 g' },
+  { nome:'Sementes de girassol', qtd:'~12 g' },
+  { nome:'Sementes de abóbora', qtd:'~12 g' },
+];
+const FOLHAS_A_VONTADE = ['Alface (lisa, crespa, americana, roxa)','Rúcula','Espinafre','Agrião','Couve','Acelga','Escarola','Chicória','Almeirão','Bertalha','Radicchio','Mostarda'];
+const LEGUMES_LOW_CARB = ['Abobrinha','Brócolis','Couve-flor','Berinjela','Chuchu','Pepino','Tomate','Pimentão (todas as cores)','Vagem','Quiabo','Jiló','Aspargos','Rabanete','Nabo','Repolho (verde e roxo)','Palmito','Broto de bambu','Cogumelos','Alcachofra'];
+const TEMPEROS_LIVRES = ['Alho','Cebola','Gengibre','Cúrcuma','Limão','Salsa','Cebolinha','Coentro','Manjericão','Orégano','Alecrim','Pimenta','Vinagre de maçã','Sal integral'];
+const SUPER_ALIMENTOS = [
+  { nome:'Cúrcuma (açafrão-da-terra)', beneficio:'Poderoso anti-inflamatório natural; ative com pimenta-preta.' },
+  { nome:'Gengibre', beneficio:'Acelera o metabolismo, melhora a digestão e desincha.' },
+  { nome:'Alho', beneficio:'Ajuda o fígado a desintoxicar e fortalece a imunidade.' },
+  { nome:'Canela', beneficio:'Ajuda a controlar o açúcar no sangue e a vontade de doce.' },
+  { nome:'Pimenta caiena', beneficio:'Termogênica: dá um empurrão no metabolismo.' },
+  { nome:'Couve', beneficio:'Rica em clorofila; apoia a limpeza do fígado.' },
+  { nome:'Brócolis e couve-flor', beneficio:'Crucíferas que ajudam o corpo a neutralizar toxinas.' },
+  { nome:'Rúcula e agrião', beneficio:'Amargas do bem: estimulam a digestão e a drenagem.' },
+  { nome:'Espinafre', beneficio:'Ferro e antioxidantes para mais energia.' },
+  { nome:'Salsa e coentro', beneficio:'Diuréticos naturais; ajudam a desinchar.' },
+  { nome:'Limão', beneficio:'Alcaliniza e estimula o fígado logo pela manhã.' },
+  { nome:'Maracujá', beneficio:'Calmante natural e fonte de fibras.' },
+  { nome:'Frutas vermelhas (morango, amora)', beneficio:'Muitos antioxidantes, baixo açúcar.' },
+  { nome:'Abacate', beneficio:'Gordura boa que sacia e nutre.' },
+  { nome:'Chá verde', beneficio:'Termogênico e rico em antioxidantes.' },
+  { nome:'Própolis verde', beneficio:'Apoia a imunidade e tem ação anti-inflamatória.' },
+  { nome:'Vinagre de maçã', beneficio:'Ajuda na digestão e no controle do apetite.' },
+];
+
 const SUPLEMENTOS = [
   { id: 'termogenico', nome: 'Termogênico', dose: '1 dose', horario: '06:00' },
   { id: 'vitd3', nome: 'Vitamina D3', dose: '1 cápsula', horario: '06:00' },
@@ -1054,6 +1290,8 @@ let state = loadState();
 let diaSelecionado = diaSemanaAtual();
 let dataSelecionada = hojeISO();
 let mealOpenState = {}; // quais refeições secundárias estão expandidas
+let receitaOpenState = {}; // quais receitas estão expandidas (não persiste)
+let receitaCheck = {}; // ingredientes marcados por receita, tipo "checklist de preparo" (não persiste)
 
 // ============================================
 // SUPABASE — carregar tudo (refeições, suplementos e água seguem sincronizados;
@@ -1363,6 +1601,106 @@ function renderCompras() {
   wrap.innerHTML = html;
 }
 
+// ============================================
+// RECEITAS
+// ============================================
+function toggleReceitaOpen(id) {
+  receitaOpenState[id] = !receitaOpenState[id];
+  renderReceitas();
+}
+function toggleIngrediente(key) {
+  receitaCheck[key] = !receitaCheck[key];
+  renderReceitas();
+}
+function limparReceita(id, ev) {
+  ev.stopPropagation();
+  RECEITAS.find(r => r.id === id).ingredientes.forEach(i => { delete receitaCheck[`${id}_${i.id}`]; });
+  renderReceitas();
+}
+
+function renderReceitas() {
+  const wrap = document.getElementById('receitas-content');
+  const categorias = [...new Set(RECEITAS.map(r => r.categoria))];
+  let html = '';
+  categorias.forEach(cat => {
+    html += `<div class="section-title">${escapeHtml(cat)}</div>`;
+    html += `<div class="meal-list">`;
+    RECEITAS.filter(r => r.categoria === cat).forEach(r => {
+      const open = !!receitaOpenState[r.id];
+      const total = r.ingredientes.length;
+      const feitos = r.ingredientes.filter(i => receitaCheck[`${r.id}_${i.id}`]).length;
+      html += `
+        <div class="meal ${open ? 'open' : ''}">
+          <div class="meal-head" onclick="toggleReceitaOpen('${r.id}')">
+            <div class="meal-body">
+              <div class="meal-name">${escapeHtml(r.nome)}</div>
+              <div class="meal-time">${feitos}/${total} ingredientes</div>
+            </div>
+            <div class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+          </div>
+          <div class="meal-detail">
+            <div class="ingrediente-list">
+              ${r.ingredientes.map(i => {
+                const key = `${r.id}_${i.id}`;
+                const done = !!receitaCheck[key];
+                return `
+                  <div class="ingrediente-row ${done ? 'done' : ''}" onclick="toggleIngrediente('${key}')">
+                    <div class="check ${done ? 'done' : ''}">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                    </div>
+                    <span class="ingrediente-text">${escapeHtml(i.texto)}</span>
+                  </div>`;
+              }).join('')}
+            </div>
+            <div class="modo-preparo"><strong>Modo de preparo:</strong> ${escapeHtml(r.modoPreparo)}</div>
+            ${r.extra ? `<div class="modo-preparo">${escapeHtml(r.extra)}</div>` : ''}
+            <button class="receita-clear" onclick="limparReceita('${r.id}', event)">Desmarcar ingredientes</button>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+
+// ============================================
+// SUBSTITUIÇÕES
+// ============================================
+function renderTabelaQtd(titulo, itens) {
+  let html = `<div class="section-title">${escapeHtml(titulo)}</div>`;
+  html += `<div class="tabela-card">`;
+  itens.forEach(it => {
+    html += `<div class="tabela-row"><span class="tabela-row-nome">${escapeHtml(it.nome)}</span><span class="tabela-row-qtd">${escapeHtml(it.qtd)}</span></div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+function renderListaSimples(titulo, itens) {
+  let html = `<div class="section-title">${escapeHtml(titulo)}</div>`;
+  html += `<div class="tabela-card"><div class="tabela-lista-texto">${itens.map(escapeHtml).join(' · ')}</div></div>`;
+  return html;
+}
+function renderSubstituicoes() {
+  const wrap = document.getElementById('substituicoes-content');
+  let html = `<div class="compras-note">Troque qualquer alimento do cardápio por outro da mesma categoria — é só procurar aqui quando a refeição disser "ou substitua por um item da tabela". Nenhuma opção tem derivados de leite.</div>`;
+  html += renderTabelaQtd('Tabela 1 — Proteínas', TABELA_PROTEINAS);
+  html += renderTabelaQtd('Tabela 2 — Carboidratos complexos', TABELA_CARBOIDRATOS);
+  html += renderTabelaQtd('Tabela 3 — Frutas', TABELA_FRUTAS);
+  html += renderTabelaQtd('Tabela 4 — Gorduras boas', TABELA_GORDURAS);
+  html += renderListaSimples('Folhas verdes · à vontade', FOLHAS_A_VONTADE);
+  html += renderListaSimples('Legumes low-carb · até 200 g por refeição', LEGUMES_LOW_CARB);
+  html += renderListaSimples('Temperos livres', TEMPEROS_LIVRES);
+  html += `<div class="section-title">Super alimentos detox</div>`;
+  html += `<div class="simple-list">` + SUPER_ALIMENTOS.map(s => `
+    <div class="simple-item" style="cursor:default;">
+      <div class="simple-item-body">
+        <div class="simple-item-name">${escapeHtml(s.nome)}</div>
+        <div class="simple-item-meta">${escapeHtml(s.beneficio)}</div>
+      </div>
+    </div>`).join('') + `</div>`;
+  wrap.innerHTML = html;
+}
+
 function renderProgress() {
   const refeicoes = PLANO_SEMANA[diaSelecionado].refeicoes;
   const concluidasHoje = state.concluidos[dataSelecionada] || {};
@@ -1411,6 +1749,8 @@ document.querySelectorAll('.nav-btn').forEach(btn => {
     document.getElementById('view-' + btn.dataset.view).classList.add('active');
     if (btn.dataset.view === 'historico') renderHistorico();
     if (btn.dataset.view === 'compras') renderCompras();
+    if (btn.dataset.view === 'receitas') renderReceitas();
+    if (btn.dataset.view === 'substituicoes') renderSubstituicoes();
   });
 });
 
