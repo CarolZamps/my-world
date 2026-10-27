@@ -153,6 +153,18 @@
     letter-spacing: 0.05em;
   }
 
+  .bloco-badge {
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .freq-toggle { display: none; }
+
   .day-tabs {
     display: flex;
     gap: 4px;
@@ -702,8 +714,13 @@
       <div class="progress-text" id="progress-text">0/0</div>
     </div>
     <div class="local-toggle" id="local-toggle">
-      <button class="local-btn active" data-local="academia">🏋️ Academia</button>
-      <button class="local-btn" data-local="casa">🏠 Casa</button>
+      <button class="local-btn" data-local="academia">🏋️ Academia</button>
+      <button class="local-btn active" data-local="casa">🏠 Casa</button>
+    </div>
+    <div class="local-toggle freq-toggle" id="freq-toggle">
+      <button class="local-btn" data-freq="3x">3x/semana</button>
+      <button class="local-btn" data-freq="4x">4x/semana</button>
+      <button class="local-btn" data-freq="5x">5x/semana</button>
     </div>
   </header>
   <nav class="day-tabs" id="day-tabs"></nav>
@@ -867,6 +884,127 @@ let TREINOS = TREINOS_FALLBACK;
 const DIAS = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
 const EX_CACHE_KEY = 'meu-treino-exercicios';
 
+// ============================================
+// TREINO DE CASA — Ficha "Tay Training" (iniciante, 3x/4x/5x na semana)
+// Prioridade atual. Editar aqui se a ficha mudar.
+// ============================================
+function ytSearch(q) { return 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q + ' execução correta'); }
+
+const TREINOS_CASA = {
+  'Treino 1': {
+    foco: 'Perna e Glúteo',
+    exercicios: [
+      { nome: 'Afundo Básico', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('afundo básico') },
+      { nome: 'Agachamento Sumô', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('agachamento sumô') },
+      { nome: 'Agachamento Básico', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('agachamento básico') },
+      { nome: 'Elevação Pélvica', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('elevação pélvica') },
+      { nome: 'Glúteo 4 Apoios (perna flexionada)', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('glúteo 4 apoios perna flexionada') },
+      { nome: 'Stiff', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('stiff com halteres') },
+      { nome: 'Panturrilha', series: 3, reps: '15', intervalo: '30 seg', video: ytSearch('panturrilha em pé') },
+    ],
+  },
+  'Treino 2': {
+    foco: 'Membros Superiores + Abd',
+    exercicios: [
+      { nome: 'Abd. Canivete', bloco: 'Bloco 1', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('abdominal canivete'),
+        obs: 'Bloco 1 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Flexão de Braço', bloco: 'Bloco 1', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('flexão de braço'),
+        obs: 'Bloco 1 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Remada Curvada', bloco: 'Bloco 1', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('remada curvada com halteres'),
+        obs: 'Bloco 1 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Abd. Infra', bloco: 'Bloco 2', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('abdominal infra'),
+        obs: 'Bloco 2 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Supino Reto', bloco: 'Bloco 2', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('supino reto com halteres em casa'),
+        obs: 'Bloco 2 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Crucifixo Inverso', bloco: 'Bloco 2', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('crucifixo inverso com halteres'),
+        obs: 'Bloco 2 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Abd. Supra', bloco: 'Bloco 3', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('abdominal supra'),
+        obs: 'Bloco 3 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Elevação Lateral', bloco: 'Bloco 3', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('elevação lateral com halteres'),
+        obs: 'Bloco 3 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Tríceps Francês', bloco: 'Bloco 3', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('tríceps francês com halteres'),
+        obs: 'Bloco 3 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Rosca Direta', bloco: 'Bloco 3', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('rosca direta com halteres'),
+        obs: 'Bloco 3 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Corrida Estacionada', bloco: 'Bloco 4', series: 3, reps: '30 seg', intervalo: '1 min', video: ytSearch('corrida estacionada'),
+        obs: 'Bloco 4 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Polichinelo', bloco: 'Bloco 4', series: 3, reps: '30 seg', intervalo: '1 min', video: ytSearch('polichinelo'),
+        obs: 'Bloco 4 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+      { nome: 'Mountain Climber', bloco: 'Bloco 4', series: 3, reps: '30 seg', intervalo: '1 min', video: ytSearch('mountain climber'),
+        obs: 'Bloco 4 — faça 1 série de cada exercício do bloco, descanse e repita a sequência.' },
+    ],
+  },
+  'Treino 3': {
+    foco: 'Corpo Todo (HIIT)',
+    exercicios: [
+      { nome: 'Burpee', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('burpee') },
+      { nome: 'Afundo + Desenvolve', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('afundo com desenvolvimento halteres') },
+      { nome: 'Thruster', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('thruster com halteres') },
+      { nome: 'Agachamento c/ salto', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('agachamento com salto') },
+      { nome: 'Prancha Abre e Fecha', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('prancha abre e fecha') },
+      { nome: 'Ski', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('exercício ski abdominal') },
+    ],
+  },
+  'Treino 4': {
+    foco: 'Perna e Glúteo',
+    exercicios: [
+      { nome: 'Subida na Plataforma', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('subida na plataforma step up'), precisaBanco: true },
+      { nome: 'Afundo Búlgaro', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('afundo búlgaro'), precisaBanco: true },
+      { nome: 'Agachamento Deslocando', series: 3, reps: '10', intervalo: '1 min', video: ytSearch('agachamento deslocando lateral') },
+      { nome: 'Glúteo em pé (perna estendida)', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('glúteo em pé perna estendida') },
+      { nome: 'Flexão de Joelho', series: 3, reps: '15', intervalo: '30 seg a 1 min', video: ytSearch('flexão de joelho em pé') },
+      { nome: 'Panturrilha Unilateral', series: 3, reps: '10', intervalo: '30 seg', video: ytSearch('panturrilha unilateral') },
+    ],
+  },
+  'Treino 5': {
+    foco: 'Membros Superiores + Abd',
+    exercicios: [
+      { nome: 'Abd. Canivete', series: 3, reps: '10', intervalo: '30 seg', video: ytSearch('abdominal canivete') },
+      { nome: 'Abd. Infra', series: 3, reps: '10', intervalo: '30 seg', video: ytSearch('abdominal infra') },
+      { nome: 'Abd. Supra', series: 3, reps: '10', intervalo: '30 seg', video: ytSearch('abdominal supra') },
+      { nome: 'Flexão de Braço', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('flexão de braço') },
+      { nome: 'Remada Unilateral', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('remada unilateral com halter') },
+      { nome: 'Desenvolvimento com Halteres', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('desenvolvimento com halteres ombro') },
+      { nome: 'Tríceps Testa', series: 3, reps: '10', intervalo: '30 seg a 1 min', video: ytSearch('tríceps testa com halter') },
+      { nome: 'Prancha Isométrica', series: 3, reps: '30 seg', intervalo: 'sem descanso', video: ytSearch('prancha isométrica') },
+      { nome: 'Polichinelo', series: 3, reps: '1 min', intervalo: 'sem descanso', video: ytSearch('polichinelo') },
+    ],
+  },
+};
+
+// Cronograma por frequência semanal — direto da ficha Tay Training.
+// Quando o dia tem 2 treinos na lista, alterna por semana (ímpar/par).
+const CRONOGRAMA_CASA = {
+  '5x': {
+    Segunda: ['Treino 1'], Terça: ['Treino 2'], Quarta: ['Treino 3'],
+    Quinta: ['Treino 4'], Sexta: ['Treino 5'], Sábado: [], Domingo: [],
+  },
+  '4x': {
+    Segunda: ['Treino 1'], Terça: ['Treino 2', 'Treino 5'], Quarta: [],
+    Quinta: ['Treino 3'], Sexta: ['Treino 4'], Sábado: [], Domingo: [],
+  },
+  '3x': {
+    Segunda: ['Treino 1', 'Treino 4'], Terça: [], Quarta: ['Treino 2', 'Treino 5'],
+    Quinta: [], Sexta: ['Treino 3'], Sábado: [], Domingo: [],
+  },
+};
+
+const REF_MONDAY = Date.UTC(2024, 0, 1); // segunda-feira de referência, só pra contar paridade de semana
+function paridadeSemana(dataISO) {
+  const [y, m, d] = dataISO.split('-').map(Number);
+  const dt = Date.UTC(y, m - 1, d);
+  const semanas = Math.floor((dt - REF_MONDAY) / (7 * 86400000));
+  return ((semanas % 2) + 2) % 2; // 0 (semana A) ou 1 (semana B)
+}
+
+function getTreinoCasaDoDia(diaNome, dataISO) {
+  const freq = state.frequenciaCasa || '3x';
+  const opcoes = (CRONOGRAMA_CASA[freq] && CRONOGRAMA_CASA[freq][diaNome]) || [];
+  if (opcoes.length === 0) return null;
+  if (opcoes.length === 1) return opcoes[0];
+  return opcoes[paridadeSemana(dataISO)];
+}
+
 async function sbFetch(path) {
   const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
     headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
@@ -974,7 +1112,7 @@ async function loadConcluidosSupabase() {
 // STORAGE
 // ============================================
 const KEY = 'meu-treino-v2';
-const initial = { cargas: {}, observacoes: {}, concluidos: {}, historico: [], locais: {} };
+const initial = { cargas: {}, observacoes: {}, concluidos: {}, historico: [], locais: {}, frequenciaCasa: '3x' };
 
 function loadState() {
   try {
@@ -1008,12 +1146,18 @@ function isConcluido(nome) {
 }
 
 function localDoDia(diaNome) {
-  return state.locais[getDataDoDia(diaNome)] || 'academia';
+  return state.locais[getDataDoDia(diaNome)] || 'casa';
 }
 
 function setLocalDoDia(diaNome, local) {
   state.locais[getDataDoDia(diaNome)] = local;
   saveState();
+}
+
+function setFrequenciaCasa(freq) {
+  state.frequenciaCasa = freq;
+  saveState();
+  render();
 }
 
 function ultimaCarga(nome) {
@@ -1064,12 +1208,19 @@ function renderDayTabs() {
   wrap.innerHTML = '';
   const ordem = ['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
   ordem.forEach(dia => {
-    const treino = TREINOS[dia];
-    const isRest = treino.exercicios.length === 0;
     const dataDoDia = getDataDoDia(dia); // ← NOVO: usa a data específica do dia
+    const localDia = localDoDia(dia);
+    let exsDia;
+    if (localDia === 'casa') {
+      const treinoCasaNome = getTreinoCasaDoDia(dia, dataDoDia);
+      exsDia = treinoCasaNome ? TREINOS_CASA[treinoCasaNome].exercicios : [];
+    } else {
+      exsDia = TREINOS[dia].exercicios;
+    }
+    const isRest = exsDia.length === 0;
     const feitos = isRest
       ? (state.concluidos[dataDoDia]?.[dia + '|' + ATIVIDADE_LIVRE] ? 1 : 0)
-      : treino.exercicios.filter(e => state.concluidos[dataDoDia]?.[dia + '|' + e.nome]).length;
+      : exsDia.filter(e => state.concluidos[dataDoDia]?.[dia + '|' + e.nome]).length;
     const hasProgress = feitos > 0;
 
     const btn = document.createElement('button');
@@ -1106,19 +1257,37 @@ function dataDaSemana(diaNome) {
 }
 
 function renderExercises() {
-  const treino = TREINOS[diaSelecionado];
-  const exs = treino.exercicios;
+  const localAtual = localDoDia(diaSelecionado);
+  const isCasa = localAtual === 'casa';
+
+  let exs, focoTexto, treinoCasaNome = null;
+  if (isCasa) {
+    treinoCasaNome = getTreinoCasaDoDia(diaSelecionado, dataSelecionada);
+    const treinoCasa = treinoCasaNome ? TREINOS_CASA[treinoCasaNome] : null;
+    exs = treinoCasa ? treinoCasa.exercicios : [];
+    focoTexto = treinoCasa ? `${treinoCasaNome} — ${treinoCasa.foco}` : 'descanso';
+  } else {
+    const treino = TREINOS[diaSelecionado];
+    exs = treino.exercicios;
+    focoTexto = treino.foco;
+  }
 
   document.getElementById('day-name').textContent = diaSelecionado;
   document.getElementById('day-date').textContent = dataDaSemana(diaSelecionado);
-  document.getElementById('day-focus').textContent = treino.foco;
+  document.getElementById('day-focus').textContent = focoTexto;
   document.getElementById('today-eyebrow').textContent =
     diaSelecionado === DIAS[new Date().getDay()] ? 'Hoje' : 'Próximo treino';
 
-  const localAtual = localDoDia(diaSelecionado);
-  document.querySelectorAll('.local-btn').forEach(btn => {
+  document.querySelectorAll('#local-toggle .local-btn').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.local === localAtual);
   });
+  const freqToggle = document.getElementById('freq-toggle');
+  freqToggle.style.display = isCasa ? 'flex' : 'none';
+  if (isCasa) {
+    document.querySelectorAll('#freq-toggle .local-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.freq === (state.frequenciaCasa || '3x'));
+    });
+  }
 
   const container = document.getElementById('exercises');
 
@@ -1146,28 +1315,19 @@ function renderExercises() {
     return;
   }
 
-  const k = todayKey();
-  const feitos = exs.filter(e => state.concluidos[k]?.[diaSelecionado + '|' + e.nome]).length;
+  const feitos = exs.filter(e => isConcluido(e.nome)).length;
   document.getElementById('progress-fill').style.width = (feitos/exs.length*100) + '%';
   document.getElementById('progress-text').textContent = `${feitos}/${exs.length}`;
 
   container.innerHTML = '';
-  const local = localDoDia(diaSelecionado);
-  const isCasa = local === 'casa';
 
   exs.forEach(ex => {
     const done = isConcluido(ex.nome);
     const cargaAtual = state.cargas[ex.nome] ?? '';
     const obs = state.observacoes[ex.nome] ?? '';
     const ultimo = ultimaCarga(ex.nome);
-    const meta = `${ex.series}×${ex.reps} · ${ex.intervalo}`;
-
-    const nomeExibido = isCasa && ex.nomeCasa ? ex.nomeCasa : ex.nome;
-    const sugeridaExibida = isCasa && ex.sugeridaCasa != null ? ex.sugeridaCasa : ex.sugerida;
-    const obsExibida = isCasa && ex.obsCasa ? ex.obsCasa : ex.obs;
-    const videoExibido = isCasa && ex.videoCasa ? ex.videoCasa : ex.video;
-    const alternativasExibidas = isCasa && ex.alternativasCasa && ex.alternativasCasa.length
-      ? ex.alternativasCasa : ex.alternativas;
+    const meta = `${ex.series}×${ex.reps}${ex.intervalo ? ' · ' + ex.intervalo : ''}`;
+    const sugerida = ex.sugerida ?? null;
 
     const div = document.createElement('div');
     div.className = 'exercise' + (done ? ' done' : '');
@@ -1178,41 +1338,42 @@ function renderExercises() {
         </div>
         <div class="exercise-body" data-action="expand">
           <div class="exercise-name">
-            ${nomeExibido}
+            ${ex.nome}
+            ${ex.bloco ? `<span class="bloco-badge">${ex.bloco}</span>` : ''}
             ${ex.lipedema ? '<span class="lipedema-badge">💜 lipedema</span>' : ''}
-            ${isCasa && ex.precisaBanco ? '<span class="banco-badge">🛋️ precisa banco</span>' : ''}
+            ${ex.precisaBanco ? '<span class="banco-badge">🛋️ precisa banco/step</span>' : ''}
           </div>
-          <div class="exercise-meta">${meta}${isCasa && ex.nomeCasa ? ` · <span style="color:var(--accent)">🏠 adaptado</span>` : ''}</div>
+          <div class="exercise-meta">${meta}</div>
         </div>
         <svg class="chevron" data-action="expand" width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 5L7 9L11 5"/>
         </svg>
       </div>
       <div class="exercise-detail">
-        ${obsExibida ? `<div class="tip">${obsExibida}</div>` : ''}
+        ${ex.obs ? `<div class="tip">${ex.obs}</div>` : ''}
         <div class="field">
           <label>Carga (kg)</label>
           <input type="number" inputmode="decimal" step="0.5" data-field="carga"
                  value="${cargaAtual}"
-                 placeholder="${sugeridaExibida === 0 ? 'sem peso' : sugeridaExibida}">
+                 placeholder="${sugerida === 0 ? 'sem peso' : (sugerida ?? 'peso usado')}">
           <div class="hint">
-            ${sugeridaExibida === 0
-              ? '<strong>Sugerido:</strong> só a mini-band'
-              : `<strong>Sugerido:</strong> ${sugeridaExibida} kg`}
-            ${ultimo ? `<br><strong>Último:</strong> ${ultimo.carga}kg (${diasAtras(ultimo.data)})` : ''}
+            ${sugerida != null ? (sugerida === 0
+              ? '<strong>Sugerido:</strong> sem peso adicional'
+              : `<strong>Sugerido:</strong> ${sugerida} kg`) : ''}
+            ${ultimo ? `${sugerida != null ? '<br>' : ''}<strong>Último:</strong> ${ultimo.carga}kg (${diasAtras(ultimo.data)})` : ''}
           </div>
         </div>
         <div class="field">
           <label>Observação</label>
           <textarea data-field="obs" placeholder="Como foi? Doeu? Pegou pesado?">${obs}</textarea>
         </div>
-        ${(videoExibido || (alternativasExibidas && alternativasExibidas.length)) ? `
+        ${(ex.video || (ex.alternativas && ex.alternativas.length)) ? `
         <div class="ex-links">
-          ${videoExibido ? `<a class="ex-link" href="${videoExibido}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
-          ${alternativasExibidas && alternativasExibidas.length ? `
+          ${ex.video ? `<a class="ex-link" href="${ex.video}" target="_blank" rel="noopener">▶ ver execução</a>` : ''}
+          ${ex.alternativas && ex.alternativas.length ? `
             <button class="alt-toggle">↔ ver alternativa</button>
             <div class="alt-list">
-              ${alternativasExibidas.map(a => `<span>${a}</span>`).join('')}
+              ${ex.alternativas.map(a => `<span>${a}</span>`).join('')}
             </div>
           ` : ''}
         </div>` : ''}
@@ -1369,6 +1530,12 @@ document.getElementById('local-toggle').addEventListener('click', (e) => {
   if (!btn) return;
   setLocalDoDia(diaSelecionado, btn.dataset.local);
   render();
+});
+
+document.getElementById('freq-toggle').addEventListener('click', (e) => {
+  const btn = e.target.closest('.local-btn');
+  if (!btn) return;
+  setFrequenciaCasa(btn.dataset.freq);
 });
 
 Promise.all([loadExercicios(), loadConcluidosSupabase()]).then(() => render());
