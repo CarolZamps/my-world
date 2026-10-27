@@ -1666,38 +1666,55 @@ function renderReceitas() {
 // ============================================
 // SUBSTITUIÇÕES
 // ============================================
-function renderTabelaQtd(titulo, itens) {
-  let html = `<div class="section-title">${escapeHtml(titulo)}</div>`;
-  html += `<div class="tabela-card">`;
+let substOpenState = {};
+function toggleSubstOpen(id) {
+  substOpenState[id] = !substOpenState[id];
+  renderSubstituicoes();
+}
+function renderSubstCard(id, titulo, bodyHtml) {
+  const open = !!substOpenState[id];
+  return `
+    <div class="meal ${open ? 'open' : ''}">
+      <div class="meal-head" onclick="toggleSubstOpen('${id}')">
+        <div class="meal-body"><div class="meal-name">${escapeHtml(titulo)}</div></div>
+        <div class="chevron"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></div>
+      </div>
+      <div class="meal-detail">${bodyHtml}</div>
+    </div>`;
+}
+function renderTabelaQtdBody(itens) {
+  let html = `<div class="tabela-card" style="margin-top:2px;">`;
   itens.forEach(it => {
     html += `<div class="tabela-row"><span class="tabela-row-nome">${escapeHtml(it.nome)}</span><span class="tabela-row-qtd">${escapeHtml(it.qtd)}</span></div>`;
   });
   html += `</div>`;
   return html;
 }
-function renderListaSimples(titulo, itens) {
-  let html = `<div class="section-title">${escapeHtml(titulo)}</div>`;
-  html += `<div class="tabela-card"><div class="tabela-lista-texto">${itens.map(escapeHtml).join(' · ')}</div></div>`;
-  return html;
+function renderListaSimplesBody(itens) {
+  return `<div class="tabela-card" style="margin-top:2px;"><div class="tabela-lista-texto">${itens.map(escapeHtml).join(' · ')}</div></div>`;
 }
-function renderSubstituicoes() {
-  const wrap = document.getElementById('substituicoes-content');
-  let html = `<div class="compras-note">Troque qualquer alimento do cardápio por outro da mesma categoria — é só procurar aqui quando a refeição disser "ou substitua por um item da tabela". Nenhuma opção tem derivados de leite.</div>`;
-  html += renderTabelaQtd('Tabela 1 — Proteínas', TABELA_PROTEINAS);
-  html += renderTabelaQtd('Tabela 2 — Carboidratos complexos', TABELA_CARBOIDRATOS);
-  html += renderTabelaQtd('Tabela 3 — Frutas', TABELA_FRUTAS);
-  html += renderTabelaQtd('Tabela 4 — Gorduras boas', TABELA_GORDURAS);
-  html += renderListaSimples('Folhas verdes · à vontade', FOLHAS_A_VONTADE);
-  html += renderListaSimples('Legumes low-carb · até 200 g por refeição', LEGUMES_LOW_CARB);
-  html += renderListaSimples('Temperos livres', TEMPEROS_LIVRES);
-  html += `<div class="section-title">Super alimentos detox</div>`;
-  html += `<div class="simple-list">` + SUPER_ALIMENTOS.map(s => `
+function renderSuperAlimentosBody() {
+  return `<div class="simple-list" style="margin-top:2px;">` + SUPER_ALIMENTOS.map(s => `
     <div class="simple-item" style="cursor:default;">
       <div class="simple-item-body">
         <div class="simple-item-name">${escapeHtml(s.nome)}</div>
         <div class="simple-item-meta">${escapeHtml(s.beneficio)}</div>
       </div>
     </div>`).join('') + `</div>`;
+}
+function renderSubstituicoes() {
+  const wrap = document.getElementById('substituicoes-content');
+  let html = `<div class="compras-note">Toque numa categoria pra abrir. Troque qualquer alimento do cardápio por outro da mesma categoria — nenhuma opção tem derivados de leite.</div>`;
+  html += `<div class="meal-list">`;
+  html += renderSubstCard('proteinas', 'Tabela 1 — Proteínas', renderTabelaQtdBody(TABELA_PROTEINAS));
+  html += renderSubstCard('carboidratos', 'Tabela 2 — Carboidratos complexos', renderTabelaQtdBody(TABELA_CARBOIDRATOS));
+  html += renderSubstCard('frutas', 'Tabela 3 — Frutas', renderTabelaQtdBody(TABELA_FRUTAS));
+  html += renderSubstCard('gorduras', 'Tabela 4 — Gorduras boas', renderTabelaQtdBody(TABELA_GORDURAS));
+  html += renderSubstCard('folhas', 'Folhas verdes · à vontade', renderListaSimplesBody(FOLHAS_A_VONTADE));
+  html += renderSubstCard('legumes', 'Legumes low-carb · até 200 g por refeição', renderListaSimplesBody(LEGUMES_LOW_CARB));
+  html += renderSubstCard('temperos', 'Temperos livres', renderListaSimplesBody(TEMPEROS_LIVRES));
+  html += renderSubstCard('superalimentos', 'Super alimentos detox', renderSuperAlimentosBody());
+  html += `</div>`;
   wrap.innerHTML = html;
 }
 

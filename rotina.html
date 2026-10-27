@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F0E13">
+<title>Rotina · Meu Mundo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🌍</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0F0E13;
+    --surface: #18161F;
+    --surface-2: #221F2C;
+    --border: #2A2735;
+    --text: #F5F3F7;
+    --text-dim: #8B8595;
+    --text-faint: #5A5566;
+    --accent: #38BDF8;
+    --accent-soft: rgba(56, 189, 248, 0.12);
+    --accent-mid: rgba(56, 189, 248, 0.25);
+    --accent-deep: #0284C7;
+    --success: #6EE7B7;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    overscroll-behavior-y: contain;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: 90px;
+  }
+
+  .header {
+    padding: 24px 20px 16px;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .header h1 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  .header h1 .focus { color: var(--accent); font-style: italic; }
+
+  .day-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-faint);
+    vertical-align: middle;
+  }
+
+  .progress-row {
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-deep), var(--accent));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+  }
+  .progress-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-dim);
+    min-width: 38px;
+    text-align: right;
+  }
+
+  main.content { padding: 16px 20px 24px; }
+
+  .section-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 22px 0 10px;
+  }
+  .section-title:first-child { margin-top: 0; }
+  .section-title .hint { font-weight: 400; text-transform: none; letter-spacing: 0; color: var(--text-faint); }
+
+  .rotina-note {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    line-height: 1.5;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+
+  /* LINHAS DE HORÁRIO */
+  .rotina-list { display: flex; flex-direction: column; gap: 6px; }
+  .rotina-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px 9px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color .15s, opacity .15s;
+  }
+  .rotina-row.tem-atividade { border-color: var(--accent-mid); }
+  .rotina-row.done { opacity: 0.55; }
+  .rotina-time {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-faint);
+    width: 42px;
+    flex-shrink: 0;
+  }
+  .rotina-input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    padding: 4px 0;
+  }
+  .rotina-input::placeholder { color: var(--text-faint); font-weight: 400; }
+  .rotina-row.done .rotina-input { text-decoration: line-through; color: var(--text-dim); }
+
+  .rotina-clear-btn {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    border: none;
+    background: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px;
+  }
+  .rotina-clear-btn:hover { color: var(--text-dim); background: var(--surface-2); }
+  .rotina-clear-btn svg { width: 12px; height: 12px; }
+
+  .check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .check:active { border-color: var(--accent); }
+  .check.done { background: var(--success); border-color: var(--success); }
+  .check svg { width: 11px; height: 11px; color: var(--bg); opacity: 0; transition: opacity 0.15s; }
+  .check.done svg { opacity: 1; }
+  .rotina-check-spacer { width: 22px; flex-shrink: 0; }
+
+  /* NAV */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px;
+    gap: 4px;
+    z-index: 20;
+  }
+  .nav-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 10px 4px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .nav-btn.active { color: var(--accent); background: var(--accent-soft); }
+  .nav-btn svg { width: 18px; height: 18px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* HISTÓRICO / CALENDÁRIO */
+  .cal-wrap { padding: 16px 20px; border-bottom: 1px solid var(--border); }
+  .cal-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-nav-btn {
+    width: 32px; height: 32px;
+    border: none;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .cal-nav-btn svg { width: 16px; height: 16px; }
+  .cal-nav-label { font-size: 14px; font-weight: 600; text-transform: capitalize; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 14px; }
+  .cal-dow { font-size: 10px; text-align: center; color: var(--text-faint); padding-bottom: 4px; }
+  .cal-day {
+    aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    border-radius: 8px;
+    position: relative;
+  }
+  .cal-day.empty { visibility: hidden; }
+  .cal-day.future { color: var(--text-faint); }
+  .cal-day.partial { background: rgba(56,189,248,0.08); color: var(--text-dim); }
+  .cal-day.full { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .cal-day.today { box-shadow: inset 0 0 0 1.5px var(--text-dim); }
+  .cal-summary { display: flex; gap: 10px; }
+  .cal-stat { flex: 1; background: var(--surface-2); border-radius: 10px; padding: 10px 12px; }
+  .cal-stat-value { font-size: 18px; font-weight: 700; color: var(--text); }
+  .cal-stat-label { font-size: 10px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .04em; margin-top: 2px; }
+
+  .history-content { padding: 8px 20px 24px; }
+  .history-entry {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+  }
+  .history-entry-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+  .history-entry-date { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); font-weight: 600; }
+  .history-entry-pct { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--accent); }
+  .history-entry-list { font-size: 12px; color: var(--text-faint); margin-top: 4px; }
+
+  @media (min-width: 640px) {
+    body { max-width: 680px; }
+    .header h1 { font-size: 32px; }
+  }
+  @media (min-width: 1024px) {
+    body { max-width: 760px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="view active" id="view-rotina">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Rotina</div>
+    <h1><span id="day-name">—</span> <span class="day-date" id="day-date">—</span><br><span class="focus">5:00 às 22:00</span></h1>
+    <div class="progress-row">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      <div class="progress-text" id="progress-text">0/0</div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div class="rotina-note">Escreva a atividade de cada horário (ex.: exercício, leitura, passear com as cachorras). Toque na bolinha pra marcar que cumpriu hoje. Horários em branco não contam no progresso.</div>
+    <div class="rotina-list" id="rotina-list"></div>
+  </main>
+</div>
+
+<div class="view" id="view-historico">
+  <header class="header">
+    <a href="/" class="back-link">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Início
+    </a>
+    <div class="eyebrow">Rotina</div>
+    <h1><span class="focus" style="font-style:normal">Histórico</span></h1>
+  </header>
+  <div class="cal-wrap">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" id="cal-prev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 6l-6 6 6 6"/></svg>
+      </button>
+      <div class="cal-nav-label" id="cal-label"></div>
+      <button class="cal-nav-btn" id="cal-next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+    <div class="cal-summary">
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-total">—</div>
+        <div class="cal-stat-label">Dias 100%</div>
+      </div>
+      <div class="cal-stat">
+        <div class="cal-stat-value" id="cal-media">—</div>
+        <div class="cal-stat-label">Média semanal</div>
+      </div>
+    </div>
+  </div>
+  <div class="history-content" id="history-content"></div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" data-view="rotina">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8V12L14.5 14.5M20 12C20 16.4183 16.4183 20 12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12Z"/></svg>
+    Hoje
+  </button>
+  <button class="nav-btn" data-view="historico">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 15l3-3 3 3 5-6"/></svg>
+    Histórico
+  </button>
+</nav>
+
+<script>
+// ============================================
+// SUPABASE
+// ============================================
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk2NDM3MzksImV4cCI6MjAzNTIyMzczOX0.2lJ3LdKI8-fVL6lRjxChMxMaLPFMN5HtLqzb3jnbP9M';
+
+async function sbFetch(path) {
+  const res = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` }
+  });
+  if (!res.ok) throw new Error(`supabase ${res.status}`);
+  return res.json();
+}
+async function sbUpsert(table, body, onConflict) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?on_conflict=${onConflict}`, {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': `Bearer ${SB_KEY}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'resolution=merge-duplicates,return=minimal',
+      },
+      body: JSON.stringify(body),
+    });
+  } catch(e) { /* silencioso — localStorage é o fallback */ }
+}
+async function sbDelete(table, query) {
+  try {
+    await fetch(`${SB_URL}/rest/v1/${table}?${query}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SB_KEY, 'Authorization': `Bearer ${SB_KEY}` },
+    });
+  } catch(e) { /* silencioso */ }
+}
+
+// ============================================
+// HORÁRIOS — grade fixa de 5:00 às 22:00, de 30 em 30 minutos
+// ============================================
+function gerarHorarios() {
+  const lista = [];
+  for (let h = 5; h <= 22; h++) {
+    lista.push(`${String(h).padStart(2,'0')}:00`);
+    if (h < 22) lista.push(`${String(h).padStart(2,'0')}:30`);
+  }
+  return lista;
+}
+const HORARIOS = gerarHorarios();
+
+// ============================================
+// DATA/HORA — sempre em fuso de Brasília
+// ============================================
+function hojeISO() {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year:'numeric', month:'2-digit', day:'2-digit' }).format(new Date());
+}
+function diaSemanaAtual() {
+  const w = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Sao_Paulo', weekday: 'long' }).format(new Date());
+  const map = { Sunday:'Domingo', Monday:'Segunda', Tuesday:'Terça', Wednesday:'Quarta', Thursday:'Quinta', Friday:'Sexta', Saturday:'Sábado' };
+  return map[w];
+}
+function formatarDataCurta(dataISO) {
+  const [y,m,d] = dataISO.split('-');
+  return `${d}/${m}`;
+}
+
+// ============================================
+// STORAGE
+// ============================================
+const KEY = 'meu-rotina-v1';
+const initial = { horarios: {}, concluidos: {} };
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (!raw) return { ...initial };
+    return { ...initial, ...JSON.parse(raw) };
+  } catch { return { ...initial }; }
+}
+function saveState() {
+  try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+let state = loadState();
+const dataSelecionada = hojeISO();
+
+// ============================================
+// SUPABASE — carregar tudo
+// ============================================
+async function loadTudoSupabase() {
+  try {
+    const [horarios, concluidos] = await Promise.all([
+      sbFetch('rotina_horarios?select=horario,atividade'),
+      sbFetch('rotina_concluidos?select=data,horario'),
+    ]);
+    horarios.forEach(r => { state.horarios[r.horario] = r.atividade; });
+    concluidos.forEach(r => {
+      if (!state.concluidos[r.data]) state.concluidos[r.data] = {};
+      state.concluidos[r.data][r.horario] = true;
+    });
+    saveState();
+  } catch(e) { /* offline — segue só com o que tem local */ }
+}
+
+// ============================================
+// AÇÕES
+// ============================================
+function onAtividadeInput(el) {
+  state.horarios[el.dataset.horario] = el.value;
+}
+function onAtividadeBlur(el) {
+  const horario = el.dataset.horario;
+  const texto = el.value.trim();
+  state.horarios[horario] = texto;
+  saveState();
+  if (texto) {
+    sbUpsert('rotina_horarios', { horario, atividade: texto }, 'horario');
+  } else {
+    sbDelete('rotina_horarios', `horario=eq.${encodeURIComponent(horario)}`);
+  }
+  render();
+}
+function limparHorario(horario, ev) {
+  ev.stopPropagation();
+  state.horarios[horario] = '';
+  saveState();
+  sbDelete('rotina_horarios', `horario=eq.${encodeURIComponent(horario)}`);
+  render();
+}
+function toggleConcluido(horario) {
+  if (!state.horarios[horario]) return;
+  if (!state.concluidos[dataSelecionada]) state.concluidos[dataSelecionada] = {};
+  if (state.concluidos[dataSelecionada][horario]) {
+    delete state.concluidos[dataSelecionada][horario];
+    sbDelete('rotina_concluidos', `data=eq.${dataSelecionada}&horario=eq.${encodeURIComponent(horario)}`);
+  } else {
+    state.concluidos[dataSelecionada][horario] = true;
+    sbUpsert('rotina_concluidos', { data: dataSelecionada, horario }, 'data,horario');
+  }
+  saveState();
+  render();
+}
+
+// ============================================
+// RENDER
+// ============================================
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+function renderHeader() {
+  document.getElementById('day-name').textContent = diaSemanaAtual();
+  document.getElementById('day-date').textContent = formatarDataCurta(dataSelecionada);
+}
+
+function renderLista() {
+  const wrap = document.getElementById('rotina-list');
+  const concluidasHoje = state.concluidos[dataSelecionada] || {};
+  const checkSvg = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+
+  wrap.innerHTML = HORARIOS.map(h => {
+    const atividade = state.horarios[h] || '';
+    const temAtividade = !!atividade;
+    const done = temAtividade && !!concluidasHoje[h];
+    return `
+      <div class="rotina-row ${temAtividade ? 'tem-atividade' : ''} ${done ? 'done' : ''}">
+        <span class="rotina-time">${h}</span>
+        <input class="rotina-input" type="text" value="${escapeHtml(atividade)}" placeholder="Adicionar atividade…"
+          data-horario="${h}" oninput="onAtividadeInput(this)" onblur="onAtividadeBlur(this)">
+        ${temAtividade ? `<button class="rotina-clear-btn" onclick="limparHorario('${h}', event)" aria-label="Limpar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg></button>` : ''}
+        ${temAtividade
+          ? `<div class="check ${done ? 'done' : ''}" onclick="toggleConcluido('${h}')">${checkSvg}</div>`
+          : `<div class="rotina-check-spacer"></div>`}
+      </div>`;
+  }).join('');
+}
+
+function renderProgress() {
+  const concluidasHoje = state.concluidos[dataSelecionada] || {};
+  const horariosComAtividade = HORARIOS.filter(h => state.horarios[h]);
+  const total = horariosComAtividade.length;
+  const feitas = horariosComAtividade.filter(h => concluidasHoje[h]).length;
+  const pct = total ? Math.round((feitas / total) * 100) : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${feitas}/${total}`;
+}
+
+function render() {
+  renderHeader();
+  renderLista();
+  renderProgress();
+}
+
+// ============================================
+// NAV entre views
+// ============================================
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('view-' + btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'historico') renderHistorico();
+  });
+});
+
+// ============================================
+// HISTÓRICO
+// ============================================
+const MESES_PT = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const hoje = new Date();
+let calAno = hoje.getFullYear();
+let calMes = hoje.getMonth();
+
+function diaStatus(dataISO) {
+  const concluidas = state.concluidos[dataISO];
+  const horariosComAtividade = HORARIOS.filter(h => state.horarios[h]);
+  if (!concluidas || horariosComAtividade.length === 0) return 'none';
+  const feitas = horariosComAtividade.filter(h => concluidas[h]).length;
+  if (feitas === 0) return 'none';
+  if (feitas === horariosComAtividade.length) return 'full';
+  return 'partial';
+}
+
+function renderHistorico() {
+  document.getElementById('cal-label').textContent = `${MESES_PT[calMes]} de ${calAno}`;
+  const grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+
+  ['D','S','T','Q','Q','S','S'].forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const primeiroDia = new Date(calAno, calMes, 1).getDay();
+  const totalDias = new Date(calAno, calMes + 1, 0).getDate();
+  const hojeISOStr = hojeISO();
+
+  for (let i = 0; i < primeiroDia; i++) {
+    const el = document.createElement('div');
+    el.className = 'cal-day empty';
+    grid.appendChild(el);
+  }
+
+  let diasCompletos = 0;
+  for (let dia = 1; dia <= totalDias; dia++) {
+    const dataISO = `${calAno}-${String(calMes+1).padStart(2,'0')}-${String(dia).padStart(2,'0')}`;
+    const el = document.createElement('div');
+    const status = diaStatus(dataISO);
+    const isFuture = dataISO > hojeISOStr;
+    el.className = 'cal-day' + (isFuture ? ' future' : '') + (status === 'full' ? ' full' : '') + (status === 'partial' ? ' partial' : '') + (dataISO === hojeISOStr ? ' today' : '');
+    el.textContent = dia;
+    grid.appendChild(el);
+    if (status === 'full') diasCompletos++;
+  }
+
+  document.getElementById('cal-total').textContent = diasCompletos;
+  const semanasNoMes = Math.ceil(totalDias / 7);
+  document.getElementById('cal-media').textContent = semanasNoMes ? (diasCompletos / semanasNoMes).toFixed(1) : '0';
+
+  renderHistoryList();
+}
+
+function renderHistoryList() {
+  const wrap = document.getElementById('history-content');
+  const dias = Object.keys(state.concluidos)
+    .filter(d => d.startsWith(`${calAno}-${String(calMes+1).padStart(2,'0')}`))
+    .sort()
+    .reverse();
+
+  if (dias.length === 0) {
+    wrap.innerHTML = `<div class="empty-state" style="padding:40px 0;text-align:center;color:var(--text-faint);font-size:13px;">Nenhum dia registrado neste mês ainda.</div>`;
+    return;
+  }
+
+  const horariosComAtividade = HORARIOS.filter(h => state.horarios[h]);
+  wrap.innerHTML = dias.map(dataISO => {
+    const concluidas = state.concluidos[dataISO];
+    const feitas = horariosComAtividade.filter(h => concluidas[h]).length;
+    const nomesFeitos = horariosComAtividade.filter(h => concluidas[h]).map(h => `${h} ${state.horarios[h]}`).join(', ');
+    return `
+      <div class="history-entry">
+        <div class="history-entry-head">
+          <span class="history-entry-date">${formatarDataCurta(dataISO)}</span>
+          <span class="history-entry-pct">${feitas}/${horariosComAtividade.length}</span>
+        </div>
+        <div class="history-entry-list">${escapeHtml(nomesFeitos || 'Nenhum horário marcado')}</div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('cal-prev').addEventListener('click', () => {
+  calMes--;
+  if (calMes < 0) { calMes = 11; calAno--; }
+  renderHistorico();
+});
+document.getElementById('cal-next').addEventListener('click', () => {
+  calMes++;
+  if (calMes > 11) { calMes = 0; calAno++; }
+  renderHistorico();
+});
+
+// ============================================
+// INIT
+// ============================================
+async function init() {
+  render();
+  await loadTudoSupabase();
+  render();
+}
+
+init();
+</script>
+
+</body>
+</html>
