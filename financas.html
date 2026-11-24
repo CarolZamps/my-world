@@ -591,6 +591,87 @@ body {
 /* ── separador anual ── */
 .anual-sep { height: 1px; background: var(--border); margin: 12px 0; }
 
+
+/* ── view cartões ── */
+#view-cartoes { display: none; max-width: 760px; margin: 0 auto; }
+.cc-hint { font-size: 12.5px; color: var(--text-dim); text-align: center; margin: -2px 0 16px; }
+.cc-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
+.cc-card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  padding: 14px; position: relative; overflow: hidden;
+}
+.cc-card::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--k); }
+.cc-card-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.cc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--k); }
+.cc-card-venc { font-size: 10.5px; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+.cc-card-total { font-size: 19px; font-weight: 600; font-family: 'JetBrains Mono', monospace; letter-spacing: -.02em; margin-top: 10px; }
+.cc-card-split { font-size: 11px; color: var(--text-dim); margin-top: 4px; line-height: 1.45; }
+.cc-card-split b { color: var(--text); font-weight: 500; font-family: 'JetBrains Mono', monospace; }
+.cc-total-geral {
+  grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: baseline;
+  background: var(--c-soft); border: 1px solid var(--c-mid); border-radius: 14px; padding: 11px 14px;
+}
+.cc-total-geral span:first-child { font-size: 12px; color: var(--text-dim); }
+.cc-total-geral span:last-child { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--c); font-size: 16px; }
+
+.cc-filter { display: flex; gap: 6px; margin-bottom: 14px; }
+.cc-chip {
+  flex: 1; padding: 7px 0; text-align: center; font-size: 12.5px; font-weight: 500;
+  border-radius: 20px; border: 1px solid var(--border); background: var(--surface); color: var(--text-dim); cursor: pointer;
+}
+.cc-chip.active { border-color: var(--c); color: var(--c); background: var(--c-soft); }
+
+.cc-section { margin-bottom: 22px; }
+.cc-sec-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.cc-sec-title { font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+.cc-sec-sub { font-size: 12px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; }
+
+.cc-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 11px 12px; margin-bottom: 7px; display: flex; gap: 10px; align-items: flex-start;
+}
+.cc-item.ultima { border-color: rgba(110,231,183,.35); }
+.cc-bar-k { width: 3px; align-self: stretch; border-radius: 2px; background: var(--k); flex-shrink: 0; }
+.cc-item-main { flex: 1; min-width: 0; }
+.cc-item-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.cc-item-desc { font-size: 13.5px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cc-item-val { font-size: 13.5px; font-family: 'JetBrains Mono', monospace; font-weight: 500; white-space: nowrap; }
+.cc-item-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; color: var(--text-dim); margin-top: 3px; }
+.cc-item-meta .tag { color: var(--text-faint); }
+.cc-prog { height: 4px; background: var(--surface-2); border-radius: 4px; margin-top: 7px; overflow: hidden; }
+.cc-prog > div { height: 100%; background: var(--k); border-radius: 4px; }
+.cc-badge { font-size: 9.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--c); background: var(--c-soft); padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+.cc-obs {
+  width: 100%; margin-top: 6px; background: transparent; border: 1px dashed transparent;
+  border-radius: 8px; padding: 4px 6px; margin-left: -6px; font: inherit; font-size: 12px;
+  color: var(--c); outline: none;
+}
+.cc-obs::placeholder { color: var(--text-faint); }
+.cc-obs:hover { border-color: var(--border); }
+.cc-obs:focus { border-color: var(--c-mid); background: var(--surface-2); color: var(--text); }
+.cc-del {
+  width: 24px; height: 24px; border: none; background: none; color: var(--text-faint);
+  border-radius: 6px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+}
+.cc-del:hover { color: var(--danger); background: rgba(248,113,113,.1); }
+.cc-empty { font-size: 12.5px; color: var(--text-faint); text-align: center; padding: 14px; border: 1px dashed var(--border); border-radius: 14px; }
+
+.cc-proj { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px; }
+.cc-proj-row { display: grid; grid-template-columns: 52px 1fr 84px; gap: 10px; align-items: center; margin-bottom: 8px; }
+.cc-proj-row:last-child { margin-bottom: 0; }
+.cc-proj-mes { font-size: 11.5px; color: var(--text-dim); font-family: 'JetBrains Mono', monospace; text-transform: capitalize; }
+.cc-proj-bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--surface-2); gap: 2px; }
+.cc-proj-bar > div { height: 100%; }
+.cc-proj-val { font-size: 12px; font-family: 'JetBrains Mono', monospace; text-align: right; }
+.cc-legend { display: flex; gap: 14px; font-size: 11px; color: var(--text-dim); margin-top: 10px; flex-wrap: wrap; }
+.cc-legend span { display: inline-flex; align-items: center; gap: 5px; }
+.cc-legend i { width: 9px; height: 9px; border-radius: 3px; display: inline-block; }
+
+.modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.seg { display: flex; gap: 6px; margin-bottom: 4px; }
+.seg-opt { flex: 1; padding: 9px 0; text-align: center; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); font-size: 13px; color: var(--text-dim); cursor: pointer; }
+.seg-opt.active { border-color: var(--c); color: var(--c); background: var(--c-soft); }
+
   @media (min-width: 768px) {
     body {
       max-width: none;
@@ -700,6 +781,7 @@ body {
 <div class="nav-tabs">
   <div class="nav-tab active" onclick="switchView('mensal')">Mês</div>
   <div class="nav-tab" onclick="switchView('anual')">Ano</div>
+  <div class="nav-tab" onclick="switchView('cartoes')">Cartões</div>
 </div>
 
 <!-- VIEW MENSAL -->
@@ -775,6 +857,58 @@ body {
   </div>
 </div>
 
+
+<!-- VIEW CARTÕES -->
+<div id="view-cartoes">
+  <div class="month-nav">
+    <button class="month-arrow" onclick="navFatura(-1)" aria-label="Fatura anterior">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <span class="month-label" id="fatura-label">—</span>
+    <button class="month-arrow" onclick="navFatura(1)" aria-label="Próxima fatura">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </div>
+  <div class="cc-hint" id="fatura-hint">—</div>
+
+  <div class="cc-overview" id="cc-overview"></div>
+
+  <div class="cc-filter" id="cc-filter">
+    <div class="cc-chip active" data-f="todos" onclick="setCartaoFiltro('todos')">Todos</div>
+    <div class="cc-chip" data-f="bradesco" onclick="setCartaoFiltro('bradesco')">Bradesco</div>
+    <div class="cc-chip" data-f="c6" onclick="setCartaoFiltro('c6')">C6</div>
+  </div>
+
+  <div class="cc-section">
+    <div class="cc-sec-head">
+      <span class="cc-sec-title">Parcelados</span>
+      <span class="cc-sec-sub" id="cc-parc-sub">—</span>
+    </div>
+    <div id="cc-parcelados"></div>
+  </div>
+
+  <div class="cc-section">
+    <div class="cc-sec-head">
+      <span class="cc-sec-title">Assinaturas</span>
+      <span class="cc-sec-sub" id="cc-rec-sub">—</span>
+    </div>
+    <div id="cc-recorrentes"></div>
+  </div>
+
+  <button class="add-btn" onclick="openItemModal()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    Adicionar compra ou assinatura
+  </button>
+
+  <div class="cc-section" style="margin-top:24px">
+    <div class="cc-sec-head">
+      <span class="cc-sec-title">Próximas faturas</span>
+      <span class="cc-sec-sub">já comprometido</span>
+    </div>
+    <div class="cc-proj" id="cc-proj"></div>
+  </div>
+</div>
+
 <!-- SUMMARY BAR -->
 <div class="summary-bar" id="summary-bar">
   <div class="sum-item">
@@ -802,6 +936,44 @@ body {
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
       <button class="btn btn-primary" onclick="confirmarAdd()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL ITEM CARTÃO -->
+<div class="modal-overlay" id="item-overlay" onclick="closeItemModal(event)">
+  <div class="modal">
+    <div class="modal-title">Novo item no cartão</div>
+    <div class="modal-label">Cartão</div>
+    <div class="seg" id="seg-cartao">
+      <div class="seg-opt active" data-v="bradesco" onclick="segPick('cartao','bradesco')">Bradesco · dia 6</div>
+      <div class="seg-opt" data-v="c6" onclick="segPick('cartao','c6')">C6 · dia 15</div>
+    </div>
+    <div class="modal-label">Tipo</div>
+    <div class="seg" id="seg-tipo">
+      <div class="seg-opt active" data-v="parcelado" onclick="segPick('tipo','parcelado')">Parcelado</div>
+      <div class="seg-opt" data-v="recorrente" onclick="segPick('tipo','recorrente')">Assinatura</div>
+    </div>
+    <div class="modal-label">Descrição</div>
+    <input class="modal-input" id="item-desc" type="text" placeholder="Ex: Netflix, Shopee..." maxlength="50">
+    <div class="modal-label">Valor por mês (R$)</div>
+    <input class="modal-input" id="item-valor" type="text" inputmode="decimal" placeholder="0,00">
+    <div class="modal-label">Observação (opcional)</div>
+    <input class="modal-input" id="item-obs" type="text" placeholder="Ex: presente da mãe, curso de inglês..." maxlength="80">
+    <div class="modal-row" id="item-parc-row">
+      <div>
+        <div class="modal-label">Parcela nesta fatura</div>
+        <input class="modal-input" id="item-pa" type="number" min="1" value="1">
+      </div>
+      <div>
+        <div class="modal-label">Total de parcelas</div>
+        <input class="modal-input" id="item-tp" type="number" min="1" value="10">
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeItemModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="confirmarItem()">Adicionar</button>
     </div>
   </div>
 </div>
@@ -1180,11 +1352,14 @@ function renderAnual(ano, meses) {
 
 // ── view switch ──
 function switchView(v) {
-  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&v==='mensal')||(i===1&&v==='anual')));
-  document.getElementById('view-mensal').style.display = v === 'mensal' ? '' : 'none';
-  document.getElementById('view-anual').style.display  = v === 'anual'  ? '' : 'none';
-  document.getElementById('summary-bar').style.display = '';
+  const views = ['mensal','anual','cartoes'];
+  document.querySelectorAll('.nav-tab').forEach((t,i) => t.classList.toggle('active', views[i] === v));
+  document.getElementById('view-mensal').style.display  = v === 'mensal'  ? '' : 'none';
+  document.getElementById('view-anual').style.display   = v === 'anual'   ? '' : 'none';
+  document.getElementById('view-cartoes').style.display = v === 'cartoes' ? 'block' : 'none';
+  document.getElementById('summary-bar').style.display  = v === 'cartoes' ? 'none' : '';
   if (v === 'anual') loadAnual();
+  if (v === 'cartoes') loadCartoes();
 }
 
 // ── add categoria modal ──
@@ -1277,6 +1452,354 @@ async function excluirCategoria() {
     toast('Erro ao remover categoria');
   }
   ctxCatId = null;
+}
+
+// ── cartões: parcelados e assinaturas ──
+const CARTOES = {
+  bradesco: { nome: 'Bradesco', venc: 6,  cor: '#FB7185' },
+  c6:       { nome: 'C6',       venc: 15, cor: '#93C5FD' },
+};
+const MESES_CURTO = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+const CC_CACHE_KEY = 'meu-cartoes-v3';
+
+// Base extraída das faturas mais recentes:
+//  · Bradesco — fatura de dez/2026 (venc. 06/12, extrato em aberto de 24/11)
+//  · C6       — fatura de nov/2026 (venc. 15/11)
+// parcela_ref = número da parcela na fatura de mes_ref; nas próximas faturas avança sozinho.
+const CC_SEED = [
+  // Bradesco · ref. 2026-12
+  ['bradesco','parcelado','Curso Mairo Vergara (Hotmart)',189.01,8,12,'Educação','2026-12'],
+  ['bradesco','parcelado','Maria Maia (Hotmart)',59.94,7,12,'Educação','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',36.83,6,6,'Compras','2026-12'],
+  ['bradesco','parcelado','Yoga Co. Wellness (Hotmart)',206.54,4,12,'Educação','2026-12'],
+  ['bradesco','parcelado','TikTok Shop',60.68,3,5,'Compras','2026-12'],
+  ['bradesco','parcelado','HNA',31.67,2,8,'Compras','2026-12'],
+  ['bradesco','parcelado','Lojas Riachuelo',102.39,2,5,'Roupas','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',200.01,2,2,'Compras','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',67.38,2,7,'Compras','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',60.33,2,6,'Compras','2026-12'],
+  ['bradesco','parcelado','Clube Livelo',42.65,2,12,'Assinatura','2026-12'],
+  ['bradesco','parcelado','Monetstore',291.63,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','Monetstore',33.00,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','Greycom',156.17,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','FS CD Cajamar',311.04,1,8,'Compras','2026-12'],
+  ['bradesco','parcelado','Weasy (Mercado Livre)',65.12,1,10,'Compras','2026-12'],
+  // C6 · ref. 2026-11
+  ['c6','parcelado','Aprender Atividades (Asaas)',356.00,10,10,'Educação','2026-11'],
+  ['c6','parcelado','Rafaela Ferreira (Hotmart)',32.18,4,12,'Educação','2026-11'],
+  ['c6','parcelado','AKAD Seguros',37.31,4,12,'Seguro','2026-11'],
+  ['c6','parcelado','SHPS Tecnologia (Shopee)',246.92,4,4,'Compras','2026-11'],
+  ['c6','parcelado','Cama Inbox (Shopee)',190.90,4,8,'Casa','2026-11'],
+  ['c6','parcelado','Obvious',74.70,4,12,'Compras','2026-11'],
+  ['c6','parcelado','Tay Training (Hotmart)',87.39,2,12,'Educação','2026-11'],
+  ['c6','parcelado','Drogaria São Paulo',125.81,2,3,'Saúde','2026-11'],
+  ['c6','parcelado','Santa Cannabis',170.00,2,5,'Saúde','2026-11'],
+  ['c6','parcelado','Saint Germain',30.80,2,6,'Compras','2026-11'],
+  ['c6','parcelado','Mobifácil',13.09,2,6,'Transporte','2026-11'],
+  ['c6','parcelado','DogDent',161.00,1,2,'Pets','2026-11'],
+  ['c6','parcelado','V Z Yan Cosméticos',92.75,1,4,'Beleza','2026-11'],
+  ['c6','parcelado','Dog Academy (Hotmart)',20.00,1,12,'Pets','2026-11'],
+  // assinaturas / recorrentes
+  ['bradesco','recorrente','Spotify',23.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Meli+',19.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Google One',4.50,null,null,'Software'],
+  ['c6','recorrente','Petlove Saúde (plano 1)',114.12,null,null,'Pets'],
+  ['c6','recorrente','Petlove Saúde (plano 2)',85.41,null,null,'Pets'],
+  ['c6','recorrente','Claude (US$ 20 + IOF)',119.86,null,null,'Software'],
+  ['c6','recorrente','Wispr (US$ 6 + IOF)',32.64,null,null,'Software'],
+  ['c6','recorrente','iFood Club',8.97,null,null,'Delivery'],
+].map(([cartao,tipo,descricao,valor,parcela_ref,total_parcelas,categoria,mes_ref]) => ({
+  cartao, tipo, descricao, valor, parcela_ref, total_parcelas,
+  mes_ref: mes_ref || null, categoria, observacao: null, ativo: true,
+}));
+
+let ccItens = [];
+let ccOnline = false;
+let ccLoaded = false;
+let ccFiltro = 'todos';
+let ccMes = faturaPadrao();
+const itemForm = { cartao: 'bradesco', tipo: 'parcelado' };
+
+function addMes(m, n) {
+  const [y, mo] = m.split('-').map(Number);
+  const d = new Date(y, mo - 1 + n, 1);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+}
+function diffMes(a, b) {
+  const [ya, ma] = a.split('-').map(Number), [yb, mb] = b.split('-').map(Number);
+  return (yb - ya) * 12 + (mb - ma);
+}
+function mesCurto(m) {
+  const [y, mo] = m.split('-').map(Number);
+  return `${MESES_CURTO[mo-1]}/${String(y).slice(2)}`;
+}
+// próxima fatura a pagar: depois do dia 15, as duas já venceram no mês corrente
+function faturaPadrao() {
+  const d = new Date();
+  const m = mesHoje();
+  return d.getDate() > 15 ? addMes(m, 1) : m;
+}
+
+function ccLocalSave() {
+  try { localStorage.setItem(CC_CACHE_KEY, JSON.stringify(ccItens)); } catch(e) {}
+}
+function ccLocalLoad() {
+  try {
+    const raw = localStorage.getItem(CC_CACHE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return CC_SEED.map((it, i) => ({ ...it, id: 'local-' + i }));
+}
+
+async function loadCartoes() {
+  if (!ccLoaded) {
+    try {
+      let rows = await sb('cartao_itens?ativo=eq.true&order=created_at.asc');
+      if (!rows || rows.length === 0) {
+        // primeira vez com o banco: leva o que já estava salvo neste aparelho (com as observações)
+        const base = ccLocalLoad().map(({ id, created_at, ...resto }) => ({ observacao: null, ...resto }));
+        await sb('cartao_itens', { method: 'POST', body: JSON.stringify(base) });
+        rows = await sb('cartao_itens?ativo=eq.true&order=created_at.asc');
+      }
+      ccItens = (rows || []).map(r => ({ ...r, valor: Number(r.valor) }));
+      ccOnline = true;
+      ccLocalSave();
+    } catch(e) {
+      ccItens = ccLocalLoad();
+      ccOnline = false;
+    }
+    ccLoaded = true;
+  }
+  renderCartoes();
+}
+
+// situação de um item numa fatura (null = não cobra nesse mês)
+function itemNaFatura(it, mes) {
+  if (it.tipo === 'recorrente') {
+    if (it.mes_ref && diffMes(it.mes_ref, mes) < 0) return null;
+    return { valor: it.valor };
+  }
+  const n = it.parcela_ref + diffMes(it.mes_ref, mes);
+  if (n < 1 || n > it.total_parcelas) return null;
+  const faltam = it.total_parcelas - n;
+  return { valor: it.valor, n, faltam, restante: faltam * it.valor, fim: addMes(mes, faltam) };
+}
+
+function totaisFatura(mes, cartao) {
+  let parc = 0, rec = 0;
+  ccItens.forEach(it => {
+    if (cartao && it.cartao !== cartao) return;
+    const s = itemNaFatura(it, mes);
+    if (!s) return;
+    if (it.tipo === 'parcelado') parc += s.valor; else rec += s.valor;
+  });
+  return { parc, rec, total: parc + rec };
+}
+
+function fmtBRL2(v) {
+  return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function escHTML(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+function renderCartoes() {
+  const [y, mo] = ccMes.split('-').map(Number);
+  document.getElementById('fatura-label').textContent = `Fatura de ${MESES_PT[mo-1]} ${y}`;
+  const dd = String(mo).padStart(2,'0');
+  document.getElementById('fatura-hint').textContent =
+    `Bradesco vence 06/${dd} · C6 vence 15/${dd}` + (ccOnline ? '' : ' · salvo neste aparelho');
+
+  // visão geral por cartão
+  let geral = 0;
+  const cards = Object.entries(CARTOES).map(([k, c]) => {
+    const t = totaisFatura(ccMes, k);
+    geral += t.total;
+    return `<div class="cc-card" style="--k:${c.cor}">
+      <div class="cc-card-name"><span class="cc-dot"></span>${c.nome}</div>
+      <div class="cc-card-venc">vence dia ${c.venc}</div>
+      <div class="cc-card-total">${fmtBRL2(t.total)}</div>
+      <div class="cc-card-split">parcelas <b>${fmtBRL2(t.parc)}</b><br>assinaturas <b>${fmtBRL2(t.rec)}</b></div>
+    </div>`;
+  }).join('');
+  document.getElementById('cc-overview').innerHTML = cards +
+    `<div class="cc-total-geral"><span>Já comprometido nesta fatura</span><span>${fmtBRL2(geral)}</span></div>`;
+
+  document.querySelectorAll('#cc-filter .cc-chip').forEach(ch => ch.classList.toggle('active', ch.dataset.f === ccFiltro));
+
+  const visiveis = ccItens
+    .filter(it => ccFiltro === 'todos' || it.cartao === ccFiltro)
+    .map(it => ({ it, s: itemNaFatura(it, ccMes) }))
+    .filter(x => x.s);
+
+  // parcelados — ordenados pelos que terminam primeiro
+  const parc = visiveis.filter(x => x.it.tipo === 'parcelado')
+    .sort((a, b) => a.s.faltam - b.s.faltam || b.s.valor - a.s.valor);
+  const totParc = parc.reduce((a, x) => a + x.s.valor, 0);
+  const totRest = parc.reduce((a, x) => a + x.s.restante, 0);
+  document.getElementById('cc-parc-sub').textContent = `${fmtBRL2(totParc)}/mês`;
+  document.getElementById('cc-parcelados').innerHTML = parc.length ? parc.map(({ it, s }) => {
+    const c = CARTOES[it.cartao];
+    const pct = Math.round(s.n / it.total_parcelas * 100);
+    const fimTxt = s.faltam === 0
+      ? '<span class="cc-badge">última</span>'
+      : `faltam ${s.faltam} · ${fmtBRL2(s.restante)} · até ${mesCurto(s.fim)}`;
+    return `<div class="cc-item ${s.faltam === 0 ? 'ultima' : ''}" style="--k:${c.cor}">
+      <div class="cc-bar-k"></div>
+      <div class="cc-item-main">
+        <div class="cc-item-top">
+          <span class="cc-item-desc">${escHTML(it.descricao)}</span>
+          <span class="cc-item-val">${fmtBRL2(s.valor)}</span>
+        </div>
+        <div class="cc-item-meta">
+          <span>${s.n}/${it.total_parcelas} <span class="tag">· ${c.nome}</span></span>
+          <span>${fimTxt}</span>
+        </div>
+        <div class="cc-prog"><div style="width:${pct}%"></div></div>
+        ${obsInput(it)}
+      </div>
+      <button class="cc-del" onclick="removerItem('${it.id}')" aria-label="Remover">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`;
+  }).join('') + `<div class="cc-item-meta" style="padding:2px 4px 0"><span>Saldo devedor depois desta fatura</span><span style="font-family:'JetBrains Mono',monospace;color:var(--text)">${fmtBRL2(totRest)}</span></div>`
+    : '<div class="cc-empty">Nenhuma parcela nesta fatura</div>';
+
+  // recorrentes
+  const rec = visiveis.filter(x => x.it.tipo === 'recorrente').sort((a, b) => b.s.valor - a.s.valor);
+  const totRec = rec.reduce((a, x) => a + x.s.valor, 0);
+  document.getElementById('cc-rec-sub').textContent = `${fmtBRL2(totRec)}/mês · ${fmtBRL2(totRec * 12)}/ano`;
+  document.getElementById('cc-recorrentes').innerHTML = rec.length ? rec.map(({ it, s }) => {
+    const c = CARTOES[it.cartao];
+    return `<div class="cc-item" style="--k:${c.cor}">
+      <div class="cc-bar-k"></div>
+      <div class="cc-item-main">
+        <div class="cc-item-top">
+          <span class="cc-item-desc">${escHTML(it.descricao)}</span>
+          <span class="cc-item-val">${fmtBRL2(s.valor)}</span>
+        </div>
+        <div class="cc-item-meta">
+          <span>${escHTML(it.categoria || 'Assinatura')} <span class="tag">· ${c.nome}</span></span>
+          <span>todo mês</span>
+        </div>
+        ${obsInput(it)}
+      </div>
+      <button class="cc-del" onclick="removerItem('${it.id}')" aria-label="Remover">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>`;
+  }).join('') : '<div class="cc-empty">Nenhuma assinatura</div>';
+
+  // projeção das próximas 6 faturas
+  const meses = Array.from({ length: 6 }, (_, i) => addMes(ccMes, i));
+  const proj = meses.map(m => {
+    const per = Object.keys(CARTOES)
+      .filter(k => ccFiltro === 'todos' || k === ccFiltro)
+      .map(k => ({ k, v: totaisFatura(m, k).total }));
+    return { m, per, tot: per.reduce((a, p) => a + p.v, 0) };
+  });
+  const max = Math.max(...proj.map(p => p.tot), 1);
+  document.getElementById('cc-proj').innerHTML = proj.map(p => `
+    <div class="cc-proj-row">
+      <span class="cc-proj-mes">${mesCurto(p.m)}</span>
+      <div class="cc-proj-bar">${p.per.filter(x => x.v > 0).map(x =>
+        `<div style="width:${x.v / max * 100}%;background:${CARTOES[x.k].cor}" title="${CARTOES[x.k].nome}: ${fmtBRL2(x.v)}"></div>`).join('')}</div>
+      <span class="cc-proj-val">${fmtBRL2(p.tot)}</span>
+    </div>`).join('') +
+    `<div class="cc-legend">${Object.entries(CARTOES).filter(([k]) => ccFiltro === 'todos' || k === ccFiltro)
+      .map(([, c]) => `<span><i style="background:${c.cor}"></i>${c.nome}</span>`).join('')}
+      <span style="color:var(--text-faint)">parcelas + assinaturas, sem compras novas</span></div>`;
+}
+
+function navFatura(dir) { ccMes = addMes(ccMes, dir); renderCartoes(); }
+function setCartaoFiltro(f) { ccFiltro = f; renderCartoes(); }
+
+function segPick(campo, v) {
+  itemForm[campo] = v;
+  document.querySelectorAll(`#seg-${campo} .seg-opt`).forEach(o => o.classList.toggle('active', o.dataset.v === v));
+  if (campo === 'tipo') document.getElementById('item-parc-row').style.display = v === 'parcelado' ? '' : 'none';
+}
+function openItemModal() {
+  segPick('cartao', ccFiltro === 'c6' ? 'c6' : 'bradesco');
+  segPick('tipo', 'parcelado');
+  document.getElementById('item-desc').value = '';
+  document.getElementById('item-valor').value = '';
+  document.getElementById('item-obs').value = '';
+  document.getElementById('item-pa').value = 1;
+  document.getElementById('item-tp').value = 10;
+  document.getElementById('item-overlay').classList.add('open');
+  document.getElementById('item-desc').focus();
+}
+function closeItemModal(event) {
+  if (event && event.target !== document.getElementById('item-overlay')) return;
+  document.getElementById('item-overlay').classList.remove('open');
+}
+
+async function confirmarItem() {
+  const descricao = document.getElementById('item-desc').value.trim();
+  const valor = parseFloat(document.getElementById('item-valor').value.replace(/\./g, '').replace(',', '.'));
+  if (!descricao) { document.getElementById('item-desc').focus(); return; }
+  if (!(valor > 0)) { document.getElementById('item-valor').focus(); return; }
+  const item = { cartao: itemForm.cartao, tipo: itemForm.tipo, descricao, valor, mes_ref: ccMes,
+    parcela_ref: null, total_parcelas: null, categoria: null, observacao: document.getElementById('item-obs').value.trim() || null, ativo: true };
+  if (item.tipo === 'parcelado') {
+    const pa = parseInt(document.getElementById('item-pa').value, 10);
+    const tp = parseInt(document.getElementById('item-tp').value, 10);
+    if (!(tp >= 1) || !(pa >= 1) || pa > tp) { toast('Confira as parcelas'); return; }
+    item.parcela_ref = pa; item.total_parcelas = tp;
+  }
+  try {
+    if (ccOnline) {
+      const [novo] = await sb('cartao_itens?select=*', { method: 'POST', prefer: 'return=representation', body: JSON.stringify(item) });
+      ccItens.push({ ...novo, valor: Number(novo.valor) });
+    } else {
+      ccItens.push({ ...item, id: 'local-' + Date.now() });
+    }
+    ccLocalSave();
+    document.getElementById('item-overlay').classList.remove('open');
+    renderCartoes();
+    toast('Item adicionado');
+  } catch(e) {
+    toast('Erro ao adicionar');
+  }
+}
+
+function obsInput(it) {
+  return `<input class="cc-obs" type="text" maxlength="80" value="${escHTML(it.observacao || '')}"
+    placeholder="✎ o que é isso? toque para anotar"
+    onkeydown="if(event.key==='Enter')this.blur()" onchange="salvarObs('${it.id}', this)">`;
+}
+
+async function salvarObs(id, el) {
+  const it = ccItens.find(x => String(x.id) === String(id));
+  if (!it) return;
+  const obs = el.value.trim() || null;
+  const anterior = it.observacao || null;
+  it.observacao = obs;
+  ccLocalSave();
+  try {
+    if (ccOnline) await sb(`cartao_itens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ observacao: obs }) });
+    toast(obs ? 'Observação salva' : 'Observação removida');
+  } catch(e) {
+    it.observacao = anterior;
+    ccLocalSave();
+    el.value = anterior || '';
+    toast('Erro ao salvar observação');
+  }
+}
+
+async function removerItem(id) {
+  const it = ccItens.find(x => String(x.id) === String(id));
+  if (!it || !confirm(`Remover "${it.descricao}"?`)) return;
+  try {
+    if (ccOnline) await sb(`cartao_itens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ ativo: false }) });
+    ccItens = ccItens.filter(x => x !== it);
+    ccLocalSave();
+    renderCartoes();
+    toast('Removido');
+  } catch(e) {
+    toast('Erro ao remover');
+  }
 }
 
 // ── toast ──
