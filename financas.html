@@ -641,6 +641,14 @@ body {
 .cc-prog { height: 4px; background: var(--surface-2); border-radius: 4px; margin-top: 7px; overflow: hidden; }
 .cc-prog > div { height: 100%; background: var(--k); border-radius: 4px; }
 .cc-badge { font-size: 9.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--c); background: var(--c-soft); padding: 1px 6px; border-radius: 10px; margin-left: 4px; }
+.cc-obs {
+  width: 100%; margin-top: 6px; background: transparent; border: 1px dashed transparent;
+  border-radius: 8px; padding: 4px 6px; margin-left: -6px; font: inherit; font-size: 12px;
+  color: var(--c); outline: none;
+}
+.cc-obs::placeholder { color: var(--text-faint); }
+.cc-obs:hover { border-color: var(--border); }
+.cc-obs:focus { border-color: var(--c-mid); background: var(--surface-2); color: var(--text); }
 .cc-del {
   width: 24px; height: 24px; border: none; background: none; color: var(--text-faint);
   border-radius: 6px; cursor: pointer; flex-shrink: 0; display: flex; align-items: center; justify-content: center;
@@ -951,6 +959,8 @@ body {
     <input class="modal-input" id="item-desc" type="text" placeholder="Ex: Netflix, Shopee..." maxlength="50">
     <div class="modal-label">Valor por mês (R$)</div>
     <input class="modal-input" id="item-valor" type="text" inputmode="decimal" placeholder="0,00">
+    <div class="modal-label">Observação (opcional)</div>
+    <input class="modal-input" id="item-obs" type="text" placeholder="Ex: presente da mãe, curso de inglês..." maxlength="80">
     <div class="modal-row" id="item-parc-row">
       <div>
         <div class="modal-label">Parcela nesta fatura</div>
@@ -1504,7 +1514,7 @@ const CC_SEED = [
   ['c6','recorrente','iFood Club',8.97,null,null,'Delivery'],
 ].map(([cartao,tipo,descricao,valor,parcela_ref,total_parcelas,categoria,mes_ref]) => ({
   cartao, tipo, descricao, valor, parcela_ref, total_parcelas,
-  mes_ref: mes_ref || null, categoria, ativo: true,
+  mes_ref: mes_ref || null, categoria, observacao: null, ativo: true,
 }));
 
 let ccItens = [];
@@ -1648,6 +1658,7 @@ function renderCartoes() {
           <span>${fimTxt}</span>
         </div>
         <div class="cc-prog"><div style="width:${pct}%"></div></div>
+        ${obsInput(it)}
       </div>
       <button class="cc-del" onclick="removerItem('${it.id}')" aria-label="Remover">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -1673,6 +1684,7 @@ function renderCartoes() {
           <span>${escHTML(it.categoria || 'Assinatura')} <span class="tag">· ${c.nome}</span></span>
           <span>todo mês</span>
         </div>
+        ${obsInput(it)}
       </div>
       <button class="cc-del" onclick="removerItem('${it.id}')" aria-label="Remover">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
@@ -1714,6 +1726,7 @@ function openItemModal() {
   segPick('tipo', 'parcelado');
   document.getElementById('item-desc').value = '';
   document.getElementById('item-valor').value = '';
+  document.getElementById('item-obs').value = '';
   document.getElementById('item-pa').value = 1;
   document.getElementById('item-tp').value = 10;
   document.getElementById('item-overlay').classList.add('open');
@@ -1730,7 +1743,7 @@ async function confirmarItem() {
   if (!descricao) { document.getElementById('item-desc').focus(); return; }
   if (!(valor > 0)) { document.getElementById('item-valor').focus(); return; }
   const item = { cartao: itemForm.cartao, tipo: itemForm.tipo, descricao, valor, mes_ref: ccMes,
-    parcela_ref: null, total_parcelas: null, categoria: null, ativo: true };
+    parcela_ref: null, total_parcelas: null, categoria: null, observacao: document.getElementById('item-obs').value.trim() || null, ativo: true };
   if (item.tipo === 'parcelado') {
     const pa = parseInt(document.getElementById('item-pa').value, 10);
     const tp = parseInt(document.getElementById('item-tp').value, 10);
@@ -1750,6 +1763,30 @@ async function confirmarItem() {
     toast('Item adicionado');
   } catch(e) {
     toast('Erro ao adicionar');
+  }
+}
+
+function obsInput(it) {
+  return `<input class="cc-obs" type="text" maxlength="80" value="${escHTML(it.observacao || '')}"
+    placeholder="✎ o que é isso? toque para anotar"
+    onkeydown="if(event.key==='Enter')this.blur()" onchange="salvarObs('${it.id}', this)">`;
+}
+
+async function salvarObs(id, el) {
+  const it = ccItens.find(x => String(x.id) === String(id));
+  if (!it) return;
+  const obs = el.value.trim() || null;
+  const anterior = it.observacao || null;
+  it.observacao = obs;
+  ccLocalSave();
+  try {
+    if (ccOnline) await sb(`cartao_itens?id=eq.${id}`, { method: 'PATCH', body: JSON.stringify({ observacao: obs }) });
+    toast(obs ? 'Observação salva' : 'Observação removida');
+  } catch(e) {
+    it.observacao = anterior;
+    ccLocalSave();
+    el.value = anterior || '';
+    toast('Erro ao salvar observação');
   }
 }
 

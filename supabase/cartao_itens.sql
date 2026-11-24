@@ -11,8 +11,12 @@ create table if not exists public.cartao_itens (
   total_parcelas int,
   mes_ref text,             -- 'YYYY-MM' da fatura de referência
   categoria text,
+  observacao text,          -- anotação livre (o que é a compra)
   ativo boolean not null default true,
   created_at timestamptz default now()
 );
 alter table public.cartao_itens enable row level security;
 create policy "anon full access" on public.cartao_itens for all using (true) with check (true);
+
+-- Se a tabela já existir sem a coluna de observação:
+alter table public.cartao_itens add column if not exists observacao text;
