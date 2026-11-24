@@ -1450,42 +1450,62 @@ const CARTOES = {
   c6:       { nome: 'C6',       venc: 15, cor: '#93C5FD' },
 };
 const MESES_CURTO = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-const CC_CACHE_KEY = 'meu-cartoes-v1';
+const CC_CACHE_KEY = 'meu-cartoes-v2';
 
-// Base extraída das faturas de out/2026 (Bradesco venc. 05/10 e C6 venc. 15/10).
+// Base extraída das faturas mais recentes:
+//  · Bradesco — fatura de dez/2026 (venc. 06/12, extrato em aberto de 24/11)
+//  · C6       — fatura de nov/2026 (venc. 15/11)
 // parcela_ref = número da parcela na fatura de mes_ref; nas próximas faturas avança sozinho.
 const CC_SEED = [
-  ['bradesco','parcelado','Curso Mairo Vergara (Hotmart)',189.01,6,12,'Educação'],
-  ['bradesco','parcelado','Maria Maia (Hotmart)',59.94,5,12,'Educação'],
-  ['bradesco','parcelado','Mercado Livre',36.83,4,6,'Compras'],
-  ['bradesco','parcelado','Mercado Livre',34.95,2,2,'Compras'],
-  ['bradesco','parcelado','Yoga Co. (Hotmart)',206.54,2,12,'Educação'],
-  ['bradesco','parcelado','TikTok Shop',60.68,1,5,'Compras'],
-  ['bradesco','parcelado','Mercado Livre',40.83,1,6,'Compras'],
-  ['c6','parcelado','Cookelet (Mercado Livre)',85.81,10,10,'Casa'],
-  ['c6','parcelado','Aprender Atividades (Asaas)',356.00,9,10,'Educação'],
-  ['c6','parcelado','4 produtos (Mercado Livre)',37.45,6,6,'Roupas'],
-  ['c6','parcelado','Rafaela Ferreira (Hotmart)',32.18,3,12,'Educação'],
-  ['c6','parcelado','AKAD Seguros',37.31,3,12,'Seguro'],
-  ['c6','parcelado','SHPS Tecnologia (Shopee)',246.92,3,4,'Compras'],
-  ['c6','parcelado','Cama Inbox (Shopee)',190.90,3,8,'Casa'],
-  ['c6','parcelado','Restaurante e Pousada',279.53,3,3,'Viagem'],
-  ['c6','parcelado','Obvious',74.70,3,12,'Compras'],
-  ['c6','parcelado','Tay Training (Hotmart)',87.39,1,12,'Educação'],
-  ['c6','parcelado','Drogaria São Paulo',125.82,1,3,'Saúde'],
-  ['c6','parcelado','Santa Cannabis',170.00,1,5,'Saúde'],
-  ['c6','parcelado','Saint Germain',30.80,1,6,'Compras'],
-  ['c6','parcelado','Mobifácil',13.11,1,6,'Transporte'],
+  // Bradesco · ref. 2026-12
+  ['bradesco','parcelado','Curso Mairo Vergara (Hotmart)',189.01,8,12,'Educação','2026-12'],
+  ['bradesco','parcelado','Maria Maia (Hotmart)',59.94,7,12,'Educação','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',36.83,6,6,'Compras','2026-12'],
+  ['bradesco','parcelado','Yoga Co. Wellness (Hotmart)',206.54,4,12,'Educação','2026-12'],
+  ['bradesco','parcelado','TikTok Shop',60.68,3,5,'Compras','2026-12'],
+  ['bradesco','parcelado','HNA',31.67,2,8,'Compras','2026-12'],
+  ['bradesco','parcelado','Lojas Riachuelo',102.39,2,5,'Roupas','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',200.01,2,2,'Compras','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',67.38,2,7,'Compras','2026-12'],
+  ['bradesco','parcelado','Mercado Livre',60.33,2,6,'Compras','2026-12'],
+  ['bradesco','parcelado','Clube Livelo',42.65,2,12,'Assinatura','2026-12'],
+  ['bradesco','parcelado','Monetstore',291.63,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','Monetstore',33.00,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','Greycom',156.17,1,3,'Compras','2026-12'],
+  ['bradesco','parcelado','FS CD Cajamar',311.04,1,8,'Compras','2026-12'],
+  ['bradesco','parcelado','Weasy (Mercado Livre)',65.12,1,10,'Compras','2026-12'],
+  // C6 · ref. 2026-11
+  ['c6','parcelado','Aprender Atividades (Asaas)',356.00,10,10,'Educação','2026-11'],
+  ['c6','parcelado','Rafaela Ferreira (Hotmart)',32.18,4,12,'Educação','2026-11'],
+  ['c6','parcelado','AKAD Seguros',37.31,4,12,'Seguro','2026-11'],
+  ['c6','parcelado','SHPS Tecnologia (Shopee)',246.92,4,4,'Compras','2026-11'],
+  ['c6','parcelado','Cama Inbox (Shopee)',190.90,4,8,'Casa','2026-11'],
+  ['c6','parcelado','Obvious',74.70,4,12,'Compras','2026-11'],
+  ['c6','parcelado','Tay Training (Hotmart)',87.39,2,12,'Educação','2026-11'],
+  ['c6','parcelado','Drogaria São Paulo',125.81,2,3,'Saúde','2026-11'],
+  ['c6','parcelado','Santa Cannabis',170.00,2,5,'Saúde','2026-11'],
+  ['c6','parcelado','Saint Germain',30.80,2,6,'Compras','2026-11'],
+  ['c6','parcelado','Mobifácil',13.09,2,6,'Transporte','2026-11'],
+  ['c6','parcelado','DogDent',161.00,1,2,'Pets','2026-11'],
+  ['c6','parcelado','V Z Yan Cosméticos',92.75,1,4,'Beleza','2026-11'],
+  ['c6','parcelado','Dog Academy (Hotmart)',20.00,1,12,'Pets','2026-11'],
+  // assinaturas / recorrentes
   ['bradesco','recorrente','Wellhub',91.70,null,null,'Saúde'],
-  ['bradesco','recorrente','YouTube Premium',16.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Wellhub (2ª cobrança)',128.38,null,null,'Saúde'],
+  ['bradesco','recorrente','Amazon Digital',24.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Spotify',23.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Prime Video',19.90,null,null,'Streaming'],
   ['bradesco','recorrente','Meli+',19.90,null,null,'Streaming'],
+  ['bradesco','recorrente','YouTube Premium',16.90,null,null,'Streaming'],
+  ['bradesco','recorrente','Google One',4.50,null,null,'Software'],
   ['c6','recorrente','Petlove Saúde (plano 1)',114.12,null,null,'Pets'],
   ['c6','recorrente','Petlove Saúde (plano 2)',85.41,null,null,'Pets'],
-  ['c6','recorrente','Claude (US$ 21 + IOF)',119.88,null,null,'Software'],
+  ['c6','recorrente','Claude (US$ 20 + IOF)',119.86,null,null,'Software'],
   ['c6','recorrente','Wispr (US$ 6 + IOF)',32.64,null,null,'Software'],
-].map(([cartao,tipo,descricao,valor,parcela_ref,total_parcelas,categoria]) => ({
+  ['c6','recorrente','iFood Club',8.97,null,null,'Delivery'],
+].map(([cartao,tipo,descricao,valor,parcela_ref,total_parcelas,categoria,mes_ref]) => ({
   cartao, tipo, descricao, valor, parcela_ref, total_parcelas,
-  mes_ref: tipo === 'parcelado' ? '2026-10' : null, categoria, ativo: true,
+  mes_ref: mes_ref || null, categoria, ativo: true,
 }));
 
 let ccItens = [];
