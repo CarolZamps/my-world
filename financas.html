@@ -1500,7 +1500,6 @@ const CC_SEED = [
   ['c6','parcelado','V Z Yan Cosméticos',92.75,1,4,'Beleza','2026-11'],
   ['c6','parcelado','Dog Academy (Hotmart)',20.00,1,12,'Pets','2026-11'],
   // assinaturas / recorrentes
-  ['bradesco','recorrente','Wellhub',91.70,null,null,'Saúde'],
   ['bradesco','recorrente','Amazon Digital',24.90,null,null,'Streaming'],
   ['bradesco','recorrente','Spotify',23.90,null,null,'Streaming'],
   ['bradesco','recorrente','Prime Video',19.90,null,null,'Streaming'],
@@ -1560,7 +1559,9 @@ async function loadCartoes() {
     try {
       let rows = await sb('cartao_itens?ativo=eq.true&order=created_at.asc');
       if (!rows || rows.length === 0) {
-        await sb('cartao_itens', { method: 'POST', body: JSON.stringify(CC_SEED) });
+        // primeira vez com o banco: leva o que já estava salvo neste aparelho (com as observações)
+        const base = ccLocalLoad().map(({ id, created_at, ...resto }) => ({ observacao: null, ...resto }));
+        await sb('cartao_itens', { method: 'POST', body: JSON.stringify(base) });
         rows = await sb('cartao_itens?ativo=eq.true&order=created_at.asc');
       }
       ccItens = (rows || []).map(r => ({ ...r, valor: Number(r.valor) }));
