@@ -80,6 +80,31 @@
       });
   }
 
+  // fase em vigor numa data, a partir do histórico de mudanças
+  // historico: [{ para_fase_id, criado_em }] (qualquer ordem)
+  function faseNaData(historico, iso, faseAtualId) {
+    const ate = (historico || [])
+      .filter(h => h.para_fase_id && dataSP(h.criado_em) <= iso)
+      .sort((a, b) => new Date(a.criado_em) - new Date(b.criado_em));
+    if (ate.length) return ate[ate.length - 1].para_fase_id;
+    return (historico || []).length ? null : faseAtualId; // antes do início do plano: nenhuma fase
+  }
+
+  // { data: { feitos, total } } para cada dia do intervalo
+  // marcas: [{ item_id, data }]
+  function historicoChecklist({ itens, fases, historicoFases, pausas, marcas, inicio, fim, faseAtualId }) {
+    const porDia = {};
+    (marcas || []).forEach(m => { (porDia[m.data] = porDia[m.data] || []).push(m.item_id); });
+    const out = {};
+    intervaloDias(inicio, fim).forEach(d => {
+      const faseId = faseNaData(historicoFases, d, faseAtualId);
+      const doDia = faseId ? itensDoDia({ itens, fases, faseAtualId: faseId, data: d, pausas }) : [];
+      const p = progressoDia(doDia, porDia[d]);
+      out[d] = { feitos: p.feitos, total: p.total };
+    });
+    return out;
+  }
+
   function progressoDia(itensDia, idsFeitos) {
     const feitos = new Set(idsFeitos || []);
     const total = itensDia.length;
@@ -273,7 +298,7 @@
   const api = {
     TZ, RECUPERACAO, RECUPERACAO_SEG, DISTANCIA_PONTOS,
     dataSP, addDias, diffDias, diaSemana, inicioSemana, intervaloDias,
-    emPausaNaData, itensDoDia, progressoDia, calcularStreak, sugerirVolume,
+    emPausaNaData, itensDoDia, progressoDia, faseNaData, historicoChecklist, calcularStreak, sugerirVolume,
     duracaoMin, avaliarAlertaPasseio, sugerirPausa, distanciaMediaBem,
     contarPorDia, mediaMovel, mediaPorDia, distribuicao, adesaoChecklist, ehReacao,
     passeiosPorSemana, reacoesPorPasseio,

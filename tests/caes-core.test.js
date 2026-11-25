@@ -186,3 +186,35 @@ test('painel de passeios: por semana e reações por passeio', () => {
   const r = C.reacoesPorPasseio(ps.slice(0, 2), enc, '2026-11-23', '2026-11-25');
   assert.deepEqual(r.map(x => x.media), [0, null, 2]);
 });
+
+test('fase em vigor em cada data, pelo histórico', () => {
+  const hist = [
+    { para_fase_id: 'f1', criado_em: '2026-11-20T12:00:00Z' },
+    { para_fase_id: 'f0', criado_em: '2026-11-10T12:00:00Z' },
+    { para_fase_id: 'f2', criado_em: '2026-11-26T02:00:00Z' }, // 25/11 23h em SP
+  ];
+  assert.equal(C.faseNaData(hist, '2026-11-09', 'f2'), null);
+  assert.equal(C.faseNaData(hist, '2026-11-15', 'f2'), 'f0');
+  assert.equal(C.faseNaData(hist, '2026-11-24', 'f2'), 'f1');
+  assert.equal(C.faseNaData(hist, '2026-11-25', 'f2'), 'f2');
+  assert.equal(C.faseNaData([], '2026-11-25', 'f2'), 'f2');
+});
+
+test('histórico do checklist usa a fase de cada dia e alimenta a sequência', () => {
+  const hist = [
+    { para_fase_id: 'f0', criado_em: '2026-11-22T12:00:00Z' },
+    { para_fase_id: 'f1', criado_em: '2026-11-24T12:00:00Z' },
+  ];
+  const marcas = [
+    { item_id: 'diario', data: '2026-11-22' },
+    { item_id: 'diario', data: '2026-11-23' },
+    { item_id: 'diario', data: '2026-11-24' }, { item_id: 'ruido', data: '2026-11-24' },
+    { item_id: 'so-f1', data: '2026-11-24' }, // terça: passeio não vale
+  ];
+  const h = C.historicoChecklist({ itens, fases, historicoFases: hist, marcas, inicio: '2026-11-21', fim: '2026-11-25', faseAtualId: 'f1' });
+  assert.deepEqual(h['2026-11-21'], { feitos: 0, total: 0 }); // antes do plano
+  assert.deepEqual(h['2026-11-22'], { feitos: 1, total: 1 });
+  assert.deepEqual(h['2026-11-24'], { feitos: 3, total: 3 });
+  assert.deepEqual(h['2026-11-25'], { feitos: 0, total: 4 }); // quarta: inclui passeio
+  assert.deepEqual(C.calcularStreak(h, '2026-11-25'), { atual: 3, melhor: 3 });
+});

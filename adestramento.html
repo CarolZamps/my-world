@@ -258,6 +258,71 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
 
 .em-breve { font-size: 13px; color: var(--text-faint); text-align: center; padding: 30px 10px; }
 
+/* ── hoje / checklist ── */
+.day-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.day-arrow {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: none;
+  color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.day-arrow:disabled { opacity: .3; cursor: default; }
+.day-label { font-size: 14px; font-weight: 600; text-align: center; }
+.day-label small { display: block; font-size: 11px; color: var(--text-faint); font-weight: 400; font-family: 'JetBrains Mono', monospace; }
+
+.today-top { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px; }
+.ring { position: relative; width: 92px; height: 92px; }
+.ring svg { transform: rotate(-90deg); }
+.ring .trk { stroke: var(--surface-2); }
+.ring .bar { stroke: var(--c); transition: stroke-dashoffset .6s cubic-bezier(.2,.9,.3,1); }
+.ring .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring .num b { font-size: 22px; font-family: 'JetBrains Mono', monospace; font-weight: 500; letter-spacing: -.03em; }
+.ring .num span { font-size: 10px; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+.streak { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+.streak-n { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+.streak-n .flame { display: inline-block; transform-origin: bottom center; }
+.streak-n .flame.on { animation: flicker 1.8s ease-in-out infinite; }
+@keyframes flicker { 0%,100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.08) rotate(-3deg); } }
+.streak-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+.check-list { display: flex; flex-direction: column; gap: 8px; }
+.check {
+  display: flex; gap: 12px; align-items: center; width: 100%; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 13px 14px; cursor: pointer; font-size: 14.5px;
+  transition: border-color .2s, background .2s, transform .1s;
+}
+.check:active { transform: scale(.985); }
+.check .box {
+  width: 24px; height: 24px; border-radius: 8px; border: 1.8px solid var(--text-faint); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #1a1208;
+  transition: background .2s, border-color .2s;
+}
+.check .box svg { transform: scale(0); transition: transform .25s cubic-bezier(.3,1.6,.5,1); }
+.check.done { background: linear-gradient(90deg, var(--c-soft), transparent 80%), var(--surface); border-color: var(--c-mid); }
+.check.done .box { background: var(--c); border-color: var(--c); }
+.check.done .box svg { transform: scale(1); }
+.check.done .check-txt { color: var(--text-dim); }
+.check.pop .box { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.check-txt { flex: 1; min-width: 0; }
+.check-sub { display: block; font-size: 11.5px; color: var(--text-faint); margin-top: 1px; }
+.check-sub.subst { color: #FBBF24; }
+.all-done { text-align: center; font-size: 13.5px; color: var(--c); margin-top: 12px; animation: fadeIn .3s ease; }
+
+.item-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); margin-bottom: 6px; font-size: 13.5px;
+}
+.item-row .t { flex: 1; min-width: 0; }
+.item-row .t small { display: block; font-size: 11px; color: var(--text-faint); }
+.grupo { font-size: 11px; color: var(--text-faint); margin: 14px 0 6px; font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13.5px; }
+.switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch span { position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; transition: background .2s; cursor: pointer; }
+.switch span::after { content: ''; position: absolute; width: 20px; height: 20px; left: 2px; top: 2px; background: var(--text-dim); border-radius: 50%; transition: transform .2s, background .2s; }
+.switch input:checked + span { background: var(--c-soft); border-color: var(--c); }
+.switch input:checked + span::after { transform: translateX(18px); background: var(--c); }
+
 /* ── sheet (janela de baixo) ── */
 .sheet-overlay {
   position: fixed; inset: 0; background: rgba(5,4,8,.6); z-index: 200;
@@ -286,6 +351,7 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
   opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 90vw; text-align: center;
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.sheet.open ~ .toast { bottom: auto; top: 20px; }
 
 .loading { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-dim); font-size: 13px; padding: 40px 0; }
 .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--c); border-radius: 50%; animation: spin .8s linear infinite; }
@@ -339,8 +405,8 @@ const LISTAS_PADRAO = {
 };
 
 const state = {
-  caes: [], fases: [], historico: [], pausas: [],
-  caoId: null, aba: 'plano', online: true,
+  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [],
+  caoId: null, aba: 'hoje', online: true, dia: null,
 };
 
 // ── supabase ──
@@ -362,8 +428,8 @@ const sbDelete = (tabela, filtro) => sb(`${tabela}?${filtro}`, { method: 'DELETE
 
 function salvarCache() {
   try {
-    const { caes, fases, historico, pausas } = state;
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas }));
+    const { caes, fases, historico, pausas, itens, marcas } = state;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas }));
   } catch (e) {}
 }
 function lerCache() {
@@ -372,13 +438,16 @@ function lerCache() {
 
 async function carregar() {
   try {
-    const [caes, fases, historico, pausas] = await Promise.all([
+    const desde = C.addDias(C.dataSP(new Date()), -120);
+    const [caes, fases, historico, pausas, itens, marcas] = await Promise.all([
       sb('caes?ativo=eq.true&order=ordem.asc,created_at.asc'),
       sb('caes_fases?order=ordem.asc'),
       sb('caes_fase_historico?order=criado_em.desc'),
       sb('caes_passeio_pausas?order=inicio.desc'),
+      sb('caes_checklist_itens?ativo=eq.true&order=ordem.asc'),
+      sb(`caes_checklist_marcas?data=gte.${desde}`),
     ]);
-    Object.assign(state, { caes, fases, historico, pausas, online: true });
+    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, online: true });
     salvarCache();
   } catch (e) {
     const cache = lerCache();
@@ -425,6 +494,7 @@ const ICON_PLUS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" s
 
 // ── navegação ──
 function irPara(caoId, aba) {
+  if (caoId !== state.caoId) state.dia = null;
   state.caoId = caoId;
   if (aba) state.aba = aba;
   const url = caoId ? `#cao=${caoId}&aba=${state.aba}` : '#';
@@ -437,7 +507,7 @@ function lerHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   const id = p.get('cao');
   state.caoId = id && state.caes.some(c => c.id === id) ? id : null;
-  state.aba = p.get('aba') || 'plano';
+  state.aba = p.get('aba') || 'hoje';
 }
 
 function render() {
@@ -462,12 +532,14 @@ function renderLista() {
     const fase = faseDo(cao);
     const pausa = pausaVigente(cao.id);
     const dias = cao.inicio_plano ? C.diffDias(cao.inicio_plano, hoje()) + 1 : null;
-    return `<button class="dog-card" onclick="irPara('${cao.id}', 'plano')">
+    const pr = progressoHoje(cao);
+    return `<button class="dog-card" onclick="irPara('${cao.id}', 'hoje')">
       ${avatarHTML(cao)}
       <div class="dog-info">
         <div class="dog-name">${esc(cao.nome)}</div>
         <div class="dog-fase">${fase ? `Fase ${fase.ordem} · ${esc(fase.nome)}` : 'Sem fase definida'}</div>
         <div class="dog-tags">
+          ${pr.total ? `<span class="tag ${pr.feitos === pr.total ? 'c' : ''}">Hoje ${pr.feitos}/${pr.total}</span>` : ''}
           ${dias && dias > 0 ? `<span class="tag c">${dias}º dia de plano</span>` : ''}
           ${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : ''}
         </div>
@@ -492,6 +564,7 @@ function renderLista() {
 
 // ── tela do cão ──
 const ABAS = [
+  { id: 'hoje', nome: 'Hoje' },
   { id: 'plano', nome: 'Plano' },
   { id: 'perfil', nome: 'Perfil' },
 ];
@@ -501,7 +574,7 @@ function renderCao() {
   const fase = faseDo(cao);
   const pausa = pausaVigente(cao.id);
   const app = document.getElementById('app');
-  const aba = ABAS.some(a => a.id === state.aba) ? state.aba : 'plano';
+  const aba = ABAS.some(a => a.id === state.aba) ? state.aba : 'hoje';
   app.innerHTML = `<div class="view">
     <div class="dog-head">
       ${avatarHTML(cao, true)}
@@ -514,8 +587,260 @@ function renderCao() {
     <div class="nav-tabs">
       ${ABAS.map(a => `<button class="nav-tab ${a.id === aba ? 'active' : ''}" onclick="irPara('${cao.id}', '${a.id}')">${a.nome}</button>`).join('')}
     </div>
-    <div id="aba-conteudo">${aba === 'perfil' ? htmlPerfil(cao) : htmlPlano(cao)}</div>
+    <div id="aba-conteudo">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : htmlHoje(cao)}</div>
   </div>`;
+}
+
+// ── aba Hoje (checklist diário) ──
+const DIAS_CURTO = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DIAS_LONGO = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+const itensCao = id => state.itens.filter(i => i.cao_id === id && i.ativo !== false);
+const marcasCao = id => state.marcas.filter(m => m.cao_id === id);
+const histCao = id => state.historico.filter(h => h.cao_id === id);
+const pausasCao = id => state.pausas.filter(p => p.cao_id === id);
+
+function faseDoDia(cao, data) {
+  if (data >= hoje()) return cao.fase_atual_id;
+  return C.faseNaData(histCao(cao.id), data, cao.fase_atual_id);
+}
+
+function itensDoDiaCao(cao, data) {
+  const faseId = faseDoDia(cao, data);
+  if (!faseId && fasesDo(cao.id).length) return [];
+  return C.itensDoDia({ itens: itensCao(cao.id), fases: fasesDo(cao.id), faseAtualId: faseId, data, pausas: pausasCao(cao.id) });
+}
+
+function feitosNoDia(cao, data) {
+  return marcasCao(cao.id).filter(m => m.data === data).map(m => m.item_id);
+}
+
+function progressoHoje(cao) {
+  return C.progressoDia(itensDoDiaCao(cao, hoje()), feitosNoDia(cao, hoje()));
+}
+
+function streakCao(cao) {
+  const fim = hoje();
+  const datas = marcasCao(cao.id).map(m => m.data);
+  const inicioPlano = cao.inicio_plano && cao.inicio_plano <= fim ? cao.inicio_plano : fim;
+  const inicio = [inicioPlano, ...datas].sort()[0] < C.addDias(fim, -120) ? C.addDias(fim, -120) : [inicioPlano, ...datas].sort()[0];
+  const historico = C.historicoChecklist({
+    itens: itensCao(cao.id), fases: fasesDo(cao.id), historicoFases: histCao(cao.id),
+    pausas: pausasCao(cao.id), marcas: marcasCao(cao.id), inicio, fim, faseAtualId: cao.fase_atual_id,
+  });
+  return C.calcularStreak(historico, fim);
+}
+
+function ringHTML(feitos, total, rotulo = 'hoje') {
+  const r = 40, circ = 2 * Math.PI * r;
+  const pct = total ? feitos / total : 0;
+  return `<div class="ring">
+    <svg width="92" height="92" viewBox="0 0 92 92">
+      <circle class="trk" cx="46" cy="46" r="${r}" fill="none" stroke-width="8"/>
+      <circle class="bar" id="ring-bar" cx="46" cy="46" r="${r}" fill="none" stroke-width="8" stroke-linecap="round"
+        stroke-dasharray="${circ}" stroke-dashoffset="${circ * (1 - pct)}"/>
+    </svg>
+    <div class="num"><b>${feitos}/${total}</b><span>${rotulo}</span></div>
+  </div>`;
+}
+
+function htmlHoje(cao) {
+  const dia = state.dia || hoje();
+  const ehHoje = dia === hoje();
+  const lista = itensDoDiaCao(cao, dia);
+  const feitos = new Set(feitosNoDia(cao, dia));
+  const prog = C.progressoDia(lista, [...feitos]);
+  const st = streakCao(cao);
+  const [, m, d] = dia.split('-');
+  const rotuloDia = ehHoje ? 'Hoje' : dia === C.addDias(hoje(), -1) ? 'Ontem' : DIAS_LONGO[C.diaSemana(dia)];
+
+  let streakTxt, streakSub;
+  if (st.atual > 0) {
+    streakTxt = `<span class="flame on">🔥</span> ${st.atual} ${st.atual === 1 ? 'dia' : 'dias'}`;
+    streakSub = st.melhor > st.atual ? `Sua melhor sequência: ${st.melhor} dias` : 'Dias seguidos com o checklist em dia';
+  } else {
+    streakTxt = `<span class="flame">🌱</span> Novo começo`;
+    streakSub = st.melhor ? `Já foram ${st.melhor} dias seguidos uma vez. Cada dia conta!` : 'Complete o checklist para começar uma sequência.';
+  }
+
+  const itensHTML = lista.length ? lista.map(it => `
+    <button class="check ${feitos.has(it.id) ? 'done' : ''}" id="ck-${it.id}" onclick="toggleCheck('${it.id}')">
+      <span class="box">${ICON_CHECK}</span>
+      <span class="check-txt">${esc(it.titulo)}
+        ${it.substituto ? '<span class="check-sub subst">no lugar do passeio · passeios em pausa</span>' : ''}
+      </span>
+    </button>`).join('')
+    : `<div class="empty"><div class="big">☁️</div>Nenhum item para ${ehHoje ? 'hoje' : 'este dia'}.<br>Dia leve! Se quiser, adicione itens ao checklist.</div>`;
+
+  return `
+    <div class="day-nav">
+      <button class="day-arrow" onclick="mudarDia(-1)" aria-label="Dia anterior">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="day-label">${rotuloDia}<small>${d}/${m} · ${DIAS_CURTO[C.diaSemana(dia)].toLowerCase()}</small></div>
+      <button class="day-arrow" onclick="mudarDia(1)" ${ehHoje ? 'disabled' : ''} aria-label="Próximo dia">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="today-top">
+      ${ringHTML(prog.feitos, prog.total, ehHoje ? 'hoje' : 'feitos')}
+      <div class="streak">
+        <div class="streak-n">${streakTxt}</div>
+        <div class="streak-sub">${streakSub}</div>
+      </div>
+    </div>
+    <div class="check-list">${itensHTML}</div>
+    ${prog.total && prog.feitos === prog.total ? `<div class="all-done">Tudo feito ${ehHoje ? 'hoje' : 'neste dia'}! ${esc(cao.nome)} agradece 🐾</div>` : ''}
+    <div style="margin-top:16px"><button class="add-btn" onclick="abrirItens()">Editar itens do checklist</button></div>`;
+}
+
+function mudarDia(dir) {
+  const atual = state.dia || hoje();
+  const novo = C.addDias(atual, dir);
+  if (novo > hoje()) return;
+  state.dia = novo === hoje() ? null : novo;
+  renderCao();
+}
+
+async function toggleCheck(itemId) {
+  const cao = caoAtual();
+  const dia = state.dia || hoje();
+  const existente = state.marcas.find(m => m.item_id === itemId && m.data === dia);
+  // atualiza a tela na hora; desfaz se não salvar
+  if (existente) state.marcas = state.marcas.filter(m => m !== existente);
+  else state.marcas.push({ item_id: itemId, cao_id: cao.id, data: dia });
+  renderCao();
+  if (!existente) document.getElementById(`ck-${itemId}`)?.classList.add('pop');
+  try {
+    if (existente) await sbDelete('caes_checklist_marcas', `item_id=eq.${itemId}&data=eq.${dia}`);
+    else await sb('caes_checklist_marcas', { method: 'POST', prefer: 'resolution=ignore-duplicates', body: JSON.stringify({ item_id: itemId, cao_id: cao.id, data: dia }) });
+    salvarCache();
+  } catch (e) {
+    if (existente) state.marcas.push(existente);
+    else state.marcas = state.marcas.filter(m => !(m.item_id === itemId && m.data === dia));
+    renderCao();
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+// ── edição dos itens do checklist ──
+function descreverItem(it) {
+  const partes = [];
+  partes.push(it.dias_semana && it.dias_semana.length ? it.dias_semana.slice().sort().map(d => DIAS_CURTO[d]).join(', ') : 'Todo dia');
+  if (it.fase_id && it.continua) partes.push('continua nas próximas fases');
+  if (it.tipo === 'passeio') partes.push('passeio');
+  return partes.join(' · ');
+}
+
+function abrirItens() {
+  const cao = caoAtual();
+  const itens = itensCao(cao.id);
+  const grupos = [{ id: null, nome: 'Todas as fases' }, ...fasesDo(cao.id).map(f => ({ id: f.id, nome: `Fase ${f.ordem} · ${f.nome}` }))];
+  const html = grupos.map(g => {
+    const doGrupo = itens.filter(i => (i.fase_id || null) === g.id).sort((a, b) => a.ordem - b.ordem);
+    if (!doGrupo.length) return '';
+    return `<div class="grupo">${esc(g.nome)}</div>` + doGrupo.map(i => `
+      <div class="item-row">
+        <span class="t">${esc(i.titulo)}<small>${esc(descreverItem(i))}</small></span>
+        <button class="mini" onclick="abrirItem('${i.id}')">Editar</button>
+      </div>`).join('');
+  }).join('');
+  openSheet(`
+    <div class="sheet-title">Itens do checklist</div>
+    <div class="sheet-sub">O checklist de cada dia é montado com os itens da fase atual e os que valem para todas.</div>
+    ${html || '<div class="em-breve">Nenhum item ainda.</div>'}
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Fechar</button>
+      <button class="btn btn-primary" onclick="abrirItem()">+ Novo item</button>
+    </div>`);
+}
+
+function abrirItem(itemId) {
+  const cao = caoAtual();
+  const it = itemId ? state.itens.find(i => i.id === itemId) : null;
+  const faseSel = it ? (it.fase_id || '') : (cao.fase_atual_id || '');
+  const dias = it?.dias_semana || [];
+  openSheet(`
+    <div class="sheet-title">${it ? 'Editar item' : 'Novo item'}</div>
+    <div class="field" style="margin-top:12px"><label class="label" for="it-tit">O que fazer</label><input class="input" id="it-tit" maxlength="80" value="${esc(it?.titulo)}" placeholder="Ex: Enriquecimento: Kong"></div>
+    <div class="field">
+      <label class="label" for="it-fase">Vale para</label>
+      <select class="input" id="it-fase">
+        <option value="" ${faseSel === '' ? 'selected' : ''}>Todas as fases</option>
+        ${fasesDo(cao.id).map(f => `<option value="${f.id}" ${faseSel === f.id ? 'selected' : ''}>Fase ${f.ordem} · ${esc(f.nome)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field switch-row">
+      <span>Continua valendo nas fases seguintes</span>
+      <label class="switch"><input type="checkbox" id="it-cont" ${it ? (it.continua ? 'checked' : '') : 'checked'}><span></span></label>
+    </div>
+    <div class="field">
+      <label class="label">Dias da semana</label>
+      <div class="chips" id="it-dias">
+        ${[1,2,3,4,5,6,0].map(d => `<button class="chip ${dias.includes(d) ? 'on' : ''}" data-d="${d}" onclick="this.classList.toggle('on')">${DIAS_CURTO[d]}</button>`).join('')}
+      </div>
+      <div class="hint">Nenhum marcado = todo dia.</div>
+    </div>
+    <div class="field switch-row">
+      <span>É um passeio<span class="hint" style="display:block;margin:0">Na pausa de passeios, vira a atividade substituta.</span></span>
+      <label class="switch"><input type="checkbox" id="it-pas" ${it?.tipo === 'passeio' ? 'checked' : ''} onchange="document.getElementById('it-sub-f').style.display=this.checked?'':'none'"><span></span></label>
+    </div>
+    <div class="field" id="it-sub-f" style="${it?.tipo === 'passeio' ? '' : 'display:none'}">
+      <label class="label" for="it-sub">Atividade substituta</label>
+      <input class="input" id="it-sub" maxlength="80" value="${esc(it?.titulo_pausa || 'Atividade substituta: farejar no quintal ou enriquecimento')}">
+    </div>
+    <div class="sheet-actions">
+      ${it ? `<button class="btn btn-danger" onclick="excluirItem('${it.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="abrirItens()">Voltar</button>`}
+      <button class="btn btn-primary" onclick="salvarItem(${it ? `'${it.id}'` : 'null'})">Salvar</button>
+    </div>`);
+  if (!it) setTimeout(() => document.getElementById('it-tit')?.focus(), 250);
+}
+
+async function salvarItem(itemId) {
+  const cao = caoAtual();
+  const titulo = document.getElementById('it-tit').value.trim();
+  if (!titulo) { document.getElementById('it-tit').focus(); return; }
+  const dias = [...document.querySelectorAll('#it-dias .chip.on')].map(c => Number(c.dataset.d)).sort();
+  const passeio = document.getElementById('it-pas').checked;
+  const dados = {
+    titulo,
+    fase_id: document.getElementById('it-fase').value || null,
+    continua: document.getElementById('it-cont').checked,
+    dias_semana: dias.length ? dias : null,
+    tipo: passeio ? 'passeio' : 'normal',
+    titulo_pausa: passeio ? (document.getElementById('it-sub').value.trim() || null) : null,
+  };
+  try {
+    if (itemId) {
+      const [it] = await sbPatch('caes_checklist_itens', `id=eq.${itemId}`, dados);
+      Object.assign(state.itens.find(i => i.id === itemId), it);
+    } else {
+      const ordem = itensCao(cao.id).reduce((m, i) => Math.max(m, i.ordem || 0), 0) + 1;
+      const [it] = await sbInsert('caes_checklist_itens', { ...dados, cao_id: cao.id, ordem });
+      state.itens.push(it);
+    }
+    salvarCache();
+    renderCao();
+    abrirItens();
+    toast('Item salvo');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function excluirItem(itemId) {
+  const it = state.itens.find(i => i.id === itemId);
+  if (!confirm(`Tirar "${it.titulo}" do checklist? O que já foi marcado fica no histórico.`)) return;
+  try {
+    await sbPatch('caes_checklist_itens', `id=eq.${itemId}`, { ativo: false });
+    it.ativo = false;
+    salvarCache();
+    renderCao();
+    abrirItens();
+    toast('Item removido');
+  } catch (e) {
+    toast('Não consegui remover. Confira a internet.');
+  }
 }
 
 // ── aba Plano ──
@@ -734,6 +1059,7 @@ async function excluirFase(faseId) {
   try {
     await sbDelete('caes_fases', `id=eq.${faseId}`);
     state.fases = state.fases.filter(x => x.id !== faseId);
+    state.itens = state.itens.filter(i => i.fase_id !== faseId);
     await renumerarFases(cao.id);
     closeSheet();
     renderCao();
@@ -1012,10 +1338,10 @@ async function criarCao() {
         sb(`caes_checklist_itens?cao_id=eq.${base.id}&ativo=eq.true`),
         sb(`caes_listas?cao_id=eq.${base.id}&ativo=eq.true`),
       ]);
-      if (itens.length) await sbInsert('caes_checklist_itens', itens.map(it => ({
+      if (itens.length) state.itens.push(...await sbInsert('caes_checklist_itens', itens.map(it => ({
         cao_id: cao.id, fase_id: it.fase_id ? mapa[it.fase_id] : null, continua: it.continua,
         titulo: it.titulo, dias_semana: it.dias_semana, ordem: it.ordem, tipo: it.tipo, titulo_pausa: it.titulo_pausa,
-      })));
+      }))));
       if (listas.length) await sbInsert('caes_listas', listas.map(l => ({ cao_id: cao.id, tipo: l.tipo, nome: l.nome, ordem: l.ordem })));
     } else {
       const linhas = [];
