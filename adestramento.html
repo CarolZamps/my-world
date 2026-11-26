@@ -354,6 +354,9 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
 .row-add { display: flex; gap: 8px; margin-top: 12px; }
 .row-add .input { flex: 1; min-width: 0; }
 .has-fab { padding-bottom: 70px; }
+.stepper { display: flex; align-items: center; gap: 10px; height: 46px; }
+.stepper .mini { width: 40px; height: 40px; font-size: 18px; padding: 0; }
+.stepper b { font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 500; min-width: 28px; text-align: center; }
 
 /* ── passeios ── */
 .walk-banner {
@@ -464,7 +467,7 @@ const LISTAS_PADRAO = {
 };
 
 const state = {
-  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [], listas: [], reatividade: [], passeios: [],
+  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [], listas: [], reatividade: [], passeios: [], sessoes: [],
   caoId: null, aba: 'hoje', online: true, dia: null,
 };
 
@@ -487,8 +490,8 @@ const sbDelete = (tabela, filtro) => sb(`${tabela}?${filtro}`, { method: 'DELETE
 
 function salvarCache() {
   try {
-    const { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios } = state;
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios }));
+    const { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, sessoes } = state;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, sessoes }));
   } catch (e) {}
 }
 function lerCache() {
@@ -498,7 +501,7 @@ function lerCache() {
 async function carregar() {
   try {
     const desde = C.addDias(C.dataSP(new Date()), -120);
-    const [caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios] = await Promise.all([
+    const [caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, sessoes] = await Promise.all([
       sb('caes?ativo=eq.true&order=ordem.asc,created_at.asc'),
       sb('caes_fases?order=ordem.asc'),
       sb('caes_fase_historico?order=criado_em.desc'),
@@ -508,8 +511,9 @@ async function carregar() {
       sb('caes_listas?ativo=eq.true&order=ordem.asc'),
       sb(`caes_reatividade?data_hora=gte.${desde}&order=data_hora.desc`),
       sb(`caes_passeios?inicio=gte.${desde}&order=inicio.desc`),
+      sb(`caes_sessoes?data_hora=gte.${desde}&order=data_hora.desc`),
     ]);
-    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, online: true });
+    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, sessoes, online: true });
     salvarCache();
   } catch (e) {
     const cache = lerCache();
@@ -765,7 +769,8 @@ function htmlHoje(cao) {
     </div>
     <div class="check-list">${itensHTML}</div>
     ${prog.total && prog.feitos === prog.total ? `<div class="all-done">Tudo feito ${ehHoje ? 'hoje' : 'neste dia'}! ${esc(cao.nome)} agradece 🐾</div>` : ''}
-    <div style="margin-top:16px"><button class="add-btn" onclick="abrirItens()">Editar itens do checklist</button></div>`;
+    <div style="margin-top:12px"><button class="add-btn" onclick="abrirItens()">Editar itens do checklist</button></div>
+    ${htmlSessoesDoDia(cao, dia)}`;
 }
 
 function mudarDia(dir) {
@@ -1643,6 +1648,228 @@ async function excluirPasseio(id) {
     renderCao();
     toast('Passeio excluído');
   } catch (e) { toast('Não consegui excluir. Confira a internet.'); }
+}
+
+// data/hora no formato do campo datetime-local, no horário de São Paulo
+function dtLocalSP(ts) {
+  const d = ts ? new Date(ts) : new Date();
+  const sp = new Date(d.toLocaleString('en-US', { timeZone: C.TZ }));
+  const pad = n => String(n).padStart(2, '0');
+  return `${sp.getFullYear()}-${pad(sp.getMonth() + 1)}-${pad(sp.getDate())}T${pad(sp.getHours())}:${pad(sp.getMinutes())}`;
+}
+
+// ── sessões de treino ──
+const ACERTO_ROT = { 1: 'quase nada', 2: 'pouco', 3: 'metade', 4: 'quase tudo', 5: 'tudo' };
+const MOTIVACAO_ROT = { 1: 'sem vontade', 2: 'pouca', 3: 'ok', 4: 'animada', 5: 'muito animada' };
+Object.assign(TIPOS_LISTA, {
+  exercicio: { nome: 'Exercícios', sing: 'exercício' },
+  petisco: { nome: 'Petiscos', sing: 'petisco' },
+});
+
+const sessoesCao = id => state.sessoes
+  .filter(s => s.cao_id === id)
+  .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+
+let ses = null; // rascunho da sessão aberta
+
+function pickSes(campo, valor) {
+  const dt = document.getElementById('ses-dt'); if (dt) ses._dt = dt.value;
+  const obs = document.getElementById('ses-obs'); if (obs) ses.observacoes = obs.value;
+  const dur = document.getElementById('ses-dur'); if (dur) ses.duracao_min = dur.value;
+  if (campo === 'exercicio' && ses.exercicio !== valor && !ses.id) {
+    // ao trocar de exercício, puxa o que foi usado da última vez nele
+    const ult = sessoesCao(caoAtual().id).find(s => s.exercicio === valor);
+    if (ult) Object.assign(ses, { duracao_min: ult.duracao_min, petisco: ult.petisco });
+  }
+  if (['acerto', 'motivacao'].includes(campo)) ses[campo] = ses[campo] === Number(valor) ? null : Number(valor);
+  else ses[campo] = ses[campo] === valor && campo !== 'exercicio' ? null : valor;
+  const scroll = document.getElementById('sheet').scrollTop;
+  renderSessao();
+  document.getElementById('sheet').scrollTop = scroll;
+}
+
+function chipsSes(campo, opcoes) {
+  return opcoes.map(o => {
+    const v = typeof o === 'string' ? o : String(o.v);
+    const t = typeof o === 'string' ? o : o.t;
+    const on = String(ses[campo] ?? '') === v;
+    return `<button class="chip ${on ? 'on' : ''}" data-v="${esc(v)}" onclick="pickSes('${campo}', this.dataset.v)">${esc(t)}</button>`;
+  }).join('');
+}
+
+function abrirSessao(id) {
+  const cao = caoAtual();
+  const s = id ? state.sessoes.find(x => x.id === id) : null;
+  const ult = sessoesCao(cao.id)[0];
+  ses = s ? { ...s } : {
+    cao_id: cao.id, exercicio: ult?.exercicio || null, duracao_min: ult?.duracao_min ?? 5,
+    repeticoes: 0, acerto: null, petisco: ult?.petisco || null, motivacao: null, observacoes: '',
+  };
+  ses.repeticoes = ses.repeticoes || 0;
+  document.getElementById('sheet').innerHTML = '';
+  renderSessao();
+}
+
+function mudarReps(delta) {
+  const dt = document.getElementById('ses-dt'); if (dt) ses._dt = dt.value;
+  const obs = document.getElementById('ses-obs'); if (obs) ses.observacoes = obs.value;
+  const dur = document.getElementById('ses-dur'); if (dur) ses.duracao_min = dur.value;
+  ses.repeticoes = Math.max(0, (ses.repeticoes || 0) + delta);
+  const el = document.getElementById('ses-reps');
+  if (el) el.textContent = ses.repeticoes;
+}
+
+function renderSessao() {
+  const cao = caoAtual();
+  const exercicios = listaDe(cao.id, 'exercicio').map(l => l.nome);
+  if (ses.exercicio && !exercicios.includes(ses.exercicio)) exercicios.push(ses.exercicio);
+  const petiscos = listaDe(cao.id, 'petisco').map(l => l.nome);
+  if (ses.petisco && !petiscos.includes(ses.petisco)) petiscos.push(ses.petisco);
+  openSheet(`
+    <div class="sheet-title">${ses.id ? 'Sessão de treino' : 'Nova sessão de treino'}</div>
+    <div class="sheet-sub">${ses.id ? fmtDataHora(ses.data_hora) : 'Sessões curtas e alegres rendem mais. 3 a 5 minutos já valem.'}</div>
+    <div class="field">
+      <label class="label">Exercício</label>
+      <div class="chips">${chipsSes('exercicio', exercicios)}<button class="chip" onclick="voltarDeLista = renderSessao; abrirLista('exercicio')">+ exercício</button></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label class="label" for="ses-dur">Duração (min)</label><input class="input" type="number" min="0" step="0.5" id="ses-dur" value="${ses.duracao_min ?? ''}"></div>
+      <div class="field">
+        <label class="label">Repetições</label>
+        <div class="stepper">
+          <button class="mini" onclick="mudarReps(-1)" aria-label="Menos">−</button>
+          <b id="ses-reps">${ses.repeticoes}</b>
+          <button class="mini" onclick="mudarReps(1)" aria-label="Mais">+</button>
+        </div>
+      </div>
+    </div>
+    <div class="field">
+      <label class="label">Taxa de acerto${ses.acerto ? ` · <span style="color:var(--c)">${ACERTO_ROT[ses.acerto]}</span>` : ''}</label>
+      <div class="chips int-chips">${chipsSes('acerto', [1,2,3,4,5].map(n => ({ v: n, t: String(n) })))}</div>
+    </div>
+    <div class="field">
+      <label class="label">Motivação dela${ses.motivacao ? ` · <span style="color:var(--c)">${MOTIVACAO_ROT[ses.motivacao]}</span>` : ''}</label>
+      <div class="chips int-chips">${chipsSes('motivacao', [1,2,3,4,5].map(n => ({ v: n, t: String(n) })))}</div>
+    </div>
+    <div class="field">
+      <label class="label">Petisco</label>
+      <div class="chips">${chipsSes('petisco', petiscos)}<button class="chip" onclick="voltarDeLista = renderSessao; abrirLista('petisco')">+ petisco</button></div>
+    </div>
+    <div class="field"><label class="label" for="ses-dt">Quando</label><input class="input" type="datetime-local" id="ses-dt" value="${ses._dt || dtLocalSP(ses.data_hora)}"></div>
+    <div class="field"><label class="label" for="ses-obs">Observações</label><textarea class="input" id="ses-obs" placeholder="O que deu certo, o que ajustar">${esc(ses.observacoes || '')}</textarea></div>
+    <div class="sheet-actions">
+      ${ses.id ? `<button class="btn btn-danger" onclick="excluirSessao('${ses.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>`}
+      <button class="btn btn-primary" id="ses-salvar" onclick="salvarSessao()" ${ses.exercicio ? '' : 'disabled'}>Salvar</button>
+    </div>`);
+}
+
+async function salvarSessao() {
+  if (!ses.exercicio) return;
+  const obs = document.getElementById('ses-obs'); if (obs) ses.observacoes = obs.value;
+  const dur = document.getElementById('ses-dur'); if (dur) ses.duracao_min = dur.value;
+  const dt = document.getElementById('ses-dt'); if (dt) ses._dt = dt.value;
+  const dados = {
+    cao_id: ses.cao_id, exercicio: ses.exercicio,
+    duracao_min: ses.duracao_min === '' || ses.duracao_min == null ? null : Number(ses.duracao_min),
+    repeticoes: ses.repeticoes || null, acerto: ses.acerto, petisco: ses.petisco, motivacao: ses.motivacao,
+    observacoes: ses.observacoes && ses.observacoes.trim() ? ses.observacoes.trim() : null,
+  };
+  if (ses._dt) dados.data_hora = spLocalParaISO(ses._dt);
+  const btn = document.getElementById('ses-salvar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+  try {
+    if (ses.id) {
+      const [r] = await sbPatch('caes_sessoes', `id=eq.${ses.id}`, dados);
+      Object.assign(state.sessoes.find(x => x.id === ses.id), r);
+    } else {
+      const [r] = await sbInsert('caes_sessoes', dados);
+      state.sessoes.push(r);
+    }
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast(ses.id ? 'Sessão atualizada' : 'Sessão registrada. Boa, dupla! 🐾');
+    ses = null;
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar'; }
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function excluirSessao(id) {
+  if (!confirm('Excluir esta sessão?')) return;
+  try {
+    await sbDelete('caes_sessoes', `id=eq.${id}`);
+    state.sessoes = state.sessoes.filter(s => s.id !== id);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Sessão excluída');
+  } catch (e) { toast('Não consegui excluir. Confira a internet.'); }
+}
+
+function sessaoItemHTML(s) {
+  const meta = [
+    s.duracao_min != null ? `${Number(s.duracao_min)} min` : '',
+    s.repeticoes ? `${s.repeticoes} rep.` : '',
+    s.acerto ? `acerto ${s.acerto}/5` : '',
+    s.motivacao ? `motivação ${s.motivacao}/5` : '',
+    s.petisco || '',
+  ].filter(Boolean).map(esc).join(' · ');
+  return `<button class="reg-item" onclick="abrirSessao('${s.id}')">
+    <span class="reg-hora">${horaSP(s.data_hora)}</span>
+    <span class="reg-main">
+      <span class="reg-gat">${esc(s.exercicio)}</span>
+      ${meta ? `<span class="reg-meta">${meta}</span>` : ''}
+      ${s.observacoes ? `<span class="reg-obs">${esc(s.observacoes)}</span>` : ''}
+    </span>
+    <span class="int-dot ${s.acerto >= 4 ? 'i1' : s.acerto === 3 ? 'i3' : s.acerto ? 'i4' : ''}" style="${s.acerto ? '' : 'background:var(--border)'}"></span>
+  </button>`;
+}
+
+// bloco que aparece na aba Hoje
+function htmlSessoesDoDia(cao, dia) {
+  const doDia = sessoesCao(cao.id).filter(s => C.dataSP(s.data_hora) === dia);
+  const min = doDia.reduce((a, s) => a + (Number(s.duracao_min) || 0), 0);
+  return `
+    <div class="sec-title" style="display:flex;justify-content:space-between;align-items:baseline">
+      <span>Sessões de treino</span>
+      ${doDia.length ? `<span style="text-transform:none;letter-spacing:0">${doDia.length} · ${Math.round(min * 10) / 10} min</span>` : ''}
+    </div>
+    ${doDia.map(sessaoItemHTML).join('') || `<div class="hint" style="margin:0 0 8px">Nenhuma sessão ${dia === hoje() ? 'hoje' : 'neste dia'}.</div>`}
+    <div style="display:flex;gap:8px;margin-top:6px">
+      ${dia === hoje() ? `<button class="btn" style="flex:1" onclick="abrirSessao()">+ Sessão de treino</button>` : ''}
+      <button class="btn btn-ghost" style="flex:1" onclick="abrirHistoricoSessoes()">Histórico</button>
+    </div>`;
+}
+
+function abrirHistoricoSessoes() {
+  const cao = caoAtual();
+  const todas = sessoesCao(cao.id);
+  const porDia = {};
+  todas.forEach(s => { const k = C.dataSP(s.data_hora); (porDia[k] = porDia[k] || []).push(s); });
+  const rotuloDia = k => k === hoje() ? 'Hoje' : k === C.addDias(hoje(), -1) ? 'Ontem' : `${DIAS_LONGO[C.diaSemana(k)]}, ${fmtData(k).slice(0, 5)}`;
+  // resumo por exercício (últimos 30 dias)
+  const desde = C.addDias(hoje(), -29);
+  const ult30 = todas.filter(s => C.dataSP(s.data_hora) >= desde);
+  const porEx = {};
+  ult30.forEach(s => {
+    const g = porEx[s.exercicio] = porEx[s.exercicio] || { n: 0, acertos: [] };
+    g.n++; if (s.acerto) g.acertos.push(s.acerto);
+  });
+  const resumo = Object.entries(porEx).sort((a, b) => b[1].n - a[1].n).map(([ex, g]) => `
+    <div class="item-row"><span class="t">${esc(ex)}<small>${g.n} ${g.n === 1 ? 'sessão' : 'sessões'}${g.acertos.length ? ` · acerto médio ${(g.acertos.reduce((a, b) => a + b, 0) / g.acertos.length).toFixed(1)}/5` : ''}</small></span></div>`).join('');
+  openSheet(`
+    <div class="sheet-title">Histórico de treinos</div>
+    <div class="sheet-sub">${ult30.length} ${ult30.length === 1 ? 'sessão' : 'sessões'} nos últimos 30 dias</div>
+    ${resumo ? `<div class="grupo">Por exercício · 30 dias</div>${resumo}` : ''}
+    ${Object.keys(porDia).sort().reverse().slice(0, 30).map(k => `<div class="grupo">${rotuloDia(k)}</div>${porDia[k].map(sessaoItemHTML).join('')}`).join('')
+      || '<div class="em-breve">Nenhuma sessão registrada ainda.</div>'}
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:12px">
+      <button class="mini" onclick="voltarDeLista = abrirHistoricoSessoes; abrirLista('exercicio')">Editar exercícios</button>
+      <button class="mini" onclick="voltarDeLista = abrirHistoricoSessoes; abrirLista('petisco')">Editar petiscos</button>
+    </div>
+    <div class="sheet-actions"><button class="btn btn-ghost" onclick="closeSheet()">Fechar</button></div>`);
 }
 
 // ── aba Plano ──
