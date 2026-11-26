@@ -323,6 +323,38 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
 .switch input:checked + span { background: var(--c-soft); border-color: var(--c); }
 .switch input:checked + span::after { transform: translateX(18px); background: var(--c); }
 
+/* ── diário de reatividade ── */
+.fab {
+  position: fixed; right: max(16px, calc(50% - 224px)); bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 150;
+  display: flex; align-items: center; gap: 8px; padding: 14px 18px; border-radius: 30px; border: none;
+  background: var(--c); color: #1a1208; font-weight: 700; font-size: 14.5px; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(251,146,60,.35), 0 2px 8px rgba(0,0,0,.4);
+  transition: transform .15s;
+}
+.fab:active { transform: scale(.94); }
+.int-chips .chip { min-width: 46px; text-align: center; font-family: 'JetBrains Mono', monospace; }
+.diario-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.mini-stat { padding: 12px 14px; }
+.mini-stat b { font-size: 24px; font-family: 'JetBrains Mono', monospace; font-weight: 500; display: block; line-height: 1.1; }
+.mini-stat span { font-size: 11.5px; color: var(--text-dim); }
+.reg-item {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 11px 12px; margin-bottom: 6px; cursor: pointer;
+}
+.reg-hora { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim); padding-top: 2px; flex-shrink: 0; }
+.reg-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.reg-gat { font-size: 14px; font-weight: 500; }
+.reg-meta { font-size: 12px; color: var(--text-dim); }
+.reg-ok { font-size: 12px; color: var(--ok); margin-top: 2px; }
+.reg-obs { font-size: 12px; color: var(--text-faint); margin-top: 2px; }
+.int-dot { width: 10px; height: 10px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+.int-dot.i1 { background: #6EE7B7; } .int-dot.i2 { background: #BEF264; } .int-dot.i3 { background: #FBBF24; }
+.int-dot.i4 { background: #FB923C; } .int-dot.i5 { background: #F87171; }
+.row-add { display: flex; gap: 8px; margin-top: 12px; }
+.row-add .input { flex: 1; min-width: 0; }
+.has-fab { padding-bottom: 70px; }
+
 /* ── sheet (janela de baixo) ── */
 .sheet-overlay {
   position: fixed; inset: 0; background: rgba(5,4,8,.6); z-index: 200;
@@ -352,6 +384,7 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 .sheet.open ~ .toast { bottom: auto; top: 20px; }
+body:has(.fab) .toast { bottom: calc(88px + env(safe-area-inset-bottom)); }
 
 .loading { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-dim); font-size: 13px; padding: 40px 0; }
 .spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--c); border-radius: 50%; animation: spin .8s linear infinite; }
@@ -405,7 +438,7 @@ const LISTAS_PADRAO = {
 };
 
 const state = {
-  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [],
+  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [], listas: [], reatividade: [],
   caoId: null, aba: 'hoje', online: true, dia: null,
 };
 
@@ -428,8 +461,8 @@ const sbDelete = (tabela, filtro) => sb(`${tabela}?${filtro}`, { method: 'DELETE
 
 function salvarCache() {
   try {
-    const { caes, fases, historico, pausas, itens, marcas } = state;
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas }));
+    const { caes, fases, historico, pausas, itens, marcas, listas, reatividade } = state;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas, listas, reatividade }));
   } catch (e) {}
 }
 function lerCache() {
@@ -439,15 +472,17 @@ function lerCache() {
 async function carregar() {
   try {
     const desde = C.addDias(C.dataSP(new Date()), -120);
-    const [caes, fases, historico, pausas, itens, marcas] = await Promise.all([
+    const [caes, fases, historico, pausas, itens, marcas, listas, reatividade] = await Promise.all([
       sb('caes?ativo=eq.true&order=ordem.asc,created_at.asc'),
       sb('caes_fases?order=ordem.asc'),
       sb('caes_fase_historico?order=criado_em.desc'),
       sb('caes_passeio_pausas?order=inicio.desc'),
       sb('caes_checklist_itens?ativo=eq.true&order=ordem.asc'),
       sb(`caes_checklist_marcas?data=gte.${desde}`),
+      sb('caes_listas?ativo=eq.true&order=ordem.asc'),
+      sb(`caes_reatividade?data_hora=gte.${desde}&order=data_hora.desc`),
     ]);
-    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, online: true });
+    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, listas, reatividade, online: true });
     salvarCache();
   } catch (e) {
     const cache = lerCache();
@@ -540,6 +575,7 @@ function renderLista() {
         <div class="dog-fase">${fase ? `Fase ${fase.ordem} · ${esc(fase.nome)}` : 'Sem fase definida'}</div>
         <div class="dog-tags">
           ${pr.total ? `<span class="tag ${pr.feitos === pr.total ? 'c' : ''}">Hoje ${pr.feitos}/${pr.total}</span>` : ''}
+          ${(() => { const n = reacoesHoje(cao); return n ? `<span class="tag">${n} ${n === 1 ? 'latido' : 'latidos'} hoje</span>` : ''; })()}
           ${dias && dias > 0 ? `<span class="tag c">${dias}º dia de plano</span>` : ''}
           ${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : ''}
         </div>
@@ -565,6 +601,7 @@ function renderLista() {
 // ── tela do cão ──
 const ABAS = [
   { id: 'hoje', nome: 'Hoje' },
+  { id: 'diario', nome: 'Diário' },
   { id: 'plano', nome: 'Plano' },
   { id: 'perfil', nome: 'Perfil' },
 ];
@@ -587,8 +624,12 @@ function renderCao() {
     <div class="nav-tabs">
       ${ABAS.map(a => `<button class="nav-tab ${a.id === aba ? 'active' : ''}" onclick="irPara('${cao.id}', '${a.id}')">${a.nome}</button>`).join('')}
     </div>
-    <div id="aba-conteudo">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : htmlHoje(cao)}</div>
-  </div>`;
+    <div id="aba-conteudo" class="has-fab">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : aba === 'diario' ? htmlDiario(cao) : htmlHoje(cao)}</div>
+  </div>
+  <button class="fab" onclick="abrirRegistro()" aria-label="Registrar latido">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+    Registrar latido
+  </button>`;
 }
 
 // ── aba Hoje (checklist diário) ──
@@ -841,6 +882,302 @@ async function excluirItem(itemId) {
   } catch (e) {
     toast('Não consegui remover. Confira a internet.');
   }
+}
+
+// ── diário de reatividade ──
+const INTENSIDADE_ROTULO = { 1: 'leve', 2: 'baixa', 3: 'média', 4: 'forte', 5: 'muito forte' };
+const RESULTADO_ROTULO = { bem: 'ficou bem', tensa: 'ficou tensa', reagiu: 'latiu' };
+const TIPOS_LISTA = {
+  gatilho: { nome: 'Gatilhos', sing: 'gatilho' },
+  local: { nome: 'Locais', sing: 'local' },
+  funcionou: { nome: 'O que funcionou', sing: 'item' },
+};
+
+const listaDe = (caoId, tipo) => state.listas
+  .filter(l => l.cao_id === caoId && l.tipo === tipo && l.ativo !== false)
+  .sort((a, b) => (a.ordem || 0) - (b.ordem || 0));
+const registrosCao = id => state.reatividade
+  .filter(r => r.cao_id === id)
+  .sort((a, b) => new Date(b.data_hora) - new Date(a.data_hora));
+
+function reacoesHoje(cao) {
+  const d = hoje();
+  return registrosCao(cao.id).filter(r => C.dataSP(r.data_hora) === d && C.ehReacao(r)).length;
+}
+
+// rascunho do registro aberto na janela
+let reg = null;
+
+function chipsHTML(grupo, opcoes, selecionado, multi) {
+  return opcoes.map(o => {
+    const v = typeof o === 'string' ? o : o.v;
+    const t = typeof o === 'string' ? o : o.t;
+    const on = multi ? (selecionado || []).includes(v) : selecionado === v;
+    return `<button class="chip ${on ? 'on' : ''}" data-v="${esc(v)}" onclick="pickReg('${grupo}', this.dataset.v, ${multi ? 'true' : 'false'})">${esc(t)}</button>`;
+  }).join('');
+}
+
+function abrirRegistro(id) {
+  const cao = caoAtual();
+  const existente = id ? state.reatividade.find(r => r.id === id) : null;
+  const ultimo = registrosCao(cao.id).find(r => !r.passeio_id);
+  if (existente) {
+    reg = { ...existente, funcionou: [...(existente.funcionou || [])] };
+  } else {
+    reg = {
+      cao_id: cao.id, gatilho: null, intensidade: ultimo?.intensidade || 3,
+      recuperacao: null, local: ultimo?.local || null, funcionou: [], observacao: '',
+      data_hora: null, resultado: 'reagiu',
+    };
+  }
+  reg._mais = !!existente;
+  renderRegistro();
+}
+
+function renderRegistro() {
+  const cao = caoAtual();
+  const gatilhos = listaDe(cao.id, 'gatilho').map(l => l.nome);
+  if (reg.gatilho && !gatilhos.includes(reg.gatilho)) gatilhos.push(reg.gatilho);
+  const locais = listaDe(cao.id, 'local').map(l => l.nome);
+  if (reg.local && !locais.includes(reg.local)) locais.push(reg.local);
+  const funcionou = listaDe(cao.id, 'funcionou').map(l => l.nome);
+  (reg.funcionou || []).forEach(f => { if (!funcionou.includes(f)) funcionou.push(f); });
+  const editando = !!reg.id;
+  const outro = reg.gatilho === 'Outro' || reg._outroTxt != null;
+
+  const dtLocal = reg.data_hora ? new Date(reg.data_hora) : new Date();
+  const pad = n => String(n).padStart(2, '0');
+  const sp = new Date(dtLocal.toLocaleString('en-US', { timeZone: C.TZ }));
+  const dtValor = `${sp.getFullYear()}-${pad(sp.getMonth() + 1)}-${pad(sp.getDate())}T${pad(sp.getHours())}:${pad(sp.getMinutes())}`;
+
+  openSheet(`
+    <div class="sheet-title">${editando ? 'Editar registro' : `${esc(cao.nome)} latiu`}</div>
+    <div class="sheet-sub">${editando ? fmtDataHora(reg.data_hora) : 'Toque no gatilho e salve. O resto é opcional.'}</div>
+
+    <div class="field">
+      <label class="label">O que foi?</label>
+      <div class="chips">${chipsHTML('gatilho', gatilhos, reg.gatilho)}</div>
+      ${outro ? `<input class="input" id="reg-outro" style="margin-top:8px" maxlength="40" placeholder="Qual foi o som?" value="${esc(reg._outroTxt || '')}" oninput="reg._outroTxt=this.value">` : ''}
+    </div>
+
+    <div class="field">
+      <label class="label">Intensidade · <span style="color:var(--c)">${INTENSIDADE_ROTULO[reg.intensidade] || '—'}</span></label>
+      <div class="chips int-chips">${chipsHTML('intensidade', [1,2,3,4,5].map(n => ({ v: String(n), t: String(n) })), String(reg.intensidade))}</div>
+    </div>
+
+    <div class="field">
+      <label class="label">Tempo até se acalmar</label>
+      <div class="chips">${chipsHTML('recuperacao', C.RECUPERACAO.map(r => ({ v: r, t: REC_ROTULO[r] })), reg.recuperacao)}</div>
+    </div>
+
+    <div class="field">
+      <label class="label">Onde</label>
+      <div class="chips">${chipsHTML('local', locais, reg.local)}</div>
+    </div>
+
+    ${reg._mais ? `
+      <div class="field">
+        <label class="label">O que funcionou</label>
+        <div class="chips">${chipsHTML('funcionou', funcionou, reg.funcionou, true)}</div>
+      </div>
+      <div class="field">
+        <label class="label" for="reg-obs">Observação</label>
+        <textarea class="input" id="reg-obs" oninput="reg.observacao=this.value" placeholder="Algo que ajude a entender o momento">${esc(reg.observacao || '')}</textarea>
+      </div>
+      <div class="field">
+        <label class="label" for="reg-dt">Data e hora</label>
+        <input class="input" type="datetime-local" id="reg-dt" value="${dtValor}" onchange="reg._dt=this.value">
+      </div>`
+    : `<button class="mini" onclick="reg._mais=true; renderRegistro()">+ O que funcionou, observação, horário</button>`}
+
+    <div class="sheet-actions">
+      ${editando ? `<button class="btn btn-danger" onclick="excluirRegistro('${reg.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>`}
+      <button class="btn btn-primary" id="reg-salvar" onclick="salvarRegistro()" ${reg.gatilho ? '' : 'disabled'}>Salvar</button>
+    </div>`);
+  if (outro) setTimeout(() => document.getElementById('reg-outro')?.focus(), 50);
+}
+
+function pickReg(grupo, valor, multi) {
+  // guarda o que já foi digitado antes de redesenhar
+  const obs = document.getElementById('reg-obs'); if (obs) reg.observacao = obs.value;
+  if (multi) {
+    const arr = reg[grupo] || [];
+    reg[grupo] = arr.includes(valor) ? arr.filter(v => v !== valor) : [...arr, valor];
+  } else if (grupo === 'intensidade') {
+    reg.intensidade = Number(valor);
+  } else {
+    reg[grupo] = reg[grupo] === valor && grupo !== 'gatilho' ? null : valor;
+    if (grupo === 'gatilho') reg._outroTxt = valor === 'Outro' ? (reg._outroTxt || '') : null;
+  }
+  const scroll = document.getElementById('sheet').scrollTop;
+  renderRegistro();
+  document.getElementById('sheet').scrollTop = scroll;
+}
+
+// "2026-11-25T14:30" no horário de São Paulo → ISO UTC
+function spLocalParaISO(v) {
+  const [d, t] = v.split('T');
+  const [y, m, dd] = d.split('-').map(Number);
+  const [h, mi] = t.split(':').map(Number);
+  const palpite = Date.UTC(y, m - 1, dd, h, mi);
+  const sp = new Date(new Date(palpite).toLocaleString('en-US', { timeZone: C.TZ }));
+  const utc = new Date(new Date(palpite).toLocaleString('en-US', { timeZone: 'UTC' }));
+  return new Date(palpite + (utc - sp)).toISOString();
+}
+
+async function salvarRegistro() {
+  if (!reg.gatilho) return;
+  const obsEl = document.getElementById('reg-obs'); if (obsEl) reg.observacao = obsEl.value;
+  const gatilho = reg.gatilho === 'Outro' && reg._outroTxt && reg._outroTxt.trim() ? reg._outroTxt.trim() : reg.gatilho;
+  const dados = {
+    cao_id: reg.cao_id, gatilho, intensidade: reg.intensidade, recuperacao: reg.recuperacao,
+    local: reg.local, funcionou: reg.funcionou && reg.funcionou.length ? reg.funcionou : null,
+    observacao: reg.observacao && reg.observacao.trim() ? reg.observacao.trim() : null,
+  };
+  if (reg._dt) dados.data_hora = spLocalParaISO(reg._dt);
+  const btn = document.getElementById('reg-salvar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+  try {
+    if (reg.id) {
+      const [r] = await sbPatch('caes_reatividade', `id=eq.${reg.id}`, dados);
+      Object.assign(state.reatividade.find(x => x.id === reg.id), r);
+    } else {
+      const [r] = await sbInsert('caes_reatividade', { ...dados, resultado: 'reagiu' });
+      state.reatividade.push(r);
+    }
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast(reg.id ? 'Registro atualizado' : 'Registrado. Respira, vocês estão juntas nessa 💛');
+    reg = null;
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar'; }
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function excluirRegistro(id) {
+  if (!confirm('Excluir este registro?')) return;
+  try {
+    await sbDelete('caes_reatividade', `id=eq.${id}`);
+    state.reatividade = state.reatividade.filter(r => r.id !== id);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Registro excluído');
+  } catch (e) {
+    toast('Não consegui excluir. Confira a internet.');
+  }
+}
+
+function htmlDiario(cao) {
+  const regs = registrosCao(cao.id);
+  const d = hoje();
+  const hojeN = regs.filter(r => C.dataSP(r.data_hora) === d && C.ehReacao(r)).length;
+  const semana = regs.filter(r => C.dataSP(r.data_hora) >= C.addDias(d, -6) && C.ehReacao(r)).length;
+
+  const porDia = {};
+  regs.forEach(r => { const k = C.dataSP(r.data_hora); (porDia[k] = porDia[k] || []).push(r); });
+  const dias = Object.keys(porDia).sort().reverse().slice(0, 30);
+
+  const rotuloDia = k => k === d ? 'Hoje' : k === C.addDias(d, -1) ? 'Ontem' : `${DIAS_LONGO[C.diaSemana(k)]}, ${fmtData(k).slice(0, 5)}`;
+  const hora = ts => new Date(ts).toLocaleTimeString('pt-BR', { timeZone: C.TZ, hour: '2-digit', minute: '2-digit' });
+
+  const lista = dias.length ? dias.map(k => `
+    <div class="grupo">${rotuloDia(k)} · ${porDia[k].length}</div>
+    ${porDia[k].map(r => `
+      <button class="reg-item" onclick="abrirRegistro('${r.id}')">
+        <span class="reg-hora">${hora(r.data_hora)}</span>
+        <span class="reg-main">
+          <span class="reg-gat">${esc(r.gatilho)}${r.passeio_id ? ' <span class="tag" style="padding:1px 6px">passeio</span>' : ''}</span>
+          <span class="reg-meta">${[
+            r.intensidade ? `intensidade ${r.intensidade}` : (r.resultado ? RESULTADO_ROTULO[r.resultado] : ''),
+            r.recuperacao ? `acalmou em ${REC_ROTULO[r.recuperacao]}` : '',
+            r.local || '',
+          ].filter(Boolean).map(esc).join(' · ')}</span>
+          ${r.funcionou && r.funcionou.length ? `<span class="reg-ok">✓ ${esc(r.funcionou.join(', '))}</span>` : ''}
+          ${r.observacao ? `<span class="reg-obs">${esc(r.observacao)}</span>` : ''}
+        </span>
+        <span class="int-dot i${r.intensidade || (r.resultado === 'reagiu' ? 4 : r.resultado === 'tensa' ? 2 : 1)}"></span>
+      </button>`).join('')}`).join('')
+    : `<div class="empty"><div class="big">🌤️</div>Nenhum registro ainda.<br>Quando ela latir, toque em <b>Registrar latido</b>. Leva poucos segundos.</div>`;
+
+  return `
+    <div class="diario-resumo">
+      <div class="card mini-stat"><b>${hojeN}</b><span>hoje</span></div>
+      <div class="card mini-stat"><b>${semana}</b><span>últimos 7 dias</span></div>
+    </div>
+    ${hojeN === 0 && dias.length ? '<div class="hint" style="text-align:center;margin:-4px 0 10px">Nenhum registro hoje. Dia tranquilo? 💛</div>' : ''}
+    ${lista}
+    <div style="margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center">
+      ${Object.entries(TIPOS_LISTA).map(([t, v]) => `<button class="mini" onclick="abrirLista('${t}')">Editar ${v.nome.toLowerCase()}</button>`).join('')}
+    </div>`;
+}
+
+// ── listas configuráveis ──
+function abrirLista(tipo) {
+  const cao = caoAtual();
+  const itens = listaDe(cao.id, tipo);
+  const info = TIPOS_LISTA[tipo];
+  openSheet(`
+    <div class="sheet-title">${info.nome}</div>
+    <div class="sheet-sub">Os chips que aparecem no registro de ${esc(cao.nome)}. Use ↑↓ para mudar a ordem.</div>
+    ${itens.map((l, i) => `
+      <div class="item-row">
+        <span class="t">${esc(l.nome)}</span>
+        <button class="mini" onclick="moverLista('${tipo}', '${l.id}', -1)" ${i === 0 ? 'disabled' : ''} aria-label="Subir">↑</button>
+        <button class="mini" onclick="moverLista('${tipo}', '${l.id}', 1)" ${i === itens.length - 1 ? 'disabled' : ''} aria-label="Descer">↓</button>
+        <button class="mini" onclick="removerLista('${tipo}', '${l.id}')" aria-label="Remover">✕</button>
+      </div>`).join('') || '<div class="em-breve">Lista vazia.</div>'}
+    <div class="row-add">
+      <input class="input" id="lista-novo" maxlength="40" placeholder="Novo ${info.sing}" onkeydown="if(event.key==='Enter')addLista('${tipo}')">
+      <button class="btn btn-primary" onclick="addLista('${tipo}')">Adicionar</button>
+    </div>
+    <div class="sheet-actions"><button class="btn btn-ghost" onclick="closeSheet()">Fechar</button></div>`);
+}
+
+async function addLista(tipo) {
+  const cao = caoAtual();
+  const nome = document.getElementById('lista-novo').value.trim();
+  if (!nome) return;
+  if (listaDe(cao.id, tipo).some(l => l.nome.toLowerCase() === nome.toLowerCase())) { toast('Esse já está na lista'); return; }
+  try {
+    const ordem = listaDe(cao.id, tipo).reduce((m, l) => Math.max(m, l.ordem || 0), 0) + 1;
+    const [l] = await sbInsert('caes_listas', { cao_id: cao.id, tipo, nome, ordem });
+    state.listas.push(l);
+    salvarCache();
+    abrirLista(tipo);
+    setTimeout(() => document.getElementById('lista-novo')?.focus(), 50);
+  } catch (e) { toast('Não consegui salvar. Confira a internet.'); }
+}
+
+async function removerLista(tipo, id) {
+  try {
+    await sbPatch('caes_listas', `id=eq.${id}`, { ativo: false });
+    state.listas.find(l => l.id === id).ativo = false;
+    salvarCache();
+    abrirLista(tipo);
+  } catch (e) { toast('Não consegui remover. Confira a internet.'); }
+}
+
+async function moverLista(tipo, id, dir) {
+  const itens = listaDe(caoAtual().id, tipo);
+  const i = itens.findIndex(l => l.id === id);
+  const j = i + dir;
+  if (j < 0 || j >= itens.length) return;
+  // renumera tudo para evitar empates de ordem
+  const nova = itens.slice();
+  [nova[i], nova[j]] = [nova[j], nova[i]];
+  try {
+    for (let k = 0; k < nova.length; k++) {
+      if (nova[k].ordem !== k + 1) {
+        await sbPatch('caes_listas', `id=eq.${nova[k].id}`, { ordem: k + 1 });
+        nova[k].ordem = k + 1;
+      }
+    }
+    salvarCache();
+    abrirLista(tipo);
+  } catch (e) { toast('Não consegui reordenar. Confira a internet.'); }
 }
 
 // ── aba Plano ──
@@ -1342,11 +1679,11 @@ async function criarCao() {
         cao_id: cao.id, fase_id: it.fase_id ? mapa[it.fase_id] : null, continua: it.continua,
         titulo: it.titulo, dias_semana: it.dias_semana, ordem: it.ordem, tipo: it.tipo, titulo_pausa: it.titulo_pausa,
       }))));
-      if (listas.length) await sbInsert('caes_listas', listas.map(l => ({ cao_id: cao.id, tipo: l.tipo, nome: l.nome, ordem: l.ordem })));
+      if (listas.length) state.listas.push(...await sbInsert('caes_listas', listas.map(l => ({ cao_id: cao.id, tipo: l.tipo, nome: l.nome, ordem: l.ordem }))));
     } else {
       const linhas = [];
       Object.entries(LISTAS_PADRAO).forEach(([tipo, nomes]) => nomes.forEach((n, i) => linhas.push({ cao_id: cao.id, tipo, nome: n, ordem: i })));
-      await sbInsert('caes_listas', linhas);
+      state.listas.push(...await sbInsert('caes_listas', linhas));
     }
     if (primeiraFase) {
       await sbPatch('caes', `id=eq.${cao.id}`, { fase_atual_id: primeiraFase.id });
