@@ -355,6 +355,32 @@ input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: non
 .row-add .input { flex: 1; min-width: 0; }
 .has-fab { padding-bottom: 70px; }
 
+/* ── passeios ── */
+.walk-banner {
+  background: linear-gradient(135deg, var(--c-soft), transparent 80%), var(--surface);
+  border: 1px solid var(--c-mid); border-radius: 18px; padding: 14px; margin-bottom: 16px;
+  animation: fadeIn .25s ease;
+}
+.walk-top { display: flex; align-items: center; gap: 8px; font-size: 13.5px; flex-wrap: wrap; }
+.walk-top b { color: var(--c); font-family: 'JetBrains Mono', monospace; font-weight: 500; }
+.walk-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--c); animation: pulse 1.6s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(251,146,60,.6); } 50% { box-shadow: 0 0 0 7px rgba(251,146,60,0); } }
+.walk-cnt { margin-left: auto; font-size: 12px; color: var(--text-dim); }
+.walk-actions { display: grid; grid-template-columns: 1fr auto; gap: 8px; margin-top: 12px; }
+.walk-big { padding: 16px; font-size: 15px; }
+.walk-start { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 16px; font-size: 15.5px; border-radius: 16px; }
+.aviso {
+  background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.25); color: var(--text);
+  border-radius: 14px; padding: 12px 14px; font-size: 13.5px; line-height: 1.5; margin-bottom: 12px;
+}
+.aviso.ok { background: rgba(110,231,183,.08); border-color: rgba(110,231,183,.25); }
+.row3 { display: grid; grid-template-columns: minmax(0,1.3fr) minmax(0,1fr) minmax(0,.8fr); gap: 8px; }
+.row3 > * { min-width: 0; }
+input[type=time].input { min-width: 0; -webkit-appearance: none; appearance: none; min-height: 46px; }
+.res-chips .chip[data-v="bem"].on { color: var(--ok); border-color: var(--ok); background: rgba(110,231,183,.1); }
+.res-chips .chip[data-v="tensa"].on { color: #FBBF24; border-color: #FBBF24; background: rgba(251,191,36,.1); }
+.res-chips .chip[data-v="reagiu"].on { color: var(--danger); border-color: var(--danger); background: rgba(248,113,113,.1); }
+
 /* ── sheet (janela de baixo) ── */
 .sheet-overlay {
   position: fixed; inset: 0; background: rgba(5,4,8,.6); z-index: 200;
@@ -438,7 +464,7 @@ const LISTAS_PADRAO = {
 };
 
 const state = {
-  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [], listas: [], reatividade: [],
+  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [], listas: [], reatividade: [], passeios: [],
   caoId: null, aba: 'hoje', online: true, dia: null,
 };
 
@@ -461,8 +487,8 @@ const sbDelete = (tabela, filtro) => sb(`${tabela}?${filtro}`, { method: 'DELETE
 
 function salvarCache() {
   try {
-    const { caes, fases, historico, pausas, itens, marcas, listas, reatividade } = state;
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas, listas, reatividade }));
+    const { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios } = state;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios }));
   } catch (e) {}
 }
 function lerCache() {
@@ -472,7 +498,7 @@ function lerCache() {
 async function carregar() {
   try {
     const desde = C.addDias(C.dataSP(new Date()), -120);
-    const [caes, fases, historico, pausas, itens, marcas, listas, reatividade] = await Promise.all([
+    const [caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios] = await Promise.all([
       sb('caes?ativo=eq.true&order=ordem.asc,created_at.asc'),
       sb('caes_fases?order=ordem.asc'),
       sb('caes_fase_historico?order=criado_em.desc'),
@@ -481,8 +507,9 @@ async function carregar() {
       sb(`caes_checklist_marcas?data=gte.${desde}`),
       sb('caes_listas?ativo=eq.true&order=ordem.asc'),
       sb(`caes_reatividade?data_hora=gte.${desde}&order=data_hora.desc`),
+      sb(`caes_passeios?inicio=gte.${desde}&order=inicio.desc`),
     ]);
-    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, listas, reatividade, online: true });
+    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, listas, reatividade, passeios, online: true });
     salvarCache();
   } catch (e) {
     const cache = lerCache();
@@ -578,6 +605,7 @@ function renderLista() {
           ${(() => { const n = reacoesHoje(cao); return n ? `<span class="tag">${n} ${n === 1 ? 'latido' : 'latidos'} hoje</span>` : ''; })()}
           ${dias && dias > 0 ? `<span class="tag c">${dias}º dia de plano</span>` : ''}
           ${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : ''}
+          ${passeioAtivo(cao.id) ? '<span class="tag c">🦮 em passeio</span>' : ''}
         </div>
       </div>
       <span class="chev">${ICON_CHEV}</span>
@@ -602,6 +630,7 @@ function renderLista() {
 const ABAS = [
   { id: 'hoje', nome: 'Hoje' },
   { id: 'diario', nome: 'Diário' },
+  { id: 'passeios', nome: 'Passeios' },
   { id: 'plano', nome: 'Plano' },
   { id: 'perfil', nome: 'Perfil' },
 ];
@@ -621,15 +650,19 @@ function renderCao() {
         <div class="dog-tags">${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : '<span class="tag">Passeios ativos</span>'}</div>
       </div>
     </div>
+    ${bannerPasseioHTML(cao)}
     <div class="nav-tabs">
       ${ABAS.map(a => `<button class="nav-tab ${a.id === aba ? 'active' : ''}" onclick="irPara('${cao.id}', '${a.id}')">${a.nome}</button>`).join('')}
     </div>
-    <div id="aba-conteudo" class="has-fab">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : aba === 'diario' ? htmlDiario(cao) : htmlHoje(cao)}</div>
+    <div id="aba-conteudo" class="has-fab">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : aba === 'diario' ? htmlDiario(cao) : aba === 'passeios' ? htmlPasseios(cao) : htmlHoje(cao)}</div>
   </div>
-  <button class="fab" onclick="abrirRegistro()" aria-label="Registrar latido">
+  ${passeioAtivo(cao.id) ? `<button class="fab" onclick="abrirEncontro()" aria-label="Encontro com estímulo">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg>
+    Encontro
+  </button>` : `<button class="fab" onclick="abrirRegistro()" aria-label="Registrar latido">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
     Registrar latido
-  </button>`;
+  </button>`}`;
 }
 
 // ── aba Hoje (checklist diário) ──
@@ -1010,7 +1043,7 @@ function pickReg(grupo, valor, multi) {
     if (grupo === 'gatilho') reg._outroTxt = valor === 'Outro' ? (reg._outroTxt || '') : null;
   }
   const scroll = document.getElementById('sheet').scrollTop;
-  renderRegistro();
+  (reg._render || renderRegistro)();
   document.getElementById('sheet').scrollTop = scroll;
 }
 
@@ -1133,7 +1166,14 @@ function abrirLista(tipo) {
       <input class="input" id="lista-novo" maxlength="40" placeholder="Novo ${info.sing}" onkeydown="if(event.key==='Enter')addLista('${tipo}')">
       <button class="btn btn-primary" onclick="addLista('${tipo}')">Adicionar</button>
     </div>
-    <div class="sheet-actions"><button class="btn btn-ghost" onclick="closeSheet()">Fechar</button></div>`);
+    <div class="sheet-actions"><button class="btn btn-ghost" onclick="fecharLista()">${voltarDeLista ? 'Voltar' : 'Fechar'}</button></div>`);
+}
+
+let voltarDeLista = null;
+function fecharLista() {
+  const v = voltarDeLista;
+  voltarDeLista = null;
+  if (v) v(); else closeSheet();
 }
 
 async function addLista(tipo) {
@@ -1178,6 +1218,431 @@ async function moverLista(tipo, id, dir) {
     salvarCache();
     abrirLista(tipo);
   } catch (e) { toast('Não consegui reordenar. Confira a internet.'); }
+}
+
+// ── passeios ──
+const DISTANCIA_ROT = { muito_longe: 'muito longe', longe: 'longe', medio: 'médio', perto: 'perto' };
+const RESULTADO_OPC = [
+  { v: 'bem', t: 'viu e ficou bem' },
+  { v: 'tensa', t: 'ficou tensa' },
+  { v: 'reagiu', t: 'latiu ou avançou' },
+];
+const LISTAS_PASSEIO = {
+  tipo_passeio: { nome: 'Tipos de passeio', sing: 'tipo' },
+  rota: { nome: 'Locais e rotas', sing: 'local ou rota' },
+  equipamento: { nome: 'Equipamentos', sing: 'equipamento' },
+};
+Object.assign(TIPOS_LISTA, LISTAS_PASSEIO);
+
+const passeiosCao = id => state.passeios
+  .filter(p => p.cao_id === id)
+  .sort((a, b) => new Date(b.inicio) - new Date(a.inicio));
+const passeioAtivo = id => state.passeios.find(p => p.cao_id === id && !p.fim && p.duracao_min == null);
+const encontrosDe = passeioId => state.reatividade
+  .filter(r => r.passeio_id === passeioId)
+  .sort((a, b) => new Date(a.data_hora) - new Date(b.data_hora));
+
+function minutosDesde(ts) { return C.duracaoMin(ts, new Date().toISOString()); }
+function duracaoDe(p) { return p.duracao_min != null ? Number(p.duracao_min) : (p.fim ? C.duracaoMin(p.inicio, p.fim) : minutosDesde(p.inicio)); }
+const horaSP = ts => new Date(ts).toLocaleTimeString('pt-BR', { timeZone: C.TZ, hour: '2-digit', minute: '2-digit' });
+
+// cronômetro do passeio em andamento
+let timerPasseio = null;
+function iniciarTimer() {
+  clearInterval(timerPasseio);
+  timerPasseio = setInterval(() => {
+    const el = document.getElementById('walk-min');
+    const cao = caoAtual();
+    const p = cao && passeioAtivo(cao.id);
+    if (!el || !p) return clearInterval(timerPasseio);
+    el.textContent = `${minutosDesde(p.inicio)} min`;
+  }, 15000);
+}
+
+function bannerPasseioHTML(cao) {
+  const p = passeioAtivo(cao.id);
+  if (!p) return '';
+  const enc = encontrosDe(p.id);
+  const reacoes = enc.filter(e => e.resultado === 'reagiu').length;
+  setTimeout(iniciarTimer, 0);
+  return `<div class="walk-banner">
+    <div class="walk-top">
+      <span class="walk-dot"></span>
+      <span>Passeio em andamento · <b id="walk-min">${minutosDesde(p.inicio)} min</b></span>
+      <span class="walk-cnt">${enc.length} ${enc.length === 1 ? 'encontro' : 'encontros'}${reacoes ? ` · ${reacoes} ${reacoes === 1 ? 'reação' : 'reações'}` : ''}</span>
+    </div>
+    <div class="walk-actions">
+      <button class="btn btn-primary walk-big" onclick="abrirEncontro()">Encontro com estímulo</button>
+      <button class="btn" onclick="abrirFinalizar()">Finalizar</button>
+    </div>
+  </div>`;
+}
+
+// ── iniciar ──
+function ultimoPasseio(caoId) { return passeiosCao(caoId).find(p => p.fim || p.duracao_min != null); }
+
+let walk = null; // rascunho de início / registro manual / edição
+
+function pickWalk(campo, valor) {
+  walk[campo] = walk[campo] === valor ? null : valor;
+  const scroll = document.getElementById('sheet').scrollTop;
+  walk._render();
+  document.getElementById('sheet').scrollTop = scroll;
+}
+
+function chipsWalk(campo, opcoes) {
+  return opcoes.map(o => {
+    const v = typeof o === 'string' ? o : o.v;
+    const t = typeof o === 'string' ? o : o.t;
+    return `<button class="chip ${walk[campo] === v ? 'on' : ''}" data-v="${esc(v)}" onclick="pickWalk('${campo}', this.dataset.v)">${esc(t)}</button>`;
+  }).join('');
+}
+
+function camposWalkHTML(cao) {
+  const tipos = listaDe(cao.id, 'tipo_passeio').map(l => l.nome);
+  const rotas = listaDe(cao.id, 'rota').map(l => l.nome);
+  const equips = listaDe(cao.id, 'equipamento').map(l => l.nome);
+  [['tipo', tipos], ['rota', rotas], ['equipamento', equips]].forEach(([c, arr]) => { if (walk[c] && !arr.includes(walk[c])) arr.push(walk[c]); });
+  return `
+    <div class="field"><label class="label">Tipo de passeio</label><div class="chips">${chipsWalk('tipo', tipos)}</div></div>
+    <div class="field"><label class="label">Local / rota</label>
+      <div class="chips">${chipsWalk('rota', rotas)}<button class="chip" onclick="voltarDeLista = walk._render; abrirLista('rota')">+ rota</button></div>
+    </div>
+    <div class="field"><label class="label">Equipamento (opcional)</label><div class="chips">${chipsWalk('equipamento', equips)}</div></div>`;
+}
+
+function abrirIniciar() {
+  const cao = caoAtual();
+  if (pausaVigente(cao.id)) {
+    if (!confirm('Os passeios estão em pausa. Quer registrar um passeio mesmo assim?')) return;
+  }
+  const u = ultimoPasseio(cao.id);
+  walk = { tipo: u?.tipo || listaDe(cao.id, 'tipo_passeio')[0]?.nome || null, rota: u?.rota || null, equipamento: u?.equipamento || null };
+  walk._render = () => openSheet(`
+    <div class="sheet-title">Iniciar passeio</div>
+    <div class="sheet-sub">O horário de início é marcado agora. Bom passeio! 🐾</div>
+    ${camposWalkHTML(cao)}
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
+      <button class="btn btn-primary" onclick="iniciarPasseio()">Iniciar</button>
+    </div>`);
+  walk._render();
+}
+
+async function iniciarPasseio() {
+  const cao = caoAtual();
+  try {
+    const [p] = await sbInsert('caes_passeios', {
+      cao_id: cao.id, inicio: new Date().toISOString(),
+      tipo: walk.tipo, rota: walk.rota, equipamento: walk.equipamento,
+    });
+    state.passeios.push(p);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    toast('Passeio iniciado. Se aparecer um estímulo, toque em "Encontro" 🐾');
+  } catch (e) { toast('Não consegui iniciar. Confira a internet.'); }
+}
+
+// ── encontro com estímulo (usa a mesma janela do diário) ──
+function abrirEncontro(id, passeioId) {
+  const cao = caoAtual();
+  const existente = id ? state.reatividade.find(r => r.id === id) : null;
+  const p = passeioId ? state.passeios.find(x => x.id === passeioId) : passeioAtivo(cao.id);
+  if (!existente && !p) return;
+  reg = existente
+    ? { ...existente, funcionou: [...(existente.funcionou || [])] }
+    : { cao_id: cao.id, passeio_id: p.id, gatilho: null, distancia: null, resultado: null, funcionou: [], recuperacao: null, observacao: '' };
+  reg._render = renderEncontro;
+  reg._voltar = existente && existente.passeio_id ? existente.passeio_id : null;
+  renderEncontro();
+}
+
+function renderEncontro() {
+  const cao = caoAtual();
+  const estimulos = listaDe(cao.id, 'gatilho').map(l => l.nome);
+  if (reg.gatilho && !estimulos.includes(reg.gatilho)) estimulos.push(reg.gatilho);
+  const fiz = listaDe(cao.id, 'funcionou').map(l => l.nome);
+  (reg.funcionou || []).forEach(f => { if (!fiz.includes(f)) fiz.push(f); });
+  const outro = reg.gatilho === 'Outro' || reg._outroTxt != null;
+  const pronto = reg.gatilho && reg.resultado;
+  openSheet(`
+    <div class="sheet-title">${reg.id ? 'Editar encontro' : 'Encontro com estímulo'}</div>
+    <div class="sheet-sub">${reg.id ? fmtDataHora(reg.data_hora) : 'Estímulo e resultado já bastam. O resto ajuda o painel.'}</div>
+    <div class="field">
+      <label class="label">Estímulo</label>
+      <div class="chips">${chipsHTML('gatilho', estimulos, reg.gatilho)}</div>
+      ${outro ? `<input class="input" id="reg-outro" style="margin-top:8px" maxlength="40" placeholder="O que era?" value="${esc(reg._outroTxt || '')}" oninput="reg._outroTxt=this.value">` : ''}
+    </div>
+    <div class="field">
+      <label class="label">Distância aproximada</label>
+      <div class="chips">${chipsHTML('distancia', Object.entries(DISTANCIA_ROT).map(([v, t]) => ({ v, t })), reg.distancia)}</div>
+    </div>
+    <div class="field">
+      <label class="label">Resultado</label>
+      <div class="chips res-chips">${chipsHTML('resultado', RESULTADO_OPC, reg.resultado)}</div>
+    </div>
+    <div class="field">
+      <label class="label">O que fiz</label>
+      <div class="chips">${chipsHTML('funcionou', fiz, reg.funcionou, true)}</div>
+    </div>
+    <div class="field">
+      <label class="label">Tempo até se acalmar</label>
+      <div class="chips">${chipsHTML('recuperacao', C.RECUPERACAO.map(r => ({ v: r, t: REC_ROTULO[r] })), reg.recuperacao)}</div>
+    </div>
+    ${reg.id ? `<div class="field"><label class="label" for="reg-obs">Observação</label><textarea class="input" id="reg-obs" oninput="reg.observacao=this.value">${esc(reg.observacao || '')}</textarea></div>` : ''}
+    <div class="sheet-actions">
+      ${reg.id ? `<button class="btn btn-danger" onclick="excluirRegistro('${reg.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>`}
+      <button class="btn btn-primary" id="reg-salvar" onclick="salvarEncontro()" ${pronto ? '' : 'disabled'}>Salvar</button>
+    </div>`);
+}
+
+async function salvarEncontro() {
+  if (!reg.gatilho || !reg.resultado) return;
+  const obsEl = document.getElementById('reg-obs'); if (obsEl) reg.observacao = obsEl.value;
+  const gatilho = reg.gatilho === 'Outro' && reg._outroTxt && reg._outroTxt.trim() ? reg._outroTxt.trim() : reg.gatilho;
+  const dados = {
+    cao_id: reg.cao_id, passeio_id: reg.passeio_id, gatilho, local: 'Passeio', intensidade: null,
+    distancia: reg.distancia, resultado: reg.resultado, recuperacao: reg.recuperacao,
+    funcionou: reg.funcionou && reg.funcionou.length ? reg.funcionou : null,
+    observacao: reg.observacao && reg.observacao.trim() ? reg.observacao.trim() : null,
+  };
+  const btn = document.getElementById('reg-salvar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Salvando...'; }
+  const voltar = reg._voltar;
+  try {
+    if (reg.id) {
+      const [r] = await sbPatch('caes_reatividade', `id=eq.${reg.id}`, dados);
+      Object.assign(state.reatividade.find(x => x.id === reg.id), r);
+    } else {
+      const [r] = await sbInsert('caes_reatividade', dados);
+      state.reatividade.push(r);
+    }
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast(dados.resultado === 'bem' ? 'Ela ficou bem! Isso é progresso 🎉' : 'Anotado. Respira e segue no ritmo dela 💛');
+    reg = null;
+    if (voltar && passeioAtivo(caoAtual().id)?.id !== voltar) abrirPasseio(voltar);
+  } catch (e) {
+    if (btn) { btn.disabled = false; btn.textContent = 'Salvar'; }
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+// ── finalizar ──
+function notaChips(campo, rotulos) {
+  return [1, 2, 3, 4, 5].map(n => `<button class="chip ${walk[campo] === n ? 'on' : ''}" onclick="walk['${campo}']=${n}; walk._render()" title="${rotulos[n]}">${n}</button>`).join('');
+}
+const AVALIACAO_ROT = { 1: 'difícil', 2: 'puxado', 3: 'ok', 4: 'bom', 5: 'ótimo' };
+const ESTRESSE_ROT = { 1: 'tranquila', 2: 'leve', 3: 'média', 4: 'agitada', 5: 'muito agitada' };
+
+function abrirFinalizar() {
+  const cao = caoAtual();
+  const p = passeioAtivo(cao.id);
+  if (!p) return;
+  walk = { avaliacao: null, estresse: null, obs: '' };
+  walk._render = () => {
+    const obs = document.getElementById('fim-obs'); if (obs) walk.obs = obs.value;
+    openSheet(`
+      <div class="sheet-title">Como foi o passeio?</div>
+      <div class="sheet-sub">${minutosDesde(p.inicio)} min · começou às ${horaSP(p.inicio)}</div>
+      <div class="field">
+        <label class="label">Avaliação geral${walk.avaliacao ? ` · <span style="color:var(--c)">${AVALIACAO_ROT[walk.avaliacao]}</span>` : ''}</label>
+        <div class="chips int-chips">${notaChips('avaliacao', AVALIACAO_ROT)}</div>
+      </div>
+      <div class="field">
+        <label class="label">Estresse ao voltar para casa${walk.estresse ? ` · <span style="color:var(--c)">${ESTRESSE_ROT[walk.estresse]}</span>` : ''}</label>
+        <div class="chips int-chips">${notaChips('estresse', ESTRESSE_ROT)}</div>
+      </div>
+      <div class="field"><label class="label" for="fim-obs">Observação</label><textarea class="input" id="fim-obs" placeholder="Algo que vale lembrar">${esc(walk.obs)}</textarea></div>
+      <div class="sheet-actions">
+        <button class="btn btn-ghost" onclick="closeSheet()">Continuar passeio</button>
+        <button class="btn btn-primary" onclick="finalizarPasseio()">Finalizar</button>
+      </div>`);
+  };
+  document.getElementById('sheet').innerHTML = '';
+  walk._render();
+}
+
+async function marcarPasseioNoChecklist(cao) {
+  const item = itensDoDiaCao(cao, hoje()).find(i => i.tipo === 'passeio' && !i.substituto);
+  if (!item || state.marcas.some(m => m.item_id === item.id && m.data === hoje())) return;
+  try {
+    await sb('caes_checklist_marcas', { method: 'POST', prefer: 'resolution=ignore-duplicates', body: JSON.stringify({ item_id: item.id, cao_id: cao.id, data: hoje() }) });
+    state.marcas.push({ item_id: item.id, cao_id: cao.id, data: hoje() });
+  } catch (e) {}
+}
+
+function alertaDe(cao, passeioId) {
+  return C.avaliarAlertaPasseio(encontrosDe(passeioId), cao);
+}
+
+async function finalizarPasseio() {
+  const cao = caoAtual();
+  const p = passeioAtivo(cao.id);
+  const obs = document.getElementById('fim-obs')?.value.trim() || null;
+  const fim = new Date().toISOString();
+  try {
+    const [r] = await sbPatch('caes_passeios', `id=eq.${p.id}`, {
+      fim, duracao_min: C.duracaoMin(p.inicio, fim), avaliacao: walk.avaliacao, estresse_volta: walk.estresse, observacao: obs,
+    });
+    Object.assign(p, r);
+    await marcarPasseioNoChecklist(cao);
+    salvarCache();
+    renderCao();
+    mostrarResumoPasseio(p.id);
+  } catch (e) { toast('Não consegui finalizar. Confira a internet.'); }
+}
+
+function mostrarResumoPasseio(passeioId) {
+  const cao = caoAtual();
+  const p = state.passeios.find(x => x.id === passeioId);
+  const enc = encontrosDe(p.id);
+  const bem = enc.filter(e => e.resultado === 'bem').length;
+  const alerta = alertaDe(cao, p.id);
+  const historico = passeiosCao(cao.id).filter(x => x.fim || x.duracao_min != null)
+    .map(x => ({ inicio: x.inicio, alerta: alertaDe(cao, x.id).atingido }));
+  const pausa = alerta.atingido && !pausaVigente(cao.id) ? C.sugerirPausa(historico, hoje(), cao) : { sugerir: false };
+  openSheet(`
+    <div class="sheet-title">Passeio registrado 🐾</div>
+    <div class="sheet-sub">${duracaoDe(p)} min · ${enc.length} ${enc.length === 1 ? 'encontro' : 'encontros'}${bem ? ` · ${bem} ${bem === 1 ? 'vez' : 'vezes'} ficou bem` : ''}</div>
+    ${alerta.atingido ? `<div class="aviso">${esc(alerta.texto)}</div>` : `<div class="aviso ok">${enc.length ? 'Dentro do ritmo dela. Muito bem!' : 'Passeio tranquilo, sem encontros. Que delícia!'}</div>`}
+    ${pausa.sugerir ? `<div class="aviso">${esc(pausa.texto)}</div>` : ''}
+    <div class="sheet-actions">
+      ${pausa.sugerir ? `<button class="btn" onclick="abrirPausa()">Pausar passeios</button>` : ''}
+      <button class="btn btn-primary" onclick="closeSheet()">Fechar</button>
+    </div>`);
+}
+
+// ── aba Passeios ──
+function htmlPasseios(cao) {
+  const pausa = pausaVigente(cao.id);
+  const ativo = passeioAtivo(cao.id);
+  const lista = passeiosCao(cao.id).filter(p => p !== ativo);
+  const semana = lista.filter(p => C.dataSP(p.inicio) >= C.addDias(hoje(), -6));
+  const media = semana.length ? Math.round(semana.reduce((a, p) => a + duracaoDe(p), 0) / semana.length) : null;
+
+  const porDia = {};
+  lista.forEach(p => { const k = C.dataSP(p.inicio); (porDia[k] = porDia[k] || []).push(p); });
+  const rotuloDia = k => k === hoje() ? 'Hoje' : k === C.addDias(hoje(), -1) ? 'Ontem' : `${DIAS_LONGO[C.diaSemana(k)]}, ${fmtData(k).slice(0, 5)}`;
+
+  const itens = Object.keys(porDia).sort().reverse().slice(0, 30).map(k => `
+    <div class="grupo">${rotuloDia(k)}</div>
+    ${porDia[k].map(p => {
+      const enc = encontrosDe(p.id);
+      const reac = enc.filter(e => e.resultado === 'reagiu').length;
+      const al = alertaDe(cao, p.id).atingido;
+      return `<button class="reg-item" onclick="abrirPasseio('${p.id}')">
+        <span class="reg-hora">${horaSP(p.inicio)}</span>
+        <span class="reg-main">
+          <span class="reg-gat">${esc(p.tipo || 'Passeio')} · ${duracaoDe(p)} min</span>
+          <span class="reg-meta">${[p.rota, `${enc.length} ${enc.length === 1 ? 'encontro' : 'encontros'}`, reac ? `${reac} ${reac === 1 ? 'reação' : 'reações'}` : '', p.avaliacao ? `nota ${p.avaliacao}` : ''].filter(Boolean).map(esc).join(' · ')}</span>
+          ${p.observacao ? `<span class="reg-obs">${esc(p.observacao)}</span>` : ''}
+        </span>
+        <span class="int-dot ${al ? 'i5' : reac ? 'i3' : 'i1'}"></span>
+      </button>`;
+    }).join('')}`).join('');
+
+  return `
+    ${pausa ? `<div class="aviso">Passeios em pausa desde ${fmtData(pausa.inicio)}${pausa.motivo ? ` · ${esc(pausa.motivo)}` : ''}. Descanso também é treino 💛 <button class="mini" style="margin-left:4px" onclick="retomarPasseios()">Retomar</button></div>` : ''}
+    ${ativo ? '' : `<button class="btn btn-primary btn-block walk-start" onclick="abrirIniciar()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M8 5v14l11-7z"/></svg> Iniciar passeio</button>`}
+    <div style="text-align:center;margin:10px 0 16px"><button class="mini" onclick="abrirPasseio()">Registrar um passeio que já aconteceu</button></div>
+    <div class="diario-resumo">
+      <div class="card mini-stat"><b>${semana.length}</b><span>passeios em 7 dias</span></div>
+      <div class="card mini-stat"><b>${media != null ? media + "'" : '—'}</b><span>duração média</span></div>
+    </div>
+    ${itens || `<div class="empty"><div class="big">🦮</div>Nenhum passeio registrado ainda.<br>Toque em <b>Iniciar passeio</b> quando sair com ${esc(cao.nome)}.</div>`}
+    <div style="margin-top:18px; display:flex; gap:8px; flex-wrap:wrap; justify-content:center">
+      ${Object.entries(LISTAS_PASSEIO).map(([t, v]) => `<button class="mini" onclick="abrirLista('${t}')">Editar ${v.nome.toLowerCase()}</button>`).join('')}
+    </div>`;
+}
+
+// ── registro manual / edição ──
+function abrirPasseio(id) {
+  const cao = caoAtual();
+  const p = id ? state.passeios.find(x => x.id === id) : null;
+  const u = ultimoPasseio(cao.id);
+  const ini = p ? new Date(p.inicio) : new Date(Date.now() - 30 * 60000);
+  const spIni = new Date(ini.toLocaleString('en-US', { timeZone: C.TZ }));
+  const pad = n => String(n).padStart(2, '0');
+  walk = {
+    id: p?.id || null,
+    data: `${spIni.getFullYear()}-${pad(spIni.getMonth() + 1)}-${pad(spIni.getDate())}`,
+    hora: `${pad(spIni.getHours())}:${pad(spIni.getMinutes())}`,
+    duracao: p ? duracaoDe(p) : 30,
+    tipo: p ? p.tipo : (u?.tipo || null), rota: p ? p.rota : (u?.rota || null), equipamento: p ? p.equipamento : (u?.equipamento || null),
+    avaliacao: p?.avaliacao || null, estresse: p?.estresse_volta || null, obs: p?.observacao || '',
+  };
+  walk._render = () => {
+    ['data', 'hora', 'duracao', 'obs'].forEach(k => { const el = document.getElementById(`ps-${k}`); if (el) walk[k] = el.value; });
+    const enc = walk.id ? encontrosDe(walk.id) : [];
+    openSheet(`
+      <div class="sheet-title">${walk.id ? 'Passeio' : 'Registrar passeio'}</div>
+      <div class="sheet-sub">${walk.id ? 'Toque em um campo para ajustar.' : 'Para um passeio que você não cronometrou.'}</div>
+      <div class="row3">
+        <div class="field"><label class="label" for="ps-data">Data</label><input class="input" type="date" id="ps-data" value="${walk.data}" max="${hoje()}"></div>
+        <div class="field"><label class="label" for="ps-hora">Início</label><input class="input" type="time" id="ps-hora" value="${walk.hora}"></div>
+        <div class="field"><label class="label" for="ps-duracao">Minutos</label><input class="input" type="number" min="1" id="ps-duracao" value="${walk.duracao}"></div>
+      </div>
+      ${camposWalkHTML(cao)}
+      <div class="field"><label class="label">Avaliação geral</label><div class="chips int-chips">${notaChips('avaliacao', AVALIACAO_ROT)}</div></div>
+      <div class="field"><label class="label">Estresse ao voltar</label><div class="chips int-chips">${notaChips('estresse', ESTRESSE_ROT)}</div></div>
+      <div class="field"><label class="label" for="ps-obs">Observação</label><textarea class="input" id="ps-obs">${esc(walk.obs)}</textarea></div>
+      ${walk.id ? `
+        <div class="grupo">Encontros · ${enc.length}</div>
+        ${enc.map(e => `<div class="item-row" onclick="abrirEncontro('${e.id}')" style="cursor:pointer">
+          <span class="t">${esc(e.gatilho)} · ${esc(RESULTADO_ROTULO[e.resultado] || '')}<small>${[horaSP(e.data_hora), DISTANCIA_ROT[e.distancia], e.recuperacao ? `acalmou em ${REC_ROTULO[e.recuperacao]}` : ''].filter(Boolean).join(' · ')}</small></span>
+          <span class="chev">${ICON_CHEV}</span></div>`).join('')}
+        <button class="mini" onclick="abrirEncontro(null, '${walk.id}')">+ Encontro</button>` : ''}
+      <div class="sheet-actions">
+        ${walk.id ? `<button class="btn btn-danger" onclick="excluirPasseio('${walk.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>`}
+        <button class="btn btn-primary" onclick="salvarPasseio()">Salvar</button>
+      </div>`);
+  };
+  document.getElementById('sheet').innerHTML = '';
+  walk._render();
+}
+
+async function salvarPasseio() {
+  const cao = caoAtual();
+  ['data', 'hora', 'duracao', 'obs'].forEach(k => { const el = document.getElementById(`ps-${k}`); if (el) walk[k] = el.value; });
+  const dur = Math.max(1, parseInt(walk.duracao, 10) || 0);
+  const inicio = spLocalParaISO(`${walk.data}T${walk.hora || '00:00'}`);
+  const fim = new Date(new Date(inicio).getTime() + dur * 60000).toISOString();
+  const dados = {
+    inicio, fim, duracao_min: dur, tipo: walk.tipo, rota: walk.rota, equipamento: walk.equipamento,
+    avaliacao: walk.avaliacao, estresse_volta: walk.estresse, observacao: walk.obs.trim() || null,
+  };
+  try {
+    if (walk.id) {
+      const [r] = await sbPatch('caes_passeios', `id=eq.${walk.id}`, dados);
+      Object.assign(state.passeios.find(x => x.id === walk.id), r);
+    } else {
+      const [r] = await sbInsert('caes_passeios', { ...dados, cao_id: cao.id });
+      state.passeios.push(r);
+      if (walk.data === hoje()) await marcarPasseioNoChecklist(cao);
+    }
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Passeio salvo');
+  } catch (e) { toast('Não consegui salvar. Confira a internet.'); }
+}
+
+async function excluirPasseio(id) {
+  if (!confirm('Excluir este passeio? Os encontros dele também serão apagados.')) return;
+  try {
+    await sbDelete('caes_passeios', `id=eq.${id}`);
+    state.passeios = state.passeios.filter(p => p.id !== id);
+    state.reatividade = state.reatividade.filter(r => r.passeio_id !== id);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Passeio excluído');
+  } catch (e) { toast('Não consegui excluir. Confira a internet.'); }
 }
 
 // ── aba Plano ──
