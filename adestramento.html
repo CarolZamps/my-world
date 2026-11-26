@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0F0E13">
+<title>Adestramento · Meu Mundo</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🐾</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F0E13;
+  --surface: #18161F;
+  --surface-2: #221F2C;
+  --border: #2A2735;
+  --text: #F5F3F7;
+  --text-dim: #8B8595;
+  --text-faint: #5A5566;
+  --c: #FB923C;
+  --c-soft: rgba(251, 146, 60, 0.12);
+  --c-mid: rgba(251, 146, 60, 0.28);
+  --ok: #6EE7B7;
+  --danger: #F87171;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+  overscroll-behavior-y: contain;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  padding: 0 16px 100px;
+  overflow-x: hidden;
+}
+
+button { font: inherit; color: inherit; }
+
+/* ── top bar ── */
+.topbar { display: flex; align-items: center; gap: 12px; padding: 20px 0 12px; }
+.back-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-dim);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; text-decoration: none; flex-shrink: 0;
+  transition: border-color .15s, color .15s;
+}
+.back-btn:hover { border-color: var(--c); color: var(--c); }
+.topbar-title { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+
+.hero { padding: 8px 0 20px; }
+.eyebrow {
+  font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
+  color: var(--text-faint); font-family: 'JetBrains Mono', monospace; margin-bottom: 8px;
+}
+.hero h1 { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 38px; line-height: 1.05; letter-spacing: -.01em; }
+.hero h1 em { color: var(--c); }
+.hero p { color: var(--text-dim); font-size: 13.5px; margin-top: 8px; }
+
+/* ── cards de cão ── */
+.dog-card {
+  display: flex; gap: 14px; align-items: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+  padding: 14px; margin-bottom: 12px; cursor: pointer; width: 100%; text-align: left;
+  transition: border-color .15s, transform .15s;
+}
+.dog-card:hover { border-color: var(--c-mid); }
+.dog-card:active { transform: scale(.98); }
+.avatar {
+  width: 64px; height: 64px; border-radius: 18px; flex-shrink: 0;
+  background: var(--c-soft); color: var(--c); overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Instrument Serif', serif; font-size: 30px;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; }
+.avatar.lg { width: 84px; height: 84px; border-radius: 24px; font-size: 40px; }
+.dog-info { flex: 1; min-width: 0; }
+.dog-name { font-size: 17px; font-weight: 600; letter-spacing: -.01em; }
+.dog-fase { font-size: 12.5px; color: var(--text-dim); margin-top: 1px; }
+.dog-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.tag {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .04em;
+  padding: 3px 8px; border-radius: 20px; background: var(--surface-2); color: var(--text-dim);
+  border: 1px solid var(--border);
+}
+.tag.c { color: var(--c); background: var(--c-soft); border-color: transparent; }
+.tag.pausa { color: #FBBF24; background: rgba(251,191,36,.1); border-color: transparent; }
+.chev { color: var(--text-faint); flex-shrink: 0; }
+
+.add-btn {
+  width: 100%; padding: 13px; border-radius: 16px;
+  border: 1px dashed var(--border); background: none; color: var(--text-dim);
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: border-color .15s, color .15s;
+}
+.add-btn:hover { border-color: var(--c); color: var(--c); }
+
+/* ── tela do cão ── */
+.dog-head { display: flex; gap: 14px; align-items: center; margin: 4px 0 18px; }
+.dog-head .dog-name { font-family: 'Instrument Serif', serif; font-weight: 400; font-size: 32px; line-height: 1.05; }
+
+.nav-tabs {
+  display: flex; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 3px; margin-bottom: 18px; overflow-x: auto; scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  flex: 1; padding: 8px 10px; text-align: center; font-size: 13.5px; font-weight: 500;
+  color: var(--text-dim); cursor: pointer; border-radius: 9px; white-space: nowrap;
+  border: none; background: none; transition: background .15s, color .15s;
+}
+.nav-tab.active { background: var(--surface-2); color: var(--text); }
+
+.sec-title {
+  font-size: 10.5px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-faint); font-family: 'JetBrains Mono', monospace; margin: 22px 0 10px;
+}
+
+/* fase atual */
+.fase-atual {
+  background: linear-gradient(160deg, var(--c-soft), transparent 70%), var(--surface);
+  border: 1px solid var(--c-mid); border-radius: 20px; padding: 18px;
+}
+.fase-num { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--c); letter-spacing: .08em; }
+.fase-nome { font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin-top: 2px; }
+.fase-obj { font-size: 13.5px; color: var(--text); margin-top: 8px; }
+.fase-desc { font-size: 13px; color: var(--text-dim); margin-top: 8px; line-height: 1.55; }
+.fase-meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11.5px; color: var(--text-faint); margin-top: 12px; font-family: 'JetBrains Mono', monospace; }
+
+.criterios { margin-top: 14px; display: flex; flex-direction: column; gap: 6px; }
+.crit {
+  display: flex; gap: 10px; align-items: flex-start; text-align: left;
+  background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  padding: 10px 12px; cursor: pointer; font-size: 13.5px; width: 100%;
+  transition: border-color .15s;
+}
+.crit .box {
+  width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--text-faint);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; margin-top: 1px;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+.crit.done .box { background: var(--c); border-color: var(--c); color: #1a1208; transform: scale(1.05); }
+.crit .box svg { opacity: 0; transition: opacity .2s; }
+.crit.done .box svg { opacity: 1; }
+.crit.done .txt { color: var(--text-dim); text-decoration: line-through; text-decoration-color: var(--text-faint); }
+.crit-prog { font-size: 12px; color: var(--text-dim); margin-top: 10px; }
+.crit-prog b { color: var(--c); font-weight: 600; }
+
+.fase-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+
+.btn {
+  padding: 11px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: 13.5px; font-weight: 500;
+  cursor: pointer; transition: border-color .15s, background .15s, opacity .15s;
+}
+.btn:hover { border-color: var(--text-faint); }
+.btn:disabled { opacity: .4; cursor: default; }
+.btn-primary { background: var(--c); border-color: var(--c); color: #1a1208; font-weight: 600; }
+.btn-primary:hover { border-color: var(--c); opacity: .9; }
+.btn-ghost { background: none; }
+.btn-danger { color: var(--danger); background: none; border-color: rgba(248,113,113,.3); }
+.btn-block { width: 100%; }
+
+/* lista de fases */
+.fase-item {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+  margin-bottom: 8px; overflow: hidden;
+}
+.fase-item.atual { border-color: var(--c-mid); }
+.fase-item-head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 12px 12px 14px; cursor: pointer;
+  width: 100%; background: none; border: none; text-align: left;
+}
+.fase-badge {
+  width: 28px; height: 28px; border-radius: 9px; background: var(--surface-2);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--text-dim);
+}
+.fase-item.atual .fase-badge { background: var(--c); color: #1a1208; }
+.fase-item.passada .fase-badge { background: var(--c-soft); color: var(--c); }
+.fase-item-nome { flex: 1; font-size: 14px; font-weight: 500; }
+.fase-item-sub { font-size: 11.5px; color: var(--text-faint); }
+.fase-item-body { display: none; padding: 0 14px 14px 52px; font-size: 13px; color: var(--text-dim); }
+.fase-item.open .fase-item-body { display: block; }
+.fase-item .caret { transition: transform .2s; color: var(--text-faint); }
+.fase-item.open .caret { transform: rotate(90deg); }
+.fase-tools { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+.mini {
+  padding: 6px 10px; border-radius: 9px; border: 1px solid var(--border); background: var(--surface-2);
+  font-size: 12px; color: var(--text-dim); cursor: pointer;
+}
+.mini:hover { color: var(--text); border-color: var(--text-faint); }
+.mini:disabled { opacity: .35; cursor: default; }
+.mini ul, .fase-item-body ul { padding-left: 16px; }
+.fase-item-body ul { margin-top: 6px; }
+
+/* histórico */
+.hist { border-left: 2px solid var(--border); margin-left: 6px; padding-left: 14px; }
+.hist-item { position: relative; padding-bottom: 12px; font-size: 13px; }
+.hist-item::before {
+  content: ''; position: absolute; left: -20px; top: 6px; width: 10px; height: 10px;
+  border-radius: 50%; background: var(--surface-2); border: 2px solid var(--c);
+}
+.hist-item.volta::before { border-color: #FBBF24; }
+.hist-data { font-size: 11px; color: var(--text-faint); font-family: 'JetBrains Mono', monospace; }
+.hist-obs { color: var(--text-dim); font-size: 12.5px; }
+
+/* formulários */
+.field { margin-bottom: 14px; }
+.label { font-size: 12px; color: var(--text-dim); margin-bottom: 6px; display: block; }
+.input, textarea.input, select.input {
+  width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px;
+  color: var(--text); font: inherit; font-size: 14.5px; padding: 11px 12px; outline: none;
+  transition: border-color .15s;
+}
+textarea.input { resize: vertical; min-height: 80px; line-height: 1.45; }
+.input:focus { border-color: var(--c); }
+.row2 { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 10px; }
+.row2 > * { min-width: 0; }
+input[type=date].input { min-width: 0; -webkit-appearance: none; appearance: none; min-height: 46px; }
+.hint { font-size: 11.5px; color: var(--text-faint); margin-top: 5px; }
+
+.card {
+  background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 16px;
+}
+.foto-edit { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip {
+  padding: 8px 12px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface-2);
+  font-size: 13px; color: var(--text-dim); cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s, transform .1s;
+}
+.chip:active { transform: scale(.95); }
+.chip.on { background: var(--c-soft); border-color: var(--c); color: var(--c); }
+
+.status-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.status-pill { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); }
+.dot.pausa { background: #FBBF24; }
+
+.empty {
+  text-align: center; color: var(--text-dim); font-size: 13.5px;
+  padding: 26px 16px; border: 1px dashed var(--border); border-radius: 18px;
+}
+.empty .big { font-size: 32px; margin-bottom: 6px; }
+
+.em-breve { font-size: 13px; color: var(--text-faint); text-align: center; padding: 30px 10px; }
+
+/* ── hoje / checklist ── */
+.day-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.day-arrow {
+  width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border); background: none;
+  color: var(--text-dim); cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.day-arrow:disabled { opacity: .3; cursor: default; }
+.day-label { font-size: 14px; font-weight: 600; text-align: center; }
+.day-label small { display: block; font-size: 11px; color: var(--text-faint); font-weight: 400; font-family: 'JetBrains Mono', monospace; }
+
+.today-top { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; margin-bottom: 16px; }
+.ring { position: relative; width: 92px; height: 92px; }
+.ring svg { transform: rotate(-90deg); }
+.ring .trk { stroke: var(--surface-2); }
+.ring .bar { stroke: var(--c); transition: stroke-dashoffset .6s cubic-bezier(.2,.9,.3,1); }
+.ring .num { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring .num b { font-size: 22px; font-family: 'JetBrains Mono', monospace; font-weight: 500; letter-spacing: -.03em; }
+.ring .num span { font-size: 10px; color: var(--text-faint); letter-spacing: .08em; text-transform: uppercase; }
+.streak { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 12px 14px; }
+.streak-n { font-size: 20px; font-weight: 600; letter-spacing: -.02em; }
+.streak-n .flame { display: inline-block; transform-origin: bottom center; }
+.streak-n .flame.on { animation: flicker 1.8s ease-in-out infinite; }
+@keyframes flicker { 0%,100% { transform: scale(1) rotate(0); } 50% { transform: scale(1.08) rotate(-3deg); } }
+.streak-sub { font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+.check-list { display: flex; flex-direction: column; gap: 8px; }
+.check {
+  display: flex; gap: 12px; align-items: center; width: 100%; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 13px 14px; cursor: pointer; font-size: 14.5px;
+  transition: border-color .2s, background .2s, transform .1s;
+}
+.check:active { transform: scale(.985); }
+.check .box {
+  width: 24px; height: 24px; border-radius: 8px; border: 1.8px solid var(--text-faint); flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; color: #1a1208;
+  transition: background .2s, border-color .2s;
+}
+.check .box svg { transform: scale(0); transition: transform .25s cubic-bezier(.3,1.6,.5,1); }
+.check.done { background: linear-gradient(90deg, var(--c-soft), transparent 80%), var(--surface); border-color: var(--c-mid); }
+.check.done .box { background: var(--c); border-color: var(--c); }
+.check.done .box svg { transform: scale(1); }
+.check.done .check-txt { color: var(--text-dim); }
+.check.pop .box { animation: pop .35s cubic-bezier(.3,1.6,.5,1); }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.25); } 100% { transform: scale(1); } }
+.check-txt { flex: 1; min-width: 0; }
+.check-sub { display: block; font-size: 11.5px; color: var(--text-faint); margin-top: 1px; }
+.check-sub.subst { color: #FBBF24; }
+.all-done { text-align: center; font-size: 13.5px; color: var(--c); margin-top: 12px; animation: fadeIn .3s ease; }
+
+.item-row {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px;
+  background: var(--surface-2); border: 1px solid var(--border); margin-bottom: 6px; font-size: 13.5px;
+}
+.item-row .t { flex: 1; min-width: 0; }
+.item-row .t small { display: block; font-size: 11px; color: var(--text-faint); }
+.grupo { font-size: 11px; color: var(--text-faint); margin: 14px 0 6px; font-family: 'JetBrains Mono', monospace; letter-spacing: .06em; text-transform: uppercase; }
+.switch-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 13.5px; }
+.switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch span { position: absolute; inset: 0; background: var(--surface-2); border: 1px solid var(--border); border-radius: 20px; transition: background .2s; cursor: pointer; }
+.switch span::after { content: ''; position: absolute; width: 20px; height: 20px; left: 2px; top: 2px; background: var(--text-dim); border-radius: 50%; transition: transform .2s, background .2s; }
+.switch input:checked + span { background: var(--c-soft); border-color: var(--c); }
+.switch input:checked + span::after { transform: translateX(18px); background: var(--c); }
+
+/* ── sheet (janela de baixo) ── */
+.sheet-overlay {
+  position: fixed; inset: 0; background: rgba(5,4,8,.6); z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity .2s;
+}
+.sheet-overlay.open { opacity: 1; pointer-events: auto; }
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 201;
+  max-width: 480px; margin: 0 auto; max-height: 90dvh; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--border); border-bottom: none;
+  border-radius: 22px 22px 0 0; padding: 10px 18px calc(22px + env(safe-area-inset-bottom));
+  transform: translateY(100%); visibility: hidden;
+  transition: transform .28s cubic-bezier(.2,.9,.3,1), visibility 0s .28s;
+}
+.sheet.open { transform: translateY(0); visibility: visible; transition: transform .28s cubic-bezier(.2,.9,.3,1); }
+.sheet-grip { width: 38px; height: 4px; border-radius: 4px; background: var(--border); margin: 0 auto 14px; }
+.sheet-title { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.sheet-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 16px; }
+.sheet-actions { display: flex; gap: 8px; margin-top: 18px; }
+.sheet-actions .btn { flex: 1; }
+
+.toast {
+  position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--surface-2); border: 1px solid var(--border); color: var(--text);
+  padding: 10px 16px; border-radius: 12px; font-size: 13.5px; z-index: 300;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; max-width: 90vw; text-align: center;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.sheet.open ~ .toast { bottom: auto; top: 20px; }
+
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--text-dim); font-size: 13px; padding: 40px 0; }
+.spinner { width: 16px; height: 16px; border: 2px solid var(--border); border-top-color: var(--c); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.view { animation: fadeIn .22s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+@media (min-width: 768px) {
+  body { max-width: 720px; padding: 0 32px 100px; }
+  .topbar { padding: 28px 0 14px; }
+  .hero h1 { font-size: 46px; }
+  .dog-list { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .dog-list .dog-card { margin-bottom: 0; }
+  .sheet { border-radius: 22px; bottom: 24px; border-bottom: 1px solid var(--border); }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/index.html" class="back-btn" id="back-btn" aria-label="Voltar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+  </a>
+  <span class="topbar-title" id="topbar-title">Adestramento</span>
+</div>
+
+<main id="app">
+  <div class="loading"><div class="spinner"></div><span>Carregando...</span></div>
+</main>
+
+<div class="sheet-overlay" id="sheet-overlay" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+<div class="toast" id="toast"></div>
+
+<script src="/js/caes-core.js"></script>
+<script>
+const SB_URL = 'https://dfeubhkpuiwodpadysmi.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRmZXViaGtwdWl3b2RwYWR5c21pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Njc3MTIsImV4cCI6MjA5ODM0MzcxMn0.2F1wNafW510GmUiYQH0O6HvO97eB-4N0G8GEk0pVOQ8';
+const CACHE_KEY = 'meu-adestramento-v1';
+const C = window.CaesCore;
+
+const LISTAS_PADRAO = {
+  gatilho: ['Pessoa','Moto','Portão','Criança','Bicicleta','Skate','Cachorro','Carro','Campainha','Desconhecido','Outro'],
+  local: ['Casa','Sala','Quintal','Portão','Passeio'],
+  exercicio: ['Resposta ao nome','Toque na mão (target)','Ir para a caminha','Chamado de emergência'],
+  funcionou: ['Chamado de emergência','Target','Afastar do som','Farejar','Petisco'],
+  petisco: ['Frango','Petisco comercial','Ração'],
+  tipo_passeio: ['Descompressão / farejar','Treino','Gasto de energia'],
+  equipamento: ['Peitoral','Guia longa','Guia curta'],
+};
+
+const state = {
+  caes: [], fases: [], historico: [], pausas: [], itens: [], marcas: [],
+  caoId: null, aba: 'hoje', online: true, dia: null,
+};
+
+// ── supabase ──
+async function sb(path, opts = {}) {
+  const r = await fetch(`${SB_URL}/rest/v1/${path}`, {
+    headers: {
+      apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`,
+      'Content-Type': 'application/json', Prefer: opts.prefer || '',
+    },
+    ...opts,
+  });
+  if (!r.ok) throw new Error(await r.text());
+  const txt = await r.text();
+  return txt ? JSON.parse(txt) : null;
+}
+const sbInsert = (tabela, dados) => sb(`${tabela}?select=*`, { method: 'POST', prefer: 'return=representation', body: JSON.stringify(dados) });
+const sbPatch = (tabela, filtro, dados) => sb(`${tabela}?${filtro}`, { method: 'PATCH', prefer: 'return=representation', body: JSON.stringify(dados) });
+const sbDelete = (tabela, filtro) => sb(`${tabela}?${filtro}`, { method: 'DELETE' });
+
+function salvarCache() {
+  try {
+    const { caes, fases, historico, pausas, itens, marcas } = state;
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ caes, fases, historico, pausas, itens, marcas }));
+  } catch (e) {}
+}
+function lerCache() {
+  try { return JSON.parse(localStorage.getItem(CACHE_KEY) || 'null'); } catch (e) { return null; }
+}
+
+async function carregar() {
+  try {
+    const desde = C.addDias(C.dataSP(new Date()), -120);
+    const [caes, fases, historico, pausas, itens, marcas] = await Promise.all([
+      sb('caes?ativo=eq.true&order=ordem.asc,created_at.asc'),
+      sb('caes_fases?order=ordem.asc'),
+      sb('caes_fase_historico?order=criado_em.desc'),
+      sb('caes_passeio_pausas?order=inicio.desc'),
+      sb('caes_checklist_itens?ativo=eq.true&order=ordem.asc'),
+      sb(`caes_checklist_marcas?data=gte.${desde}`),
+    ]);
+    Object.assign(state, { caes, fases, historico, pausas, itens, marcas, online: true });
+    salvarCache();
+  } catch (e) {
+    const cache = lerCache();
+    if (cache) Object.assign(state, cache);
+    state.online = false;
+    toast('Sem conexão: mostrando os dados salvos neste aparelho');
+  }
+}
+
+// ── utilidades ──
+const hoje = () => C.dataSP(new Date());
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
+}
+function fmtData(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.slice(0, 10).split('-');
+  return `${d}/${m}/${y}`;
+}
+function fmtDataHora(ts) {
+  const d = new Date(ts);
+  return d.toLocaleString('pt-BR', { timeZone: C.TZ, day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function idade(nasc) {
+  if (!nasc) return null;
+  const meses = Math.floor(C.diffDias(nasc, hoje()) / 30.44);
+  if (meses < 12) return `${meses} ${meses === 1 ? 'mês' : 'meses'}`;
+  const anos = Math.floor(meses / 12);
+  return `${anos} ${anos === 1 ? 'ano' : 'anos'}`;
+}
+const caoAtual = () => state.caes.find(c => c.id === state.caoId);
+const fasesDo = id => state.fases.filter(f => f.cao_id === id).sort((a, b) => a.ordem - b.ordem);
+const pausaVigente = id => state.pausas.find(p => p.cao_id === id && !p.fim);
+const faseDo = cao => state.fases.find(f => f.id === cao.fase_atual_id);
+
+function avatarHTML(cao, lg) {
+  const inner = cao.foto ? `<img src="${esc(cao.foto)}" alt="">` : esc((cao.nome || '?').trim().charAt(0).toUpperCase());
+  return `<div class="avatar ${lg ? 'lg' : ''}">${inner}</div>`;
+}
+
+const ICON_CHECK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 7"/></svg>';
+const ICON_CHEV = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>';
+const ICON_PLUS = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+
+// ── navegação ──
+function irPara(caoId, aba) {
+  if (caoId !== state.caoId) state.dia = null;
+  state.caoId = caoId;
+  if (aba) state.aba = aba;
+  const url = caoId ? `#cao=${caoId}&aba=${state.aba}` : '#';
+  history.replaceState(null, '', url);
+  render();
+  window.scrollTo({ top: 0 });
+}
+
+function lerHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  const id = p.get('cao');
+  state.caoId = id && state.caes.some(c => c.id === id) ? id : null;
+  state.aba = p.get('aba') || 'hoje';
+}
+
+function render() {
+  const back = document.getElementById('back-btn');
+  if (state.caoId && caoAtual()) {
+    back.setAttribute('href', '#');
+    back.onclick = e => { e.preventDefault(); irPara(null); };
+    document.getElementById('topbar-title').textContent = 'Adestramento';
+    renderCao();
+  } else {
+    state.caoId = null;
+    back.setAttribute('href', '/index.html');
+    back.onclick = null;
+    renderLista();
+  }
+}
+
+// ── lista de cães ──
+function renderLista() {
+  const app = document.getElementById('app');
+  const cards = state.caes.map(cao => {
+    const fase = faseDo(cao);
+    const pausa = pausaVigente(cao.id);
+    const dias = cao.inicio_plano ? C.diffDias(cao.inicio_plano, hoje()) + 1 : null;
+    const pr = progressoHoje(cao);
+    return `<button class="dog-card" onclick="irPara('${cao.id}', 'hoje')">
+      ${avatarHTML(cao)}
+      <div class="dog-info">
+        <div class="dog-name">${esc(cao.nome)}</div>
+        <div class="dog-fase">${fase ? `Fase ${fase.ordem} · ${esc(fase.nome)}` : 'Sem fase definida'}</div>
+        <div class="dog-tags">
+          ${pr.total ? `<span class="tag ${pr.feitos === pr.total ? 'c' : ''}">Hoje ${pr.feitos}/${pr.total}</span>` : ''}
+          ${dias && dias > 0 ? `<span class="tag c">${dias}º dia de plano</span>` : ''}
+          ${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : ''}
+        </div>
+      </div>
+      <span class="chev">${ICON_CHEV}</span>
+    </button>`;
+  }).join('');
+
+  app.innerHTML = `<div class="view">
+    <div class="hero">
+      <div class="eyebrow">Adestramento</div>
+      <h1>Um passinho<br>de <em>cada vez</em></h1>
+      <p>Reforço positivo, sem pressa e sem punição.</p>
+    </div>
+    ${state.caes.length ? `<div class="dog-list">${cards}</div>` :
+      `<div class="empty"><div class="big">🐾</div>Nenhum cão cadastrado ainda.<br>Que tal começar adicionando o primeiro?</div>`}
+    <div style="margin-top:14px">
+      <button class="add-btn" onclick="abrirNovoCao()">${ICON_PLUS} Adicionar cão</button>
+    </div>
+  </div>`;
+}
+
+// ── tela do cão ──
+const ABAS = [
+  { id: 'hoje', nome: 'Hoje' },
+  { id: 'plano', nome: 'Plano' },
+  { id: 'perfil', nome: 'Perfil' },
+];
+
+function renderCao() {
+  const cao = caoAtual();
+  const fase = faseDo(cao);
+  const pausa = pausaVigente(cao.id);
+  const app = document.getElementById('app');
+  const aba = ABAS.some(a => a.id === state.aba) ? state.aba : 'hoje';
+  app.innerHTML = `<div class="view">
+    <div class="dog-head">
+      ${avatarHTML(cao, true)}
+      <div>
+        <div class="dog-name">${esc(cao.nome)}</div>
+        <div class="dog-fase">${fase ? `Fase ${fase.ordem} · ${esc(fase.nome)}` : 'Sem fase definida'}</div>
+        <div class="dog-tags">${pausa ? '<span class="tag pausa">Passeios em pausa</span>' : '<span class="tag">Passeios ativos</span>'}</div>
+      </div>
+    </div>
+    <div class="nav-tabs">
+      ${ABAS.map(a => `<button class="nav-tab ${a.id === aba ? 'active' : ''}" onclick="irPara('${cao.id}', '${a.id}')">${a.nome}</button>`).join('')}
+    </div>
+    <div id="aba-conteudo">${aba === 'perfil' ? htmlPerfil(cao) : aba === 'plano' ? htmlPlano(cao) : htmlHoje(cao)}</div>
+  </div>`;
+}
+
+// ── aba Hoje (checklist diário) ──
+const DIAS_CURTO = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const DIAS_LONGO = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+
+const itensCao = id => state.itens.filter(i => i.cao_id === id && i.ativo !== false);
+const marcasCao = id => state.marcas.filter(m => m.cao_id === id);
+const histCao = id => state.historico.filter(h => h.cao_id === id);
+const pausasCao = id => state.pausas.filter(p => p.cao_id === id);
+
+function faseDoDia(cao, data) {
+  if (data >= hoje()) return cao.fase_atual_id;
+  return C.faseNaData(histCao(cao.id), data, cao.fase_atual_id);
+}
+
+function itensDoDiaCao(cao, data) {
+  const faseId = faseDoDia(cao, data);
+  if (!faseId && fasesDo(cao.id).length) return [];
+  return C.itensDoDia({ itens: itensCao(cao.id), fases: fasesDo(cao.id), faseAtualId: faseId, data, pausas: pausasCao(cao.id) });
+}
+
+function feitosNoDia(cao, data) {
+  return marcasCao(cao.id).filter(m => m.data === data).map(m => m.item_id);
+}
+
+function progressoHoje(cao) {
+  return C.progressoDia(itensDoDiaCao(cao, hoje()), feitosNoDia(cao, hoje()));
+}
+
+function streakCao(cao) {
+  const fim = hoje();
+  const datas = marcasCao(cao.id).map(m => m.data);
+  const inicioPlano = cao.inicio_plano && cao.inicio_plano <= fim ? cao.inicio_plano : fim;
+  const inicio = [inicioPlano, ...datas].sort()[0] < C.addDias(fim, -120) ? C.addDias(fim, -120) : [inicioPlano, ...datas].sort()[0];
+  const historico = C.historicoChecklist({
+    itens: itensCao(cao.id), fases: fasesDo(cao.id), historicoFases: histCao(cao.id),
+    pausas: pausasCao(cao.id), marcas: marcasCao(cao.id), inicio, fim, faseAtualId: cao.fase_atual_id,
+  });
+  return C.calcularStreak(historico, fim);
+}
+
+function ringHTML(feitos, total, rotulo = 'hoje') {
+  const r = 40, circ = 2 * Math.PI * r;
+  const pct = total ? feitos / total : 0;
+  return `<div class="ring">
+    <svg width="92" height="92" viewBox="0 0 92 92">
+      <circle class="trk" cx="46" cy="46" r="${r}" fill="none" stroke-width="8"/>
+      <circle class="bar" id="ring-bar" cx="46" cy="46" r="${r}" fill="none" stroke-width="8" stroke-linecap="round"
+        stroke-dasharray="${circ}" stroke-dashoffset="${circ * (1 - pct)}"/>
+    </svg>
+    <div class="num"><b>${feitos}/${total}</b><span>${rotulo}</span></div>
+  </div>`;
+}
+
+function htmlHoje(cao) {
+  const dia = state.dia || hoje();
+  const ehHoje = dia === hoje();
+  const lista = itensDoDiaCao(cao, dia);
+  const feitos = new Set(feitosNoDia(cao, dia));
+  const prog = C.progressoDia(lista, [...feitos]);
+  const st = streakCao(cao);
+  const [, m, d] = dia.split('-');
+  const rotuloDia = ehHoje ? 'Hoje' : dia === C.addDias(hoje(), -1) ? 'Ontem' : DIAS_LONGO[C.diaSemana(dia)];
+
+  let streakTxt, streakSub;
+  if (st.atual > 0) {
+    streakTxt = `<span class="flame on">🔥</span> ${st.atual} ${st.atual === 1 ? 'dia' : 'dias'}`;
+    streakSub = st.melhor > st.atual ? `Sua melhor sequência: ${st.melhor} dias` : 'Dias seguidos com o checklist em dia';
+  } else {
+    streakTxt = `<span class="flame">🌱</span> Novo começo`;
+    streakSub = st.melhor ? `Já foram ${st.melhor} dias seguidos uma vez. Cada dia conta!` : 'Complete o checklist para começar uma sequência.';
+  }
+
+  const itensHTML = lista.length ? lista.map(it => `
+    <button class="check ${feitos.has(it.id) ? 'done' : ''}" id="ck-${it.id}" onclick="toggleCheck('${it.id}')">
+      <span class="box">${ICON_CHECK}</span>
+      <span class="check-txt">${esc(it.titulo)}
+        ${it.substituto ? '<span class="check-sub subst">no lugar do passeio · passeios em pausa</span>' : ''}
+      </span>
+    </button>`).join('')
+    : `<div class="empty"><div class="big">☁️</div>Nenhum item para ${ehHoje ? 'hoje' : 'este dia'}.<br>Dia leve! Se quiser, adicione itens ao checklist.</div>`;
+
+  return `
+    <div class="day-nav">
+      <button class="day-arrow" onclick="mudarDia(-1)" aria-label="Dia anterior">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <div class="day-label">${rotuloDia}<small>${d}/${m} · ${DIAS_CURTO[C.diaSemana(dia)].toLowerCase()}</small></div>
+      <button class="day-arrow" onclick="mudarDia(1)" ${ehHoje ? 'disabled' : ''} aria-label="Próximo dia">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+    <div class="today-top">
+      ${ringHTML(prog.feitos, prog.total, ehHoje ? 'hoje' : 'feitos')}
+      <div class="streak">
+        <div class="streak-n">${streakTxt}</div>
+        <div class="streak-sub">${streakSub}</div>
+      </div>
+    </div>
+    <div class="check-list">${itensHTML}</div>
+    ${prog.total && prog.feitos === prog.total ? `<div class="all-done">Tudo feito ${ehHoje ? 'hoje' : 'neste dia'}! ${esc(cao.nome)} agradece 🐾</div>` : ''}
+    <div style="margin-top:16px"><button class="add-btn" onclick="abrirItens()">Editar itens do checklist</button></div>`;
+}
+
+function mudarDia(dir) {
+  const atual = state.dia || hoje();
+  const novo = C.addDias(atual, dir);
+  if (novo > hoje()) return;
+  state.dia = novo === hoje() ? null : novo;
+  renderCao();
+}
+
+async function toggleCheck(itemId) {
+  const cao = caoAtual();
+  const dia = state.dia || hoje();
+  const existente = state.marcas.find(m => m.item_id === itemId && m.data === dia);
+  // atualiza a tela na hora; desfaz se não salvar
+  if (existente) state.marcas = state.marcas.filter(m => m !== existente);
+  else state.marcas.push({ item_id: itemId, cao_id: cao.id, data: dia });
+  renderCao();
+  if (!existente) document.getElementById(`ck-${itemId}`)?.classList.add('pop');
+  try {
+    if (existente) await sbDelete('caes_checklist_marcas', `item_id=eq.${itemId}&data=eq.${dia}`);
+    else await sb('caes_checklist_marcas', { method: 'POST', prefer: 'resolution=ignore-duplicates', body: JSON.stringify({ item_id: itemId, cao_id: cao.id, data: dia }) });
+    salvarCache();
+  } catch (e) {
+    if (existente) state.marcas.push(existente);
+    else state.marcas = state.marcas.filter(m => !(m.item_id === itemId && m.data === dia));
+    renderCao();
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+// ── edição dos itens do checklist ──
+function descreverItem(it) {
+  const partes = [];
+  partes.push(it.dias_semana && it.dias_semana.length ? it.dias_semana.slice().sort().map(d => DIAS_CURTO[d]).join(', ') : 'Todo dia');
+  if (it.fase_id && it.continua) partes.push('continua nas próximas fases');
+  if (it.tipo === 'passeio') partes.push('passeio');
+  return partes.join(' · ');
+}
+
+function abrirItens() {
+  const cao = caoAtual();
+  const itens = itensCao(cao.id);
+  const grupos = [{ id: null, nome: 'Todas as fases' }, ...fasesDo(cao.id).map(f => ({ id: f.id, nome: `Fase ${f.ordem} · ${f.nome}` }))];
+  const html = grupos.map(g => {
+    const doGrupo = itens.filter(i => (i.fase_id || null) === g.id).sort((a, b) => a.ordem - b.ordem);
+    if (!doGrupo.length) return '';
+    return `<div class="grupo">${esc(g.nome)}</div>` + doGrupo.map(i => `
+      <div class="item-row">
+        <span class="t">${esc(i.titulo)}<small>${esc(descreverItem(i))}</small></span>
+        <button class="mini" onclick="abrirItem('${i.id}')">Editar</button>
+      </div>`).join('');
+  }).join('');
+  openSheet(`
+    <div class="sheet-title">Itens do checklist</div>
+    <div class="sheet-sub">O checklist de cada dia é montado com os itens da fase atual e os que valem para todas.</div>
+    ${html || '<div class="em-breve">Nenhum item ainda.</div>'}
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Fechar</button>
+      <button class="btn btn-primary" onclick="abrirItem()">+ Novo item</button>
+    </div>`);
+}
+
+function abrirItem(itemId) {
+  const cao = caoAtual();
+  const it = itemId ? state.itens.find(i => i.id === itemId) : null;
+  const faseSel = it ? (it.fase_id || '') : (cao.fase_atual_id || '');
+  const dias = it?.dias_semana || [];
+  openSheet(`
+    <div class="sheet-title">${it ? 'Editar item' : 'Novo item'}</div>
+    <div class="field" style="margin-top:12px"><label class="label" for="it-tit">O que fazer</label><input class="input" id="it-tit" maxlength="80" value="${esc(it?.titulo)}" placeholder="Ex: Enriquecimento: Kong"></div>
+    <div class="field">
+      <label class="label" for="it-fase">Vale para</label>
+      <select class="input" id="it-fase">
+        <option value="" ${faseSel === '' ? 'selected' : ''}>Todas as fases</option>
+        ${fasesDo(cao.id).map(f => `<option value="${f.id}" ${faseSel === f.id ? 'selected' : ''}>Fase ${f.ordem} · ${esc(f.nome)}</option>`).join('')}
+      </select>
+    </div>
+    <div class="field switch-row">
+      <span>Continua valendo nas fases seguintes</span>
+      <label class="switch"><input type="checkbox" id="it-cont" ${it ? (it.continua ? 'checked' : '') : 'checked'}><span></span></label>
+    </div>
+    <div class="field">
+      <label class="label">Dias da semana</label>
+      <div class="chips" id="it-dias">
+        ${[1,2,3,4,5,6,0].map(d => `<button class="chip ${dias.includes(d) ? 'on' : ''}" data-d="${d}" onclick="this.classList.toggle('on')">${DIAS_CURTO[d]}</button>`).join('')}
+      </div>
+      <div class="hint">Nenhum marcado = todo dia.</div>
+    </div>
+    <div class="field switch-row">
+      <span>É um passeio<span class="hint" style="display:block;margin:0">Na pausa de passeios, vira a atividade substituta.</span></span>
+      <label class="switch"><input type="checkbox" id="it-pas" ${it?.tipo === 'passeio' ? 'checked' : ''} onchange="document.getElementById('it-sub-f').style.display=this.checked?'':'none'"><span></span></label>
+    </div>
+    <div class="field" id="it-sub-f" style="${it?.tipo === 'passeio' ? '' : 'display:none'}">
+      <label class="label" for="it-sub">Atividade substituta</label>
+      <input class="input" id="it-sub" maxlength="80" value="${esc(it?.titulo_pausa || 'Atividade substituta: farejar no quintal ou enriquecimento')}">
+    </div>
+    <div class="sheet-actions">
+      ${it ? `<button class="btn btn-danger" onclick="excluirItem('${it.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="abrirItens()">Voltar</button>`}
+      <button class="btn btn-primary" onclick="salvarItem(${it ? `'${it.id}'` : 'null'})">Salvar</button>
+    </div>`);
+  if (!it) setTimeout(() => document.getElementById('it-tit')?.focus(), 250);
+}
+
+async function salvarItem(itemId) {
+  const cao = caoAtual();
+  const titulo = document.getElementById('it-tit').value.trim();
+  if (!titulo) { document.getElementById('it-tit').focus(); return; }
+  const dias = [...document.querySelectorAll('#it-dias .chip.on')].map(c => Number(c.dataset.d)).sort();
+  const passeio = document.getElementById('it-pas').checked;
+  const dados = {
+    titulo,
+    fase_id: document.getElementById('it-fase').value || null,
+    continua: document.getElementById('it-cont').checked,
+    dias_semana: dias.length ? dias : null,
+    tipo: passeio ? 'passeio' : 'normal',
+    titulo_pausa: passeio ? (document.getElementById('it-sub').value.trim() || null) : null,
+  };
+  try {
+    if (itemId) {
+      const [it] = await sbPatch('caes_checklist_itens', `id=eq.${itemId}`, dados);
+      Object.assign(state.itens.find(i => i.id === itemId), it);
+    } else {
+      const ordem = itensCao(cao.id).reduce((m, i) => Math.max(m, i.ordem || 0), 0) + 1;
+      const [it] = await sbInsert('caes_checklist_itens', { ...dados, cao_id: cao.id, ordem });
+      state.itens.push(it);
+    }
+    salvarCache();
+    renderCao();
+    abrirItens();
+    toast('Item salvo');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function excluirItem(itemId) {
+  const it = state.itens.find(i => i.id === itemId);
+  if (!confirm(`Tirar "${it.titulo}" do checklist? O que já foi marcado fica no histórico.`)) return;
+  try {
+    await sbPatch('caes_checklist_itens', `id=eq.${itemId}`, { ativo: false });
+    it.ativo = false;
+    salvarCache();
+    renderCao();
+    abrirItens();
+    toast('Item removido');
+  } catch (e) {
+    toast('Não consegui remover. Confira a internet.');
+  }
+}
+
+// ── aba Plano ──
+function htmlPlano(cao) {
+  const fases = fasesDo(cao.id);
+  const atual = faseDo(cao);
+  if (!fases.length) {
+    return `<div class="empty"><div class="big">🗺️</div>O plano ainda está vazio.<br>Adicione a primeira fase para começar.</div>
+      <div style="margin-top:12px"><button class="add-btn" onclick="abrirFase()">${ICON_PLUS} Adicionar fase</button></div>`;
+  }
+  const idx = atual ? fases.findIndex(f => f.id === atual.id) : -1;
+  let blocoAtual = '';
+  if (atual) {
+    const crit = atual.criterios || [];
+    const feitos = crit.filter(c => c.feito).length;
+    const desde = state.historico.find(h => h.cao_id === cao.id && h.para_fase_id === atual.id);
+    const diasNaFase = desde ? C.diffDias(C.dataSP(desde.criado_em), hoje()) + 1 : null;
+    blocoAtual = `<div class="fase-atual">
+      <div class="fase-num">FASE ATUAL · ${atual.ordem} DE ${fases[fases.length - 1].ordem}</div>
+      <div class="fase-nome">${esc(atual.nome)}</div>
+      ${atual.objetivo ? `<div class="fase-obj">${esc(atual.objetivo)}</div>` : ''}
+      ${atual.descricao ? `<div class="fase-desc">${esc(atual.descricao)}</div>` : ''}
+      <div class="fase-meta">
+        ${atual.duracao_estimada ? `<span>⏱ ${esc(atual.duracao_estimada)}</span>` : ''}
+        ${diasNaFase ? `<span>📅 ${diasNaFase}º dia nesta fase</span>` : ''}
+      </div>
+      ${crit.length ? `
+        <div class="sec-title" style="margin-top:16px">Para avançar</div>
+        <div class="criterios">${crit.map((c, i) => `
+          <button class="crit ${c.feito ? 'done' : ''}" onclick="toggleCriterio('${atual.id}', ${i})">
+            <span class="box">${ICON_CHECK}</span><span class="txt">${esc(c.texto)}</span>
+          </button>`).join('')}
+        </div>
+        <div class="crit-prog"><b>${feitos} de ${crit.length}</b> ${feitos === crit.length ? '· tudo pronto para o próximo passo 🎉' : 'critérios cumpridos'}</div>` : ''}
+      <div class="fase-actions">
+        <button class="btn" onclick="confirmarMudanca(-1)" ${idx <= 0 ? 'disabled' : ''}>Voltar uma fase</button>
+        <button class="btn btn-primary" onclick="confirmarMudanca(1)" ${idx >= fases.length - 1 ? 'disabled' : ''}>Avançar de fase</button>
+      </div>
+    </div>`;
+  } else {
+    blocoAtual = `<div class="empty">Nenhuma fase marcada como atual.<br>Abra uma fase abaixo e toque em "Tornar atual".</div>`;
+  }
+
+  const lista = fases.map((f, i) => {
+    const cls = f.id === atual?.id ? 'atual' : (atual && f.ordem < atual.ordem ? 'passada' : '');
+    const crit = f.criterios || [];
+    return `<div class="fase-item ${cls}" id="fi-${f.id}">
+      <button class="fase-item-head" onclick="document.getElementById('fi-${f.id}').classList.toggle('open')">
+        <span class="fase-badge">${f.ordem}</span>
+        <span style="flex:1;min-width:0">
+          <span class="fase-item-nome" style="display:block">${esc(f.nome)}</span>
+          <span class="fase-item-sub">${f.id === atual?.id ? 'fase atual' : (esc(f.duracao_estimada) || '')}</span>
+        </span>
+        <span class="caret">${ICON_CHEV}</span>
+      </button>
+      <div class="fase-item-body">
+        ${f.objetivo ? `<div style="color:var(--text)">${esc(f.objetivo)}</div>` : ''}
+        ${f.descricao ? `<div style="margin-top:6px">${esc(f.descricao)}</div>` : ''}
+        ${crit.length ? `<ul>${crit.map(c => `<li>${c.feito ? '✓ ' : ''}${esc(c.texto)}</li>`).join('')}</ul>` : ''}
+        <div class="fase-tools">
+          <button class="mini" onclick="abrirFase('${f.id}')">Editar</button>
+          <button class="mini" onclick="moverFase('${f.id}', -1)" ${i === 0 ? 'disabled' : ''} aria-label="Subir">↑</button>
+          <button class="mini" onclick="moverFase('${f.id}', 1)" ${i === fases.length - 1 ? 'disabled' : ''} aria-label="Descer">↓</button>
+          ${f.id !== atual?.id ? `<button class="mini" onclick="tornarAtual('${f.id}')">Tornar atual</button>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  const hist = state.historico.filter(h => h.cao_id === cao.id);
+  const nomeFase = id => { const f = state.fases.find(x => x.id === id); return f ? `Fase ${f.ordem} · ${f.nome}` : 'fase removida'; };
+  const rotulo = { inicio: 'Início do plano', avanco: 'Avançou para', volta: 'Voltou para', ajuste: 'Ajuste para' };
+  const histHTML = hist.length ? `<div class="hist">${hist.map(h => `
+    <div class="hist-item ${h.tipo}">
+      <div class="hist-data">${fmtDataHora(h.criado_em)}</div>
+      <div>${rotulo[h.tipo]}${h.tipo === 'inicio' ? ' · ' : ' '}${esc(nomeFase(h.para_fase_id))}</div>
+      ${h.observacao && h.tipo !== 'inicio' ? `<div class="hist-obs">${esc(h.observacao)}</div>` : ''}
+    </div>`).join('')}</div>` : '<div class="em-breve">Nenhuma mudança de fase ainda.</div>';
+
+  return `${blocoAtual}
+    <div class="sec-title">Todas as fases</div>
+    ${lista}
+    <button class="add-btn" onclick="abrirFase()">${ICON_PLUS} Adicionar fase</button>
+    <div class="sec-title">Histórico de fases</div>
+    ${histHTML}`;
+}
+
+async function toggleCriterio(faseId, i) {
+  const f = state.fases.find(x => x.id === faseId);
+  const crit = (f.criterios || []).map((c, j) => j === i ? { ...c, feito: !c.feito } : c);
+  const antes = f.criterios;
+  f.criterios = crit;
+  renderCao();
+  try {
+    await sbPatch('caes_fases', `id=eq.${faseId}`, { criterios: crit });
+    salvarCache();
+  } catch (e) {
+    f.criterios = antes; renderCao(); toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+function confirmarMudanca(dir) {
+  const cao = caoAtual();
+  const fases = fasesDo(cao.id);
+  const idx = fases.findIndex(f => f.id === cao.fase_atual_id);
+  const alvo = fases[idx + dir];
+  if (!alvo) return;
+  const avancar = dir > 0;
+  openSheet(`
+    <div class="sheet-title">${avancar ? 'Avançar para a próxima fase?' : 'Voltar uma fase?'}</div>
+    <div class="sheet-sub">${avancar
+      ? `${esc(cao.nome)} vai para a <b>Fase ${alvo.ordem} · ${esc(alvo.nome)}</b>. Que conquista! 🎉`
+      : `Recaídas fazem parte do processo. Voltar para a <b>Fase ${alvo.ordem} · ${esc(alvo.nome)}</b> é cuidado, não erro. 💛`}</div>
+    <div class="field">
+      <label class="label" for="mud-obs">Anotação (opcional)</label>
+      <textarea class="input" id="mud-obs" placeholder="${avancar ? 'O que mostrou que ela estava pronta?' : 'O que aconteceu? Isso ajuda a ajustar o plano.'}"></textarea>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
+      <button class="btn btn-primary" onclick="mudarFase('${alvo.id}', '${avancar ? 'avanco' : 'volta'}')">${avancar ? 'Avançar' : 'Voltar'}</button>
+    </div>`);
+}
+
+function tornarAtual(faseId) {
+  const f = state.fases.find(x => x.id === faseId);
+  openSheet(`
+    <div class="sheet-title">Tornar esta a fase atual?</div>
+    <div class="sheet-sub">A fase atual passa a ser a <b>Fase ${f.ordem} · ${esc(f.nome)}</b>. Fica registrado como ajuste no histórico.</div>
+    <div class="field"><label class="label" for="mud-obs">Anotação (opcional)</label><textarea class="input" id="mud-obs"></textarea></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
+      <button class="btn btn-primary" onclick="mudarFase('${f.id}', 'ajuste')">Confirmar</button>
+    </div>`);
+}
+
+async function mudarFase(paraId, tipo) {
+  const cao = caoAtual();
+  const obs = document.getElementById('mud-obs')?.value.trim() || null;
+  try {
+    const [h] = await sbInsert('caes_fase_historico', { cao_id: cao.id, de_fase_id: cao.fase_atual_id, para_fase_id: paraId, tipo, observacao: obs });
+    await sbPatch('caes', `id=eq.${cao.id}`, { fase_atual_id: paraId });
+    cao.fase_atual_id = paraId;
+    state.historico.unshift(h);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast(tipo === 'avanco' ? 'Nova fase! Vocês estão indo muito bem 🐾' : tipo === 'volta' ? 'Fase ajustada. Sem pressa 💛' : 'Fase atual atualizada');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+function abrirFase(faseId) {
+  const f = faseId ? state.fases.find(x => x.id === faseId) : null;
+  const crit = f ? (f.criterios || []).map(c => c.texto).join('\n') : '';
+  openSheet(`
+    <div class="sheet-title">${f ? 'Editar fase' : 'Nova fase'}</div>
+    <div class="sheet-sub">${f ? `Fase ${f.ordem}` : 'Ela entra no fim do plano; depois dá para reordenar.'}</div>
+    <div class="field"><label class="label" for="fase-nome">Nome</label><input class="input" id="fase-nome" maxlength="60" value="${esc(f?.nome)}"></div>
+    <div class="field"><label class="label" for="fase-obj">Objetivo</label><input class="input" id="fase-obj" maxlength="160" value="${esc(f?.objetivo)}"></div>
+    <div class="field"><label class="label" for="fase-desc">Descrição</label><textarea class="input" id="fase-desc">${esc(f?.descricao)}</textarea></div>
+    <div class="field"><label class="label" for="fase-crit">Critérios para avançar</label><textarea class="input" id="fase-crit" placeholder="Um critério por linha">${esc(crit)}</textarea><div class="hint">Um por linha. Os que já estavam marcados continuam marcados.</div></div>
+    <div class="field"><label class="label" for="fase-dur">Duração estimada</label><input class="input" id="fase-dur" maxlength="40" placeholder="Ex: 2 a 4 semanas" value="${esc(f?.duracao_estimada)}"></div>
+    <div class="sheet-actions">
+      ${f ? `<button class="btn btn-danger" onclick="excluirFase('${f.id}')">Excluir</button>` : `<button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>`}
+      <button class="btn btn-primary" onclick="salvarFase(${f ? `'${f.id}'` : 'null'})">Salvar</button>
+    </div>`);
+  setTimeout(() => document.getElementById('fase-nome')?.focus(), 250);
+}
+
+async function salvarFase(faseId) {
+  const cao = caoAtual();
+  const nome = document.getElementById('fase-nome').value.trim();
+  if (!nome) { document.getElementById('fase-nome').focus(); return; }
+  const antiga = faseId ? state.fases.find(x => x.id === faseId) : null;
+  const feitoAntes = Object.fromEntries((antiga?.criterios || []).map(c => [c.texto, c.feito]));
+  const criterios = document.getElementById('fase-crit').value.split('\n').map(s => s.trim()).filter(Boolean)
+    .map(texto => ({ texto, feito: !!feitoAntes[texto] }));
+  const dados = {
+    nome,
+    objetivo: document.getElementById('fase-obj').value.trim() || null,
+    descricao: document.getElementById('fase-desc').value.trim() || null,
+    duracao_estimada: document.getElementById('fase-dur').value.trim() || null,
+    criterios,
+  };
+  try {
+    if (antiga) {
+      const [f] = await sbPatch('caes_fases', `id=eq.${faseId}`, dados);
+      Object.assign(antiga, f);
+    } else {
+      const fases = fasesDo(cao.id);
+      const ordem = fases.length ? fases[fases.length - 1].ordem + 1 : 0;
+      const [f] = await sbInsert('caes_fases', { ...dados, cao_id: cao.id, ordem });
+      state.fases.push(f);
+      if (!cao.fase_atual_id) {
+        await sbPatch('caes', `id=eq.${cao.id}`, { fase_atual_id: f.id });
+        const [h] = await sbInsert('caes_fase_historico', { cao_id: cao.id, para_fase_id: f.id, tipo: 'inicio', observacao: 'Início do plano' });
+        cao.fase_atual_id = f.id;
+        state.historico.unshift(h);
+      }
+    }
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Fase salva');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function excluirFase(faseId) {
+  const cao = caoAtual();
+  if (faseId === cao.fase_atual_id) { toast('Essa é a fase atual. Mude a fase atual antes de excluir.'); return; }
+  const f = state.fases.find(x => x.id === faseId);
+  if (!confirm(`Excluir a fase "${f.nome}"? Os itens de checklist dela também serão removidos.`)) return;
+  try {
+    await sbDelete('caes_fases', `id=eq.${faseId}`);
+    state.fases = state.fases.filter(x => x.id !== faseId);
+    state.itens = state.itens.filter(i => i.fase_id !== faseId);
+    await renumerarFases(cao.id);
+    closeSheet();
+    renderCao();
+    toast('Fase excluída');
+  } catch (e) {
+    toast('Não consegui excluir. Confira a internet.');
+  }
+}
+
+// mantém a numeração contínua (0, 1, 2…) depois de excluir ou mover
+async function renumerarFases(caoId) {
+  const fases = fasesDo(caoId);
+  const mudar = fases.map((f, i) => ({ f, i })).filter(({ f, i }) => f.ordem !== i);
+  for (const { f, i } of mudar) {
+    await sbPatch('caes_fases', `id=eq.${f.id}`, { ordem: i });
+    f.ordem = i;
+  }
+  salvarCache();
+}
+
+async function moverFase(faseId, dir) {
+  const cao = caoAtual();
+  const fases = fasesDo(cao.id);
+  const i = fases.findIndex(f => f.id === faseId);
+  const j = i + dir;
+  if (j < 0 || j >= fases.length) return;
+  const a = fases[i], b = fases[j];
+  try {
+    await sbPatch('caes_fases', `id=eq.${a.id}`, { ordem: b.ordem });
+    await sbPatch('caes_fases', `id=eq.${b.id}`, { ordem: a.ordem });
+    [a.ordem, b.ordem] = [b.ordem, a.ordem];
+    salvarCache();
+    renderCao();
+    document.getElementById(`fi-${a.id}`)?.classList.add('open');
+  } catch (e) {
+    toast('Não consegui reordenar. Confira a internet.');
+  }
+}
+
+// ── aba Perfil ──
+const REC_ROTULO = { '<30s': '< 30 s', '1min': '1 min', '2-5min': '2–5 min', '>5min': '> 5 min' };
+
+function htmlPerfil(cao) {
+  const pausa = pausaVigente(cao.id);
+  const pausas = state.pausas.filter(p => p.cao_id === cao.id);
+  const anos = idade(cao.nascimento);
+  return `
+    <div class="card">
+      <div class="foto-edit">
+        ${avatarHTML(cao, true)}
+        <div>
+          <label class="btn" style="display:inline-block">
+            ${cao.foto ? 'Trocar foto' : 'Adicionar foto'}
+            <input type="file" accept="image/*" style="display:none" onchange="escolherFoto(this)">
+          </label>
+          ${cao.foto ? `<button class="mini" style="margin-left:6px" onclick="removerFoto()">Remover</button>` : ''}
+          ${anos ? `<div class="hint">${anos}</div>` : ''}
+        </div>
+      </div>
+      <div class="field"><label class="label" for="p-nome">Nome</label><input class="input" id="p-nome" maxlength="40" value="${esc(cao.nome)}"></div>
+      <div class="row2">
+        <div class="field"><label class="label" for="p-nasc">Nascimento (opcional)</label><input class="input" type="date" id="p-nasc" value="${esc(cao.nascimento)}"></div>
+        <div class="field"><label class="label" for="p-inicio">Início do plano</label><input class="input" type="date" id="p-inicio" value="${esc(cao.inicio_plano)}"></div>
+      </div>
+      <div class="field"><label class="label" for="p-obs">Observações</label><textarea class="input" id="p-obs" placeholder="Jeitinho dela, medos, o que acalma...">${esc(cao.observacoes)}</textarea></div>
+      <button class="btn btn-primary btn-block" onclick="salvarPerfil()">Salvar perfil</button>
+    </div>
+
+    <div class="sec-title">Passeios</div>
+    <div class="card">
+      <div class="status-line">
+        <span class="status-pill"><span class="dot ${pausa ? 'pausa' : ''}"></span>${pausa ? 'Em pausa' : 'Ativos'}</span>
+        ${pausa
+          ? `<button class="btn btn-primary" onclick="retomarPasseios()">Retomar passeios</button>`
+          : `<button class="btn" onclick="abrirPausa()">Pausar passeios</button>`}
+      </div>
+      ${pausa ? `<div class="hint" style="margin-top:10px">Desde ${fmtData(pausa.inicio)}${pausa.motivo ? ` · ${esc(pausa.motivo)}` : ''}. Enquanto isso, o checklist troca o passeio por uma atividade substituta.</div>` : ''}
+      ${pausas.filter(p => p.fim).length ? `<div class="sec-title" style="margin-top:16px">Pausas anteriores</div>
+        ${pausas.filter(p => p.fim).map(p => `<div class="hint" style="margin-top:4px">${fmtData(p.inicio)} → ${fmtData(p.fim)}${p.motivo ? ` · ${esc(p.motivo)}` : ''}</div>`).join('')}` : ''}
+    </div>
+
+    <div class="sec-title">Alerta dos passeios</div>
+    <div class="card">
+      <div class="hint" style="margin:0 0 12px">Quando um passeio passar desses limites, o app sugere com carinho encurtar os próximos. Nada é aplicado sozinho.</div>
+      <div class="row2">
+        <div class="field"><label class="label" for="a-reac">Reações por passeio (máx.)</label><input class="input" type="number" min="0" id="a-reac" value="${cao.alerta_reacoes_max ?? 2}"></div>
+        <div class="field">
+          <label class="label">Recuperação a partir de</label>
+          <select class="input" id="a-rec">${C.RECUPERACAO.map(r => `<option value="${r}" ${r === (cao.alerta_recuperacao || '>5min') ? 'selected' : ''}>${REC_ROTULO[r]}</option>`).join('')}</select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label class="label" for="a-qtd">Sugerir pausa após</label><input class="input" type="number" min="1" id="a-qtd" value="${cao.alerta_pausa_qtd ?? 3}"><div class="hint">passeios intensos</div></div>
+        <div class="field"><label class="label" for="a-dias">dentro de</label><input class="input" type="number" min="1" id="a-dias" value="${cao.alerta_pausa_dias ?? 7}"><div class="hint">dias</div></div>
+      </div>
+      <button class="btn btn-block" onclick="salvarAlerta()">Salvar limites</button>
+    </div>
+
+    <div style="margin-top:28px; text-align:center">
+      <button class="btn btn-danger" onclick="removerCao()">Remover ${esc(cao.nome)} do app</button>
+    </div>`;
+}
+
+async function atualizarCao(dados, msg) {
+  const cao = caoAtual();
+  try {
+    const [c] = await sbPatch('caes', `id=eq.${cao.id}`, dados);
+    Object.assign(cao, c);
+    salvarCache();
+    renderCao();
+    if (msg) toast(msg);
+    return true;
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+    return false;
+  }
+}
+
+function salvarPerfil() {
+  const nome = document.getElementById('p-nome').value.trim();
+  if (!nome) { document.getElementById('p-nome').focus(); return; }
+  atualizarCao({
+    nome,
+    nascimento: document.getElementById('p-nasc').value || null,
+    inicio_plano: document.getElementById('p-inicio').value || null,
+    observacoes: document.getElementById('p-obs').value.trim() || null,
+  }, 'Perfil salvo');
+}
+
+function salvarAlerta() {
+  const n = id => Math.max(0, parseInt(document.getElementById(id).value, 10) || 0);
+  atualizarCao({
+    alerta_reacoes_max: n('a-reac'),
+    alerta_recuperacao: document.getElementById('a-rec').value,
+    alerta_pausa_qtd: Math.max(1, n('a-qtd')),
+    alerta_pausa_dias: Math.max(1, n('a-dias')),
+  }, 'Limites salvos');
+}
+
+// reduz a foto no próprio aparelho (máx. 480 px, JPEG) antes de salvar
+function escolherFoto(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const img = new Image();
+  const url = URL.createObjectURL(file);
+  img.onload = () => {
+    const max = 480;
+    const s = Math.min(1, max / Math.max(img.width, img.height));
+    const cv = document.createElement('canvas');
+    cv.width = Math.round(img.width * s);
+    cv.height = Math.round(img.height * s);
+    cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+    URL.revokeObjectURL(url);
+    atualizarCao({ foto: cv.toDataURL('image/jpeg', 0.82) }, 'Foto atualizada 📸');
+  };
+  img.onerror = () => toast('Não consegui abrir essa imagem');
+  img.src = url;
+}
+function removerFoto() { atualizarCao({ foto: null }, 'Foto removida'); }
+
+function abrirPausa() {
+  const cao = caoAtual();
+  openSheet(`
+    <div class="sheet-title">Pausar passeios</div>
+    <div class="sheet-sub">Uma pausa ajuda ${esc(cao.nome)} a baixar o estresse. O checklist troca o passeio por uma atividade substituta.</div>
+    <div class="field"><label class="label" for="pz-ini">A partir de</label><input class="input" type="date" id="pz-ini" value="${hoje()}"></div>
+    <div class="field"><label class="label" for="pz-mot">Motivo (curto)</label><input class="input" id="pz-mot" maxlength="80" placeholder="Ex: semana de muitas reações"></div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
+      <button class="btn btn-primary" onclick="salvarPausa()">Pausar</button>
+    </div>`);
+}
+
+async function salvarPausa() {
+  const cao = caoAtual();
+  try {
+    const [p] = await sbInsert('caes_passeio_pausas', {
+      cao_id: cao.id,
+      inicio: document.getElementById('pz-ini').value || hoje(),
+      motivo: document.getElementById('pz-mot').value.trim() || null,
+    });
+    state.pausas.unshift(p);
+    salvarCache();
+    closeSheet();
+    renderCao();
+    toast('Passeios em pausa. Descanso também é treino 💛');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function retomarPasseios() {
+  const p = pausaVigente(state.caoId);
+  if (!p) return;
+  try {
+    const [r] = await sbPatch('caes_passeio_pausas', `id=eq.${p.id}`, { fim: hoje() });
+    Object.assign(p, r);
+    salvarCache();
+    renderCao();
+    toast('Passeios retomados! Bom passeio 🐾');
+  } catch (e) {
+    toast('Não consegui salvar. Confira a internet.');
+  }
+}
+
+async function removerCao() {
+  const cao = caoAtual();
+  if (!confirm(`Remover ${cao.nome} do app? Os registros ficam guardados no banco.`)) return;
+  try {
+    await sbPatch('caes', `id=eq.${cao.id}`, { ativo: false });
+    state.caes = state.caes.filter(c => c.id !== cao.id);
+    salvarCache();
+    irPara(null);
+    toast(`${cao.nome} foi removida da lista`);
+  } catch (e) {
+    toast('Não consegui remover. Confira a internet.');
+  }
+}
+
+// ── novo cão ──
+function abrirNovoCao() {
+  const opcoes = state.caes.map(c => `<button class="chip" data-base="${c.id}" onclick="escolherBase(this)">Copiar plano de ${esc(c.nome)}</button>`).join('');
+  openSheet(`
+    <div class="sheet-title">Novo cão</div>
+    <div class="sheet-sub">Cada cão tem o próprio plano. Você pode começar do zero ou copiar um plano e ajustar depois.</div>
+    <div class="field"><label class="label" for="n-nome">Nome</label><input class="input" id="n-nome" maxlength="40" placeholder="Ex: Milli"></div>
+    <div class="field">
+      <label class="label">Plano</label>
+      <div class="chips" id="n-base">
+        <button class="chip on" data-base="" onclick="escolherBase(this)">Começar do zero</button>
+        ${opcoes}
+      </div>
+      <div class="hint">Copiar leva as fases, os itens do checklist e as listas (gatilhos, exercícios...). Os registros não são copiados.</div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn btn-ghost" onclick="closeSheet()">Cancelar</button>
+      <button class="btn btn-primary" id="n-salvar" onclick="criarCao()">Adicionar</button>
+    </div>`);
+  setTimeout(() => document.getElementById('n-nome')?.focus(), 250);
+}
+
+function escolherBase(el) {
+  document.querySelectorAll('#n-base .chip').forEach(c => c.classList.toggle('on', c === el));
+}
+
+async function criarCao() {
+  const nome = document.getElementById('n-nome').value.trim();
+  if (!nome) { document.getElementById('n-nome').focus(); return; }
+  const baseId = document.querySelector('#n-base .chip.on')?.dataset.base || '';
+  const btn = document.getElementById('n-salvar');
+  btn.disabled = true; btn.textContent = 'Criando...';
+  try {
+    const ordem = state.caes.reduce((m, c) => Math.max(m, c.ordem), -1) + 1;
+    const base = state.caes.find(c => c.id === baseId);
+    const [cao] = await sbInsert('caes', {
+      nome, ordem, inicio_plano: hoje(),
+      ...(base ? {
+        alerta_reacoes_max: base.alerta_reacoes_max, alerta_recuperacao: base.alerta_recuperacao,
+        alerta_pausa_qtd: base.alerta_pausa_qtd, alerta_pausa_dias: base.alerta_pausa_dias,
+      } : {}),
+    });
+    let primeiraFase = null;
+    if (base) {
+      // fases
+      const fasesBase = fasesDo(base.id);
+      const novas = fasesBase.length ? await sbInsert('caes_fases', fasesBase.map(f => ({
+        cao_id: cao.id, ordem: f.ordem, nome: f.nome, objetivo: f.objetivo, descricao: f.descricao,
+        duracao_estimada: f.duracao_estimada, criterios: (f.criterios || []).map(c => ({ texto: c.texto, feito: false })),
+      }))) : [];
+      const mapa = {};
+      fasesBase.forEach(f => { mapa[f.id] = novas.find(n => n.ordem === f.ordem)?.id; });
+      state.fases.push(...novas);
+      primeiraFase = novas.sort((a, b) => a.ordem - b.ordem)[0] || null;
+      // checklist e listas
+      const [itens, listas] = await Promise.all([
+        sb(`caes_checklist_itens?cao_id=eq.${base.id}&ativo=eq.true`),
+        sb(`caes_listas?cao_id=eq.${base.id}&ativo=eq.true`),
+      ]);
+      if (itens.length) state.itens.push(...await sbInsert('caes_checklist_itens', itens.map(it => ({
+        cao_id: cao.id, fase_id: it.fase_id ? mapa[it.fase_id] : null, continua: it.continua,
+        titulo: it.titulo, dias_semana: it.dias_semana, ordem: it.ordem, tipo: it.tipo, titulo_pausa: it.titulo_pausa,
+      }))));
+      if (listas.length) await sbInsert('caes_listas', listas.map(l => ({ cao_id: cao.id, tipo: l.tipo, nome: l.nome, ordem: l.ordem })));
+    } else {
+      const linhas = [];
+      Object.entries(LISTAS_PADRAO).forEach(([tipo, nomes]) => nomes.forEach((n, i) => linhas.push({ cao_id: cao.id, tipo, nome: n, ordem: i })));
+      await sbInsert('caes_listas', linhas);
+    }
+    if (primeiraFase) {
+      await sbPatch('caes', `id=eq.${cao.id}`, { fase_atual_id: primeiraFase.id });
+      cao.fase_atual_id = primeiraFase.id;
+      const [h] = await sbInsert('caes_fase_historico', { cao_id: cao.id, para_fase_id: primeiraFase.id, tipo: 'inicio', observacao: 'Início do plano' });
+      state.historico.unshift(h);
+    }
+    state.caes.push(cao);
+    salvarCache();
+    closeSheet();
+    irPara(cao.id, 'plano');
+    toast(`Bem-vinda, ${nome}! 🐾`);
+  } catch (e) {
+    btn.disabled = false; btn.textContent = 'Adicionar';
+    toast('Não consegui criar. Confira a internet.');
+  }
+}
+
+// ── sheet e toast ──
+function openSheet(html) {
+  const s = document.getElementById('sheet');
+  s.innerHTML = `<div class="sheet-grip"></div>${html}`;
+  s.scrollTop = 0;
+  document.getElementById('sheet-overlay').classList.add('open');
+  s.classList.add('open');
+}
+function closeSheet() {
+  document.getElementById('sheet-overlay').classList.remove('open');
+  document.getElementById('sheet').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── init ──
+(async function init() {
+  await carregar();
+  lerHash();
+  render();
+})();
+</script>
+</body>
+</html>
